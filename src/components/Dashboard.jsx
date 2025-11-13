@@ -329,7 +329,7 @@ const Dashboard = ({ user, onLogout }) => {
   
   // Retorna el contenedor principal con el contenido dinámico
   return (
-      <div className="min-h-screen flex" style={{ backgroundColor: '#200C2C' }}>
+      <div className="min-h-screen flex w-full overflow-x-hidden" style={{ backgroundColor: '#200C2C', maxWidth: '100vw' }}>
       {/* Sidebar Estático y Responsivo - Solo visible en desktop */}
       <div 
         className={`hidden lg:block fixed left-0 top-0 h-full transition-all duration-300 z-40 shadow-2xl ${
@@ -406,7 +406,7 @@ const Dashboard = ({ user, onLogout }) => {
       </div>
 
       {/* Contenido Principal */}
-      <div className={`flex-1 flex flex-col transition-all duration-300 ${
+      <div className={`flex-1 flex flex-col transition-all duration-300 overflow-x-hidden min-w-0 ${
         sidebarHovered ? 'lg:ml-64' : 'lg:ml-16'
       }`}>
         {/* Navbar Superior Estático */}
@@ -644,7 +644,7 @@ const Dashboard = ({ user, onLogout }) => {
         </nav>
 
         {/* Área de Contenido Scrolleable */}
-        <div className="flex-1 overflow-y-auto pt-14 sm:pt-16">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden pt-14 sm:pt-16">
       {renderDashboardContent()}
         </div>
       </div>

@@ -2,7 +2,7 @@
 // IMPORTS - Importaciones de dependencias
 // ========================================
 
-import React, { useState } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import {
   BarChart3,        // Panel de Ventas
   ShoppingCart,     // Pedidos y Transacciones
@@ -22,7 +22,9 @@ import {
   Search,
   Download,
   Plus,
-  Settings
+  Settings,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react'
 
 // Importar componentes de cada sección
@@ -44,6 +46,35 @@ import AdvancedReports from './sections/AdvancedReports'
 
 const EcommerceModule = () => {
   const [activeSection, setActiveSection] = useState('sales')
+  const [showNavArrowLeft, setShowNavArrowLeft] = useState(false)
+  const [showNavArrowRight, setShowNavArrowRight] = useState(false)
+  const navContainerRef = useRef(null)
+
+  useEffect(() => {
+    const container = navContainerRef.current
+    if (!container) return
+
+    const updateNavArrows = () => {
+      const { scrollLeft, scrollWidth, clientWidth } = container
+      setShowNavArrowLeft(scrollLeft > 8)
+      setShowNavArrowRight(scrollLeft + clientWidth < scrollWidth - 8)
+    }
+
+    updateNavArrows()
+    container.addEventListener('scroll', updateNavArrows)
+    window.addEventListener('resize', updateNavArrows)
+
+    return () => {
+      container.removeEventListener('scroll', updateNavArrows)
+      window.removeEventListener('resize', updateNavArrows)
+    }
+  }, [])
+
+  const handleNavScroll = (direction) => {
+    const container = navContainerRef.current
+    if (!container) return
+    container.scrollBy({ left: direction * 240, behavior: 'smooth' })
+  }
 
   // Configuración de secciones según el diagrama + funcionalidades adicionales
   const sections = [
@@ -156,38 +187,59 @@ const EcommerceModule = () => {
         {/* Contenedor unificado con tabs horizontales compactos */}
         <div className="bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 shadow-xl overflow-hidden w-full" style={{maxWidth: '100%'}}>
           {/* Tabs horizontales compactos */}
-          <div className="border-b border-white/10 overflow-x-auto">
-            <nav className="flex overflow-x-auto scrollbar-hide min-w-0">
-              {sections.map((section, index) => {
-                const Icon = section.icon
-                const isActive = activeSection === section.id
-                const isFirst = index === 0
-                const isLast = index === sections.length - 1
-                
-                return (
-                  <button
-                    key={section.id}
-                    onClick={() => setActiveSection(section.id)}
-                    className={`
-                      group relative flex items-center gap-2 px-4 sm:px-5 md:px-6 py-3 sm:py-3.5 font-semibold text-sm sm:text-base
-                      transition-all duration-300 whitespace-nowrap flex-shrink-0
-                      ${isFirst ? 'rounded-tl-2xl' : ''}
-                      ${isLast ? 'rounded-tr-2xl' : ''}
-                      ${isActive
-                        ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg'
-                        : 'bg-transparent text-white/70 hover:text-white hover:bg-white/5'
-                      }
-                    `}
-                  >
-                    <Icon size={18} className={`flex-shrink-0 transition-transform duration-300 ${isActive ? 'scale-110' : 'group-hover:scale-110'}`} />
-                    <span className="relative z-10">{section.label}</span>
-                    {isActive && (
-                      <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-white/30"></div>
-                    )}
-                  </button>
-                )
-              })}
-            </nav>
+          <div className="border-b border-white/10 relative">
+            {showNavArrowLeft && (
+              <button
+                type="button"
+                onClick={() => handleNavScroll(-1)}
+                className="absolute left-2 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-9 h-9 rounded-full bg-gradient-to-r from-purple-700/80 to-pink-600/70 border border-white/20 shadow-lg hover:from-purple-600 hover:to-pink-500 transition-all"
+              >
+                <ChevronLeft className="w-4 h-4 text-white" />
+              </button>
+            )}
+
+            {showNavArrowRight && (
+              <button
+                type="button"
+                onClick={() => handleNavScroll(1)}
+                className="absolute right-2 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-9 h-9 rounded-full bg-gradient-to-r from-purple-700/80 to-pink-600/70 border border-white/20 shadow-lg hover:from-purple-600 hover:to-pink-500 transition-all"
+              >
+                <ChevronRight className="w-4 h-4 text-white" />
+              </button>
+            )}
+
+            <div
+              ref={navContainerRef}
+              className="overflow-x-auto scrollbar-hide px-1 sm:px-10"
+            >
+              <nav className="flex min-w-0 gap-1 sm:gap-2">
+                {sections.map((section, index) => {
+                  const Icon = section.icon
+                  const isActive = activeSection === section.id
+                  const cornerClasses = [
+                    index === 0 ? 'rounded-tl-2xl' : '',
+                    index === sections.length - 1 ? 'rounded-tr-2xl' : ''
+                  ].join(' ')
+                  const stateClasses = isActive
+                    ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg'
+                    : 'bg-transparent text-white/70 hover:text-white hover:bg-white/5'
+
+                  return (
+                    <button
+                      key={section.id}
+                      onClick={() => setActiveSection(section.id)}
+                      className={`group relative flex items-center gap-2 px-4 sm:px-5 md:px-6 py-3 sm:py-3.5 font-semibold text-sm sm:text-base transition-all duration-300 whitespace-nowrap flex-shrink-0 ${cornerClasses} ${stateClasses}`}
+                    >
+                      <Icon size={18} className={`flex-shrink-0 transition-transform duration-300 ${isActive ? 'scale-110' : 'group-hover:scale-110'}`} />
+                      <span className="relative z-10">{section.label}</span>
+                      {isActive && (
+                        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-white/30"></div>
+                      )}
+                    </button>
+                  )
+                })}
+              </nav>
+            </div>
           </div>
 
           {/* Contenido de la sección activa */}
