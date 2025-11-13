@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kelumy - Diagramas Funcionales</title>
+    <link rel="stylesheet" href="styles-diagramas.css">
+    <link rel="stylesheet" href="styles-map-container.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🗺️ Kelumy Dashboard</h1>
+            <p>Diagramas Funcionales del Sistema - Versión Interactiva</p>
+            <div class="view-toggle">
+                <button class="view-btn active" onclick="showMapView()">Vista de Mapas</button>
+                <button class="view-btn" onclick="showMindMapView()">Vista de Mapa Mental</button>
+            </div>
+        </div>
+
+        <!-- Menú Mosaico -->
+        <div id="mosaic-menu" class="mosaic-menu">
+            <div class="mosaic-card" onclick="showMap('ecommerce')">
+                <h3>🛒 E-commerce y Ventas</h3>
+                <p>Gestión de ventas, pagos, facturación y suscripciones. Funcionalidades core para monetización.</p>
+                <div class="card-stats">
+                    <span class="stat">7 módulos</span>
+                    <span class="stat">28 submódulos</span>
+                    <span class="stat">85+ funcionalidades</span>
+                </div>
+            </div>
+            
+            <div class="mosaic-card" onclick="showMap('certificaciones')">
+                <h3>🏆 Certificaciones</h3>
+                <p>Sistema de certificados digitales con validación QR y blockchain para autenticidad.</p>
+                <div class="card-stats">
+                    <span class="stat">4 módulos</span>
+                    <span class="stat">16 submódulos</span>
+                    <span class="stat">45+ funcionalidades</span>
+                </div>
+            </div>
+            
+            <div class="mosaic-card" onclick="showMap('cursos')">
+                <h3>🎓 Gestión de Cursos</h3>
+                <p>Administración de contenido educativo, instructores y analítica de aprendizaje.</p>
+                <div class="card-stats">
+                    <span class="stat">5 módulos</span>
+                    <span class="stat">20 submódulos</span>
+                    <span class="stat">60+ funcionalidades</span>
+                </div>
+            </div>
+            
+            <div class="mosaic-card" onclick="showMap('reportes')">
+                <h3>📊 Reportes y Analítica</h3>
+                <p>Dashboard ejecutivo, métricas de negocio y reportes financieros.</p>
+                <div class="card-stats">
+                    <span class="stat">5 módulos</span>
+                    <span class="stat">20 submódulos</span>
+                    <span class="stat">55+ funcionalidades</span>
+                </div>
+            </div>
+            
+            <div class="mosaic-card" onclick="showMap('configuracion')">
+                <h3>⚙️ Configuración</h3>
+                <p>Configuración del sistema, seguridad y personalización de la plataforma.</p>
+                <div class="card-stats">
+                    <span class="stat">6 módulos</span>
+                    <span class="stat">24 submódulos</span>
+                    <span class="stat">65+ funcionalidades</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenedor para los mapas conceptuales -->
+        <div id="map-container" style="display: none;">
+            <button class="back-to-mosaic" onclick="showMosaic()">Volver al Mosaico</button>
+            <div id="map-content"></div>
+        </div>
+
+        <!-- Leyenda -->
+        <div class="legend">
+            <h4>📋 Leyenda de Prioridades</h4>
+            <div class="legend-item">
+                <span class="priority-badge priority-core">CORE</span>
+                <span>Funcionalidades esenciales - Implementar primero</span>
+            </div>
+            <div class="legend-item">
+                <span class="priority-badge priority-second">SECOND</span>
+                <span>Funcionalidades secundarias - Implementar después</span>
+            </div>
+            <div class="legend-item">
+                <span class="priority-badge priority-future">FUTURE</span>
+                <span>Referencia futura - No prioritarias</span>
+            </div>
+        </div>
+
+        <!-- Diagrama E-commerce -->
+        <div id="ecommerce" class="diagram-container">
+            <button class="back-btn" onclick="showMosaic()">← Volver al Mosaico</button>
+            <h2 class="diagram-title">🛒 E-COMMERCE Y VENTAS</h2>
+            <div class="tree">
+                <div class="main-branch">
+                    <span class="icon">📊</span> Panel de Ventas
+                    <span class="priority-badge priority-core">CORE</span>
+                </div>
+                <div class="sub-branch">├─ Resumen de Ingresos</div>
+                <div class="function">│   ├─ Ingresos diarios (ventas del día actual)</div>
+                <div class="function">│   ├─ Ingresos semanales (comparativa con semana anterior)</div>
+                <div class="function">│   ├─ Ingresos mensuales (progreso del mes actual)</div>
+                <div class="function">│   └─ Proyección de ingresos (basada en tendencias)</div>
+                
+                <div class="sub-branch">├─ Gráficas Dinámicas</div>
+                <div class="function">│   ├─ Gráfica de barras (ingresos por día)</div>
+                <div class="function">│   ├─ Gráfica de líneas (tendencias temporales)</div>
+                <div class="function">│   ├─ Gráfica de pastel (ingresos por método de pago)</div>
+                <div class="function">│   └─ Gráfica comparativa (períodos anteriores)</div>
+                
+                <div class="sub-branch">└─ Filtros y Búsqueda</div>
+                <div class="function">    ├─ Filtro por curso (seleccionar cursos específicos)</div>
+                <div class="function">    ├─ Filtro por fecha (rango de fechas personalizable)</div>
+                <div class="function">    ├─ Filtro por método de pago (Stripe, PayPal, etc.)</div>
+                <div class="function">    └─ Exportación de datos (Excel, PDF, CSV)</div>
+
+                <div class="main-branch">
+                    <span class="icon">💼</span> Pedidos y Transacciones
+                    <span class="priority-badge priority-core">CORE</span>
+                </div>
+                <div class="sub-branch">├─ Listado de Pedidos</div>
+                <div class="function">│   ├─ Vista de tabla con paginación (20 pedidos por página)</div>
+                <div class="function">│   ├─ Buscador avanzado (por ID, email, curso)</div>
+                <div class="function">│   ├─ Ordenamiento por columnas (fecha, monto, estado)</div>
+                <div class="function">│   └─ Vista de tarjetas para móviles</div>
+                
+                <div class="sub-branch">├─ Estados de Pedidos</div>
+                <div class="function">│   ├─ Pagado (transacción completada exitosamente)</div>
+                <div class="function">│   ├─ Pendiente (esperando confirmación de pago)</div>
+                <div class="function">│   ├─ Cancelado (pedido cancelado por usuario)</div>
+                <div class="function">│   ├─ Reembolsado (dinero devuelto al cliente)</div>
+                <div class="function">│   └─ En proceso (procesando el pago)</div>
+                
+                <div class="sub-branch">├─ Detalles del Pedido</div>
+                <div class="function">│   ├─ Información del cliente (nombre, email, teléfono)</div>
+                <div class="function">│   ├─ Cursos incluidos (título, precio, descuentos)</div>
+                <div class="function">│   ├─ Método de pago utilizado</div>
+                <div class="function">│   ├─ Fecha y hora de la transacción</div>
+                <div class="function">│   └─ Historial de cambios de estado</div>
+                
+                <div class="sub-branch">└─ Acciones Disponibles</div>
+                <div class="function">    ├─ Reembolsar (devolver dinero al cliente)</div>
+                <div class="function">    ├─ Descargar factura (PDF/XML)</div>
+                <div class="function">    ├─ Reenviar confirmación (email al cliente)</div>
+                <div class="function">    ├─ Contactar cliente (abrir chat/email)</div>
+                <div class="function">    └─ Marcar como pagado (confirmación manual)</div>
+
+                <div class="main-branch">
+                    <span class="icon">💳</span> Métodos de Pago
+                    <span class="priority-badge priority-core">CORE</span>
+                </div>
+                <div class="sub-branch">├─ Configuración de Pasarelas</div>
+                <div class="function">│   ├─ Stripe México (tarjetas de crédito/débito)</div>
+                <div class="function">│   ├─ PayPal México (cuenta PayPal, tarjetas)</div>
+                <div class="function">│   ├─ MercadoPago (tarjetas, efectivo, transferencias)</div>
+                <div class="function">│   └─ OXXO Pay (pagos en efectivo en tiendas)</div>
+                
+                <div class="sub-branch">├─ Credenciales API</div>
+                <div class="function">│   ├─ Claves públicas y privadas</div>
+                <div class="function">│   ├─ Modo sandbox (pruebas sin cobros reales)</div>
+                <div class="function">│   ├─ Modo producción (cobros reales)</div>
+                <div class="function">│   └─ Rotación automática de claves</div>
+                
+                <div class="sub-branch">├─ Gestión de Comisiones</div>
+                <div class="function">│   ├─ Cálculo automático de comisiones</div>
+                <div class="function">│   ├─ Desglose por método de pago</div>
+                <div class="function">│   ├─ Reportes de comisiones mensuales</div>
+                <div class="function">    └─ Optimización de métodos según costo</div>
+                
+                <div class="sub-branch">└─ Monitoreo y Alertas</div>
+                <div class="function">    ├─ Límites de transacción por método</div>
+                <div class="function">    ├─ Monitoreo de límites de API</div>
+                <div class="function">    ├─ Alertas de fallos de pago</div>
+                <div class="function">    └─ Estadísticas de éxito por método</div>
+
+                <div class="main-branch">
+                    <span class="icon">🧾</span> Facturación (México)
+                    <span class="priority-badge priority-core">CORE</span>
+                </div>
+                <div class="sub-branch">├─ Generación CFDI</div>
+                <div class="function">│   ├─ Emisión automática de CFDI 3.3</div>
+                <div class="function">│   ├─ Validación de RFC del cliente</div>
+                <div class="function">│   ├─ Timbre fiscal automático</div>
+                <div class="function">│   └─ Integración con PAC autorizado</div>
+                
+                <div class="sub-branch">├─ Gestión de Documentos</div>
+                <div class="function">│   ├─ Descarga de PDF (factura legible)</div>
+                <div class="function">│   ├─ Descarga de XML (archivo fiscal)</div>
+                <div class="function">│   ├─ Envío automático por email</div>
+                <div class="function">│   └─ Almacenamiento en la nube</div>
+                
+                <div class="sub-branch">├─ Configuración Fiscal</div>
+                <div class="function">│   ├─ Datos fiscales de Kelumy (RFC, domicilio)</div>
+                <div class="function">│   ├─ Catálogos SAT (productos, servicios)</div>
+                <div class="function">│   ├─ Configuración de conceptos por curso</div>
+                <div class="function">│   └─ Retención de ISR e IVA</div>
+                
+                <div class="sub-branch">└─ Gestión de Errores</div>
+                <div class="function">    ├─ Cancelación de CFDI</div>
+                <div class="function">    ├─ Consulta de estatus en SAT</div>
+                <div class="function">    ├─ Reenvío de facturas fallidas</div>
+                <div class="function">    └─ Log de errores fiscales</div>
+
+                <div class="main-branch">
+                    <span class="icon">🎟️</span> Cupones y Promociones
+                    <span class="priority-badge priority-second">SECOND</span>
+                </div>
+                <div class="sub-branch">├─ Creación de Cupones</div>
+                <div class="function">│   ├─ Descuento por porcentaje (10%, 20%, 30%)</div>
+                <div class="function">│   ├─ Descuento por monto fijo ($100, $500 MXN)</div>
+                <div class="function">│   ├─ Códigos automáticos generados</div>
+                <div class="function">│   └─ Códigos personalizados por cliente</div>
+                
+                <div class="sub-branch">├─ Configuración de Vigencia</div>
+                <div class="function">│   ├─ Fecha de inicio de validez</div>
+                <div class="function">│   ├─ Fecha de expiración</div>
+                <div class="function">│   ├─ Límite de usos totales</div>
+                <div class="function">│   └─ Límite de usos por usuario</div>
+                
+                <div class="sub-branch">├─ Asignación de Cursos</div>
+                <div class="function">│   ├─ Cupones aplicables a todos los cursos</div>
+                <div class="function">│   ├─ Cupones para cursos específicos</div>
+                <div class="function">│   ├─ Cupones para categorías de cursos</div>
+                <div class="function">│   └─ Exclusión de cursos en oferta</div>
+                
+                <div class="sub-branch">└─ Tracking y Analítica</div>
+                <div class="function">    ├─ Uso de cupones por usuario</div>
+                <div class="function">    ├─ Conversiones generadas por cupón</div>
+                <div class="function">    ├─ ROI de cada promoción</div>
+                <div class="function">    └─ Reportes de efectividad</div>
+
+                <div class="main-branch">
+                    <span class="icon">📦</span> Bundles y Paquetes
+                    <span class="priority-badge priority-second">SECOND</span>
+                </div>
+                <div class="sub-branch">├─ Creación de Paquetes</div>
+                <div class="function">│   ├─ Selección de cursos para el paquete</div>
+                <div class="function">│   ├─ Precio individual vs precio paquete</div>
+                <div class="function">│   ├─ Cálculo automático de ahorro</div>
+                <div class="function">│   └─ Descripción del paquete</div>
+                
+                <div class="sub-branch">├─ Configuración de Acceso</div>
+                <div class="function">│   ├─ Acceso secuencial (curso por curso)</div>
+                <div class="function">│   ├─ Acceso simultáneo (todos los cursos)</div>
+                <div class="function">│   ├─ Prerequisitos entre cursos</div>
+                <div class="function">│   └─ Certificación conjunta</div>
+                
+                <div class="sub-branch">└─ Gestión de Contenido</div>
+                <div class="function">    ├─ Materiales compartidos entre cursos</div>
+                <div class="function">    ├─ Progreso integrado del paquete</div>
+                <div class="function">    ├─ Evaluaciones combinadas</div>
+                <div class="function">    └─ Descuentos adicionales por paquete</div>
+
+                <div class="main-branch">
+                    <span class="icon">💳</span> Suscripciones y Membresías
+                    <span class="priority-badge priority-core">CORE</span>
+                </div>
+                <div class="sub-branch">├─ Planes de Suscripción</div>
+                <div class="function">│   ├─ Plan Básico ($340 MXN/mes - 15 cursos)</div>
+                <div class="function">│   ├─ Plan Premium ($680 MXN/mes - 50+ cursos)</div>
+                <div class="function">│   ├─ Plan Enterprise ($1,780 MXN/mes - 10 usuarios)</div>
+                <div class="function">│   └─ Planes anuales con descuento</div>
+                
+                <div class="sub-branch">├─ Gestión de Membresías</div>
+                <div class="function">│   ├─ Estado activo (suscripción vigente)</div>
+                <div class="function">│   ├─ Estado vencido (suscripción expirada)</div>
+                <div class="function">│   ├─ Estado suspendido (pago pendiente)</div>
+                <div class="function">│   └─ Período de gracia (7 días adicionales)</div>
+                
+                <div class="sub-branch">├─ Renovación Automática</div>
+                <div class="function">│   ├─ Recordatorios de pago (3 días antes)</div>
+                <div class="function">│   ├─ Reintentos automáticos de cobro</div>
+                <div class="function">│   ├─ Suspensión temporal por fallo</div>
+                <div class="function">│   └─ Reactivación automática al pagar</div>
+                
+                <div class="sub-branch">└─ Beneficios por Nivel</div>
+                <div class="function">    ├─ Acceso a contenido exclusivo</div>
+                <div class="function">    ├─ Eventos especiales y webinars</div>
+                <div class="function">    ├─ Soporte prioritario</div>
+                <div class="function">    └─ Descuentos adicionales en compras</div>
+            </div>
+        </div>
+
+        <!-- Diagrama Certificaciones -->
+        <div id="certificaciones" class="diagram-container">
+            <button class="back-btn" onclick="showMosaic()">← Volver al Mosaico</button>
+            <h2 class="diagram-title">🏆 CERTIFICACIONES DIGITALES</h2>
+            <div class="tree">
+                <div class="main-branch">
+                    <span class="icon">🏆</span> Generación de Certificados
+                    <span class="priority-badge priority-core">CORE</span>
+                </div>
+                <div class="sub-branch">├─ Plantillas de Certificado</div>
+                <div class="function">│   ├─ Plantilla básica (diseño estándar)</div>
+                <div class="function">│   ├─ Plantilla premium (diseño avanzado)</div>
+                <div class="function">│   ├─ Plantilla corporativa (para empresas)</div>
+                <div class="function">│   └─ Editor visual de plantillas</div>
+                
+                <div class="sub-branch">├─ Datos del Certificado</div>
+                <div class="function">│   ├─ Información del estudiante (nombre, email)</div>
+                <div class="function">│   ├─ Detalles del curso (título, duración, fecha)</div>
+                <div class="function">│   ├─ Calificación obtenida (porcentaje, nivel)</div>
+                <div class="function">│   └─ Firma digital del instructor</div>
+                
+                <div class="sub-branch">├─ Generación Automática</div>
+                <div class="function">│   ├─ Activación al completar curso (100%)</div>
+                <div class="function">│   ├─ Verificación de requisitos previos</div>
+                <div class="function">│   ├─ Validación de identidad del estudiante</div>
+                <div class="function">│   └─ Notificación automática al estudiante</div>
+                
+                <div class="sub-branch">└─ Configuración de Seguridad</div>
+                <div class="function">    ├─ Código único de verificación</div>
+                <div class="function">    ├─ Sello de autenticidad</div>
+                <div class="function">    ├─ Fecha de emisión y validez</div>
+                <div class="function">    └─ Integración con blockchain</div>
+
+                <div class="main-branch">
+                    <span class="icon">🔍</span> Validación por QR
+                    <span class="priority-badge priority-core">CORE</span>
+                </div>
+                <div class="sub-branch">├─ Generación de Códigos QR</div>
+                <div class="function">│   ├─ Códigos únicos por certificado</div>
+                <div class="function">│   ├─ Enlace de verificación directo</div>
+                <div class="function">│   ├─ Datos encriptados en el QR</div>
+                <div class="function">│   └─ Generación en alta resolución</div>
+                
+                <div class="sub-branch">├─ Sistema de Verificación</div>
+                <div class="function">│   ├─ Escaneo instantáneo con cámara</div>
+                <div class="function">│   ├─ Verificación online en tiempo real</div>
+                <div class="function">│   ├─ Validación de autenticidad</div>
+                <div class="function">│   └─ Historial de verificaciones</div>
+                
+                <div class="sub-branch">├─ Integración Blockchain</div>
+                <div class="function">│   ├─ Registro inmutable del certificado</div>
+                <div class="function">│   ├─ Verificación descentralizada</div>
+                <div class="function">│   ├─ Certificación de autenticidad</div>
+                <div class="function">│   └─ Prevención de falsificación</div>
+                
+                <div class="sub-branch">└─ API de Verificación</div>
+                <div class="function">    ├─ Endpoint público de verificación</div>
+                <div class="function">    ├─ Documentación técnica completa</div>
+                <div class="function">    ├─ Integración con sistemas externos</div>
+                <div class="function">    └─ Rate limiting y seguridad</div>
+
+                <div class="main-branch">
+                    <span class="icon">📜</span> Historial de Certificados
+                    <span class="priority-badge priority-second">SECOND</span>
+                </div>
+                <div class="sub-branch">├─ Lista de Certificados Emitidos</div>
+                <div class="function">│   ├─ Vista de tabla con paginación</div>
+                <div class="function">│   ├─ Búsqueda por estudiante o curso</div>
+                <div class="function">│   ├─ Filtros por fecha de emisión</div>
+                <div class="function">│   └─ Ordenamiento por columnas</div>
+                
+                <div class="sub-branch">├─ Filtros y Búsqueda Avanzada</div>
+                <div class="function">│   ├─ Filtro por curso específico</div>
+                <div class="function">│   ├─ Filtro por rango de fechas</div>
+                <div class="function">│   ├─ Filtro por estado de verificación</div>
+                <div class="function">│   └─ Búsqueda por código de verificación</div>
+                
+                <div class="sub-branch">├─ Gestión de Certificados</div>
+                <div class="function">│   ├─ Reenvío automático por email</div>
+                <div class="function">│   ├─ Descarga individual en PDF</div>
+                <div class="function">│   ├─ Cancelación de certificados</div>
+                <div class="function">│   └─ Regeneración de códigos QR</div>
+                
+                <div class="sub-branch">└─ Reportes de Emisión</div>
+                <div class="function">    ├─ Estadísticas por período</div>
+                <div class="function">    ├─ Cursos más certificados</div>
+                <div class="function">    ├─ Tendencias de certificación</div>
+                <div class="function">    └─ Exportación de datos</div>
+
+                <div class="main-branch">
+                    <span class="icon">⚙️</span> Configuración del Sistema
+                    <span class="priority-badge priority-second">SECOND</span>
+                </div>
+                <div class="sub-branch">├─ Editor de Plantillas</div>
+                <div class="function">│   ├─ Editor visual drag & drop</div>
+                <div class="function">│   ├─ Elementos personalizables</div>
+                <div class="function">│   ├─ Preview en tiempo real</div>
+                <div class="function">│   └─ Biblioteca de elementos</div>
+                
+                <div class="sub-branch">├─ Configuración de Datos</div>
+                <div class="function">│   ├─ Campos obligatorios por curso</div>
+                <div class="function">│   ├─ Formatos de fecha y hora</div>
+                <div class="function">│   ├─ Configuración de firmas</div>
+                <div class="function">│   └─ Validación de datos</div>
+                
+                <div class="sub-branch">├─ Integración con LinkedIn</div>
+                <div class="function">│   ├─ API de LinkedIn Learning</div>
+                <div class="function">│   ├─ Sincronización automática</div>
+                <div class="function">│   ├─ Verificación de perfil</div>
+                <div class="function">│   └─ Publicación automática</div>
+                
+                <div class="sub-branch">└─ Cumplimiento Legal</div>
+                <div class="function">    ├─ Regulaciones educativas mexicanas</div>
+                <div class="function">    ├─ Estándares internacionales</div>
+                <div class="function">    ├─ Certificaciones de calidad</div>
+                <div class="function">    └─ Auditorías de cumplimiento</div>
+            </div>
+        </div>
+
+        <!-- Diagrama Marketing -->
+        <div id="marketing" class="diagram-container">
+            <button class="back-btn" onclick="showMosaic()">← Volver al Mosaico</button>
+            <h2 class="diagram-title">📈 MARKETING Y CRM</h2>
+            <div class="tree">
+                <div class="main-branch">
+                    <span class="icon">📢</span> Panel de Marketing
+                    <span class="priority-badge priority-core">CORE</span>
+                </div>
+                <div class="function">├─ Campañas activas</div>
+                <div class="function">├─ Métricas básicas (apertura/clics)</div>
+                <div class="function">└─ Comparativas por canal</div>
+
+                <div class="main-branch">
+                    <span class="icon">✉️</span> Campañas de Correo
+                    <span class="priority-badge priority-core">CORE</span>
+                </div>
+                <div class="function">├─ Crear campaña básica</div>
+                <div class="function">├─ Editor simple de texto</div>
+                <div class="function">├─ Segmentación por tipo de usuario</div>
+                <div class="function">└─ Programación de envío</div>
+
+                <div class="main-branch">
+                    <span class="icon">🧩</span> Plantillas de Correo
+                    <span class="priority-badge priority-second">SECOND</span>
+                </div>
+                <div class="function">├─ Plantillas predefinidas</div>
+                <div class="function">├─ Editor básico HTML</div>
+                <div class="function">└─ Preview simple</div>
+
+                <div class="main-branch">
+                    <span class="icon">🧭</span> Embudos Básicos
+                    <span class="priority-badge priority-second">SECOND</span>
+                </div>
+                <div class="function">├─ Flujo de bienvenida</div>
+                <div class="function">├─ Reactivación de inactivos</div>
+                <div class="function">└─ Upsell simple</div>
+
+                <div class="main-branch">
+                    <span class="icon">👥</span> CRM de Alumnos
+                    <span class="priority-badge priority-core">CORE</span>
+                </div>
+                <div class="function">├─ Lista de contactos</div>
+                <div class="function">├─ Información básica del usuario</div>
+                <div class="function">├─ Historial de cursos</div>
+                <div class="function">└─ Notas simples</div>
+
+                <div class="main-branch">
+                    <span class="icon">🔗</span> Integraciones Básicas
+                    <span class="priority-badge priority-second">SECOND</span>
+                </div>
+                <div class="function">├─ Google Analytics</div>
+                <div class="function">├─ Facebook Pixel</div>
+                <div class="function">└─ SendGrid/Mailchimp</div>
+            </div>
+        </div>
+
+        <!-- Diagrama Cursos -->
+        <div id="cursos" class="diagram-container">
+            <button class="back-btn" onclick="showMosaic()">← Volver al Mosaico</button>
+            <h2 class="diagram-title">🎓 GESTIÓN DE CURSOS</h2>
+            <div class="tree">
+                <div class="main-branch">
+                    <span class="icon">📚</span> Catálogo de Cursos
+                    <span class="priority-badge priority-core">CORE</span>
+                </div>
+                <div class="function">├─ Crear/editar cursos</div>
+                <div class="function">├─ Estados: borrador/publicado</div>
+                <div class="function">├─ Categorización básica</div>
+                <div class="function">└─ Precios y descuentos</div>
+
+                <div class="main-branch">
+                    <span class="icon">📹</span> Gestión de Contenido
+                    <span class="priority-badge priority-core">CORE</span>
+                </div>
+                <div class="function">├─ Subir videos (MP4)</div>
+                <div class="function">├─ Documentos PDF</div>
+                <div class="function">├─ Quizzes básicos</div>
+                <div class="function">└─ Materiales descargables</div>
+
+                <div class="main-branch">
+                    <span class="icon">📊</span> Analítica Básica
+                    <span class="priority-badge priority-second">SECOND</span>
+                </div>
+                <div class="function">├─ Progreso de estudiantes</div>
+                <div class="function">├─ Tasa de finalización</div>
+                <div class="function">└─ Calificaciones</div>
+
+                <div class="main-branch">
+                    <span class="icon">🎯</span> Configuración de Precios
+                    <span class="priority-badge priority-core">CORE</span>
+                </div>
+                <div class="function">├─ Precios por curso</div>
+                <div class="function">├─ Descuentos básicos</div>
+                <div class="function">└─ Promociones temporales</div>
+            </div>
+        </div>
+
+        <!-- Diagrama Reportes -->
+        <div id="reportes" class="diagram-container">
+            <button class="back-btn" onclick="showMosaic()">← Volver al Mosaico</button>
+            <h2 class="diagram-title">📊 REPORTES Y ANALÍTICA</h2>
+            <div class="tree">
+                <div class="main-branch">
+                    <span class="icon">📈</span> Dashboard Principal
+                    <span class="priority-badge priority-core">CORE</span>
+                </div>
+                <div class="function">├─ Métricas clave en tiempo real</div>
+                <div class="function">├─ Gráficas básicas</div>
+                <div class="function">└─ Alertas simples</div>
+
+                <div class="main-branch">
+                    <span class="icon">💰</span> Reportes Financieros
+                    <span class="priority-badge priority-core">CORE</span>
+                </div>
+                <div class="function">├─ Ingresos por curso</div>
+                <div class="function">├─ Flujo de caja básico</div>
+                <div class="function">└─ Exportación a Excel</div>
+
+                <div class="main-branch">
+                    <span class="icon">👥</span> Reportes de Usuarios
+                    <span class="priority-badge priority-second">SECOND</span>
+                </div>
+                <div class="function">├─ Registros por período</div>
+                <div class="function">├─ Retención básica</div>
+                <div class="function">└─ Segmentación simple</div>
+
+                <div class="main-branch">
+                    <span class="icon">📚</span> Reportes de Cursos
+                    <span class="priority-badge priority-second">SECOND</span>
+                </div>
+                <div class="function">├─ Cursos más populares</div>
+                <div class="function">├─ Tasa de finalización</div>
+                <div class="function">└─ Satisfacción básica</div>
+            </div>
+        </div>
+
+        <!-- Diagrama Configuración -->
+        <div id="configuracion" class="diagram-container">
+            <button class="back-btn" onclick="showMosaic()">← Volver al Mosaico</button>
+            <h2 class="diagram-title">⚙️ CONFIGURACIÓN Y SEGURIDAD</h2>
+            <div class="tree">
+                <div class="main-branch">
+                    <span class="icon">🎨</span> Personalización Básica
+                    <span class="priority-badge priority-core">CORE</span>
+                </div>
+                <div class="function">├─ Logo y colores</div>
+                <div class="function">├─ Dominio personalizado</div>
+                <div class="function">└─ Configuración básica</div>
+
+                <div class="main-branch">
+                    <span class="icon">👥</span> Gestión de Usuarios
+                    <span class="priority-badge priority-core">CORE</span>
+                </div>
+                <div class="function">├─ Roles básicos (Admin/Usuario)</div>
+                <div class="function">├─ Autenticación simple</div>
+                <div class="function">└─ Gestión de sesiones</div>
+
+                <div class="main-branch">
+                    <span class="icon">🔒</span> Seguridad Básica
+                    <span class="priority-badge priority-core">CORE</span>
+                </div>
+                <div class="function">├─ Encriptación de datos</div>
+                <div class="function">├─ Certificados SSL</div>
+                <div class="function">└─ Backup automático</div>
+
+                <div class="main-branch">
+                    <span class="icon">📋</span> Políticas Básicas
+                    <span class="priority-badge priority-second">SECOND</span>
+                </div>
+                <div class="function">├─ Términos de servicio</div>
+                <div class="function">├─ Política de privacidad</div>
+                <div class="function">└─ Política de reembolsos</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script-details-expansion.js"></script>
+    <script src="script-diagramas.js"></script>
+    <script>
+        // Funciones para cambiar entre vistas
+        function showMapView() {
+            // Ya estamos en la vista de mapas, no hacer nada
+        }
+
+        function showMindMapView() {
+            // Abrir la vista de mapa mental en nueva pestaña
+            window.open('mindmap-view.html', '_blank');
+        }
+    </script>
+</body>
+</html>

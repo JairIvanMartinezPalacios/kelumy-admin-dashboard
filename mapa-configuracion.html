@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kelumy - Mapa Configuración</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .map-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+
+        .central-node {
+            background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+            color: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(149, 165, 166, 0.3);
+        }
+
+        .central-node h2 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .central-node p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .branches-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .branch {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border-left: 5px solid #95a5a6;
+            transition: all 0.3s ease;
+        }
+
+        .branch:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        .branch-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .branch-icon {
+            font-size: 2rem;
+            margin-right: 15px;
+        }
+
+        .branch-title {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .priority-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-left: 10px;
+        }
+
+        .priority-core {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .priority-second {
+            background: #f39c12;
+            color: white;
+        }
+
+        .sub-branches {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .sub-branch {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            border-left: 3px solid #95a5a6;
+        }
+
+        .sub-branch h4 {
+            color: #34495e;
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+
+        .functions-list {
+            list-style: none;
+        }
+
+        .functions-list li {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+            padding-left: 15px;
+            position: relative;
+        }
+
+        .functions-list li::before {
+            content: "•";
+            color: #95a5a6;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        .back-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .back-btn:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+
+        .legend {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .legend h4 {
+            margin-bottom: 10px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 5px 0;
+        }
+
+        /* Estilos para expansión de detalles */
+        .function-item {
+            cursor: pointer;
+            position: relative;
+        }
+
+        .function-item::after {
+            content: "▶";
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #3498db;
+            font-size: 0.8rem;
+            transition: transform 0.3s ease;
+        }
+
+        .function-item.expanded::after {
+            transform: translateY(-50%) rotate(90deg);
+        }
+
+        .function-details {
+            display: none;
+            background: #f8f9fa;
+            border-left: 3px solid #3498db;
+            margin: 8px 0 0 20px;
+            padding: 12px;
+            border-radius: 6px;
+            animation: slideDown 0.3s ease;
+        }
+
+        .function-details.show {
+            display: block;
+        }
+
+        .detail-item {
+            background: white;
+            padding: 8px 12px;
+            margin: 6px 0;
+            border-radius: 4px;
+            border-left: 2px solid #3498db;
+            font-size: 0.85rem;
+            color: #495057;
+            transition: all 0.2s ease;
+        }
+
+        .detail-item:hover {
+            background: #e3f2fd;
+            transform: translateX(2px);
+        }
+
+        .detail-section {
+            margin-bottom: 12px;
+        }
+
+        .detail-section h6 {
+            color: #2c3e50;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            padding-bottom: 3px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .branches-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sub-branches {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🗺️ Kelumy Dashboard</h1>
+            <p>Mapa Conceptual - Configuración y Seguridad</p>
+        </div>
+
+        <a href="index-diagramas.html" class="back-btn">← Volver al Mosaico</a>
+
+        <div class="legend">
+            <h4>📋 Leyenda de Prioridades</h4>
+            <div class="legend-item">
+                <span class="priority-badge priority-core">CORE</span>
+                <span>Funcionalidades esenciales - Implementar primero</span>
+            </div>
+            <div class="legend-item">
+                <span class="priority-badge priority-second">SECOND</span>
+                <span>Funcionalidades secundarias - Implementar después</span>
+            </div>
+        </div>
+
+        <div class="map-container">
+            <div class="central-node">
+                <h2>⚙️ CONFIGURACIÓN Y SEGURIDAD</h2>
+                <p>Sistema completo de configuración del sistema, seguridad y personalización de la plataforma Kelumy</p>
+            </div>
+
+            <div class="branches-container">
+                <!-- Personalización Básica -->
+                <div class="branch">
+                    <div class="branch-header">
+                        <span class="branch-icon">🎨</span>
+                        <span class="branch-title">Personalización Básica</span>
+                        <span class="priority-badge priority-core">CORE</span>
+                    </div>
+                    <div class="sub-branches">
+                        <div class="sub-branch">
+                            <h4>Identidad Visual</h4>
+                            <ul class="functions-list">
+                                <li>Subida y configuración de logo</li>
+                                <li>Paleta de colores personalizable</li>
+                                <li>Tipografías y fuentes</li>
+                                <li>Iconos y elementos gráficos</li>
+                            </ul>
+                        </div>
+                        <div class="sub-branch">
+                            <h4>Dominio Personalizado</h4>
+                            <ul class="functions-list">
+                                <li>Configuración de dominio personalizado</li>
+                                <li>Certificados SSL automáticos</li>
+                                <li>Redirección de dominios</li>
+                                <li>Configuración de subdominios</li>
+                            </ul>
+                        </div>
+                        <div class="sub-branch">
+                            <h4>Configuración General</h4>
+                            <ul class="functions-list">
+                                <li>Información básica de la empresa</li>
+                                <li>Configuración de idioma y región</li>
+                                <li>Zona horaria y formato de fechas</li>
+                                <li>Configuración de moneda</li>
+                            </ul>
+                        </div>
+                        <div class="sub-branch">
+                            <h4>Personalización de Interfaz</h4>
+                            <ul class="functions-list">
+                                <li>Layouts personalizables</li>
+                                <li>Configuración de sidebar y navegación</li>
+                                <li>Personalización de dashboard</li>
+                                <li>Temas claros y oscuros</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gestión de Usuarios -->
+                <div class="branch">
+                    <div class="branch-header">
+                        <span class="branch-icon">👥</span>
+                        <span class="branch-title">Gestión de Usuarios</span>
+                        <span class="priority-badge priority-core">CORE</span>
+                    </div>
+                    <div class="table-structure">
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Roles y Permisos</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Tipos de Usuario</h5>
+                                    <div class="function-item">Administrador (acceso completo)</div>
+                                    <div class="function-item">Instructor (gestión de cursos)</div>
+                                    <div class="function-item">Soporte (atención al cliente)</div>
+                                    <div class="function-item">Analista (solo reportes)</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Autenticación</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Métodos de Acceso</h5>
+                                    <div class="function-item">Login con email y contraseña</div>
+                                    <div class="function-item">Autenticación de dos factores (2FA)</div>
+                                    <div class="function-item">Integración con Google/Microsoft</div>
+                                    <div class="function-item">Recuperación de contraseñas</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Gestión de Sesiones</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Control de Acceso</h5>
+                                    <div class="function-item">Control de sesiones activas</div>
+                                    <div class="function-item">Límites de tiempo de sesión</div>
+                                    <div class="function-item">Desconexión automática por inactividad</div>
+                                    <div class="function-item">Historial de accesos</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Administración de Usuarios</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Gestión de Cuentas</h5>
+                                    <div class="function-item">Creación y edición de usuarios</div>
+                                    <div class="function-item">Asignación de roles y permisos</div>
+                                    <div class="function-item">Desactivación temporal de usuarios</div>
+                                    <div class="function-item">Auditoría de acciones de usuarios</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Seguridad Básica -->
+                <div class="branch">
+                    <div class="branch-header">
+                        <span class="branch-icon">🔒</span>
+                        <span class="branch-title">Seguridad Básica</span>
+                        <span class="priority-badge priority-core">CORE</span>
+                    </div>
+                    <div class="sub-branches">
+                        <div class="sub-branch">
+                            <h4>Encriptación de Datos</h4>
+                            <ul class="functions-list">
+                                <li>Encriptación de datos sensibles</li>
+                                <li>Encriptación de contraseñas</li>
+                                <li>Encriptación de comunicaciones</li>
+                                <li>Gestión de claves de encriptación</li>
+                            </ul>
+                        </div>
+                        <div class="sub-branch">
+                            <h4>Certificados SSL</h4>
+                            <ul class="functions-list">
+                                <li>Certificados SSL automáticos</li>
+                                <li>Renovación automática de certificados</li>
+                                <li>Configuración de HTTPS forzado</li>
+                                <li>Monitoreo de expiración</li>
+                            </ul>
+                        </div>
+                        <div class="sub-branch">
+                            <h4>Backup Automático</h4>
+                            <ul class="functions-list">
+                                <li>Backup diario de base de datos</li>
+                                <li>Backup de archivos y contenido</li>
+                                <li>Almacenamiento en la nube</li>
+                                <li>Restauración rápida de datos</li>
+                            </ul>
+                        </div>
+                        <div class="sub-branch">
+                            <h4>Monitoreo de Seguridad</h4>
+                            <ul class="functions-list">
+                                <li>Detección de intentos de intrusión</li>
+                                <li>Monitoreo de accesos sospechosos</li>
+                                <li>Alertas de seguridad automáticas</li>
+                                <li>Logs de seguridad detallados</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Políticas Básicas -->
+                <div class="branch">
+                    <div class="branch-header">
+                        <span class="branch-icon">📋</span>
+                        <span class="branch-title">Políticas Básicas</span>
+                        <span class="priority-badge priority-second">SECOND</span>
+                    </div>
+                    <div class="sub-branches">
+                        <div class="sub-branch">
+                            <h4>Términos de Servicio</h4>
+                            <ul class="functions-list">
+                                <li>Editor de términos de servicio</li>
+                                <li>Versiones y historial de cambios</li>
+                                <li>Aceptación automática por usuarios</li>
+                                <li>Notificaciones de cambios</li>
+                            </ul>
+                        </div>
+                        <div class="sub-branch">
+                            <h4>Política de Privacidad</h4>
+                            <ul class="functions-list">
+                                <li>Editor de política de privacidad</li>
+                                <li>Cumplimiento con GDPR y LFPDPPP</li>
+                                <li>Gestión de consentimientos</li>
+                                <li>Derechos de los usuarios</li>
+                            </ul>
+                        </div>
+                        <div class="sub-branch">
+                            <h4>Política de Reembolsos</h4>
+                            <ul class="functions-list">
+                                <li>Configuración de políticas de reembolso</li>
+                                <li>Períodos de garantía configurables</li>
+                                <li>Procesos automáticos de reembolso</li>
+                                <li>Gestión de solicitudes de reembolso</li>
+                            </ul>
+                        </div>
+                        <div class="sub-branch">
+                            <h4>Políticas de Uso</h4>
+                            <ul class="functions-list">
+                                <li>Políticas de uso aceptable</li>
+                                <li>Restricciones de contenido</li>
+                                <li>Políticas de propiedad intelectual</li>
+                                <li>Gestión de violaciones</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Configuración de Integraciones -->
+                <div class="branch">
+                    <div class="branch-header">
+                        <span class="branch-icon">🔗</span>
+                        <span class="branch-title">Integraciones</span>
+                        <span class="priority-badge priority-second">SECOND</span>
+                    </div>
+                    <div class="sub-branches">
+                        <div class="sub-branch">
+                            <h4>Pasarelas de Pago</h4>
+                            <ul class="functions-list">
+                                <li>Configuración de Stripe</li>
+                                <li>Configuración de PayPal</li>
+                                <li>Configuración de MercadoPago</li>
+                                <li>Configuración de OXXO Pay</li>
+                            </ul>
+                        </div>
+                        <div class="sub-branch">
+                            <h4>Servicios de Email</h4>
+                            <ul class="functions-list">
+                                <li>Configuración de SendGrid</li>
+                                <li>Configuración de Mailchimp</li>
+                                <li>Configuración de SMTP personalizado</li>
+                                <li>Configuración de templates de email</li>
+                            </ul>
+                        </div>
+                        <div class="sub-branch">
+                            <h4>Analytics y Tracking</h4>
+                            <ul class="functions-list">
+                                <li>Configuración de Google Analytics</li>
+                                <li>Configuración de Facebook Pixel</li>
+                                <li>Configuración de Hotjar</li>
+                                <li>Configuración de Mixpanel</li>
+                            </ul>
+                        </div>
+                        <div class="sub-branch">
+                            <h4>Servicios de Almacenamiento</h4>
+                            <ul class="functions-list">
+                                <li>Configuración de AWS S3</li>
+                                <li>Configuración de Google Cloud Storage</li>
+                                <li>Configuración de CDN</li>
+                                <li>Configuración de backup automático</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Configuración de Notificaciones -->
+                <div class="branch">
+                    <div class="branch-header">
+                        <span class="branch-icon">🔔</span>
+                        <span class="branch-title">Notificaciones</span>
+                        <span class="priority-badge priority-second">SECOND</span>
+                    </div>
+                    <div class="sub-branches">
+                        <div class="sub-branch">
+                            <h4>Configuración de Alertas</h4>
+                            <ul class="functions-list">
+                                <li>Alertas de ventas y transacciones</li>
+                                <li>Alertas de errores del sistema</li>
+                                <li>Alertas de seguridad</li>
+                                <li>Alertas de rendimiento</li>
+                            </ul>
+                        </div>
+                        <div class="sub-branch">
+                            <h4>Canales de Notificación</h4>
+                            <ul class="functions-list">
+                                <li>Notificaciones por email</li>
+                                <li>Notificaciones por SMS</li>
+                                <li>Notificaciones push</li>
+                                <li>Notificaciones en dashboard</li>
+                            </ul>
+                        </div>
+                        <div class="sub-branch">
+                            <h4>Configuración de Usuarios</h4>
+                            <ul class="functions-list">
+                                <li>Preferencias de notificación por usuario</li>
+                                <li>Configuración de horarios de notificación</li>
+                                <li>Configuración de tipos de notificación</li>
+                                <li>Configuración de frecuencia</li>
+                            </ul>
+                        </div>
+                        <div class="sub-branch">
+                            <h4>Plantillas de Notificación</h4>
+                            <ul class="functions-list">
+                                <li>Editor de plantillas de notificación</li>
+                                <li>Variables dinámicas en notificaciones</li>
+                                <li>Personalización de contenido</li>
+                                <li>Preview de notificaciones</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script-details-expansion.js"></script>
+</body>
+</html>

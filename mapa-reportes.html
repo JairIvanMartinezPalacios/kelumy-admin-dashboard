@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kelumy - Mapa Reportes y Analítica</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .map-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+
+        .central-node {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(52, 152, 219, 0.3);
+        }
+
+        .central-node h2 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .central-node p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .branches-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .branch {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border-left: 5px solid #3498db;
+            transition: all 0.3s ease;
+        }
+
+        .branch:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        .branch-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .branch-icon {
+            font-size: 2rem;
+            margin-right: 15px;
+        }
+
+        .branch-title {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .priority-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-left: 10px;
+        }
+
+        .priority-core {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .priority-second {
+            background: #f39c12;
+            color: white;
+        }
+
+        .sub-branches {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .sub-branch {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            border-left: 3px solid #3498db;
+        }
+
+        .sub-branch h4 {
+            color: #34495e;
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+
+        .functions-list {
+            list-style: none;
+        }
+
+        .functions-list li {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+            padding-left: 15px;
+            position: relative;
+        }
+
+        .functions-list li::before {
+            content: "•";
+            color: #3498db;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        .back-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .back-btn:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+
+        .legend {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .legend h4 {
+            margin-bottom: 10px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 5px 0;
+        }
+
+        /* Estilos para expansión de detalles */
+        .function-item {
+            cursor: pointer;
+            position: relative;
+        }
+
+        .function-item::after {
+            content: "▶";
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #3498db;
+            font-size: 0.8rem;
+            transition: transform 0.3s ease;
+        }
+
+        .function-item.expanded::after {
+            transform: translateY(-50%) rotate(90deg);
+        }
+
+        .function-details {
+            display: none;
+            background: #f8f9fa;
+            border-left: 3px solid #3498db;
+            margin: 8px 0 0 20px;
+            padding: 12px;
+            border-radius: 6px;
+            animation: slideDown 0.3s ease;
+        }
+
+        .function-details.show {
+            display: block;
+        }
+
+        .detail-item {
+            background: white;
+            padding: 8px 12px;
+            margin: 6px 0;
+            border-radius: 4px;
+            border-left: 2px solid #3498db;
+            font-size: 0.85rem;
+            color: #495057;
+            transition: all 0.2s ease;
+        }
+
+        .detail-item:hover {
+            background: #e3f2fd;
+            transform: translateX(2px);
+        }
+
+        .detail-section {
+            margin-bottom: 12px;
+        }
+
+        .detail-section h6 {
+            color: #2c3e50;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            padding-bottom: 3px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .branches-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sub-branches {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🗺️ Kelumy Dashboard</h1>
+            <p>Mapa Conceptual - Reportes y Analítica</p>
+        </div>
+
+        <a href="index-diagramas.html" class="back-btn">← Volver al Mosaico</a>
+
+        <div class="legend">
+            <h4>📋 Leyenda de Prioridades</h4>
+            <div class="legend-item">
+                <span class="priority-badge priority-core">CORE</span>
+                <span>Funcionalidades esenciales - Implementar primero</span>
+            </div>
+            <div class="legend-item">
+                <span class="priority-badge priority-second">SECOND</span>
+                <span>Funcionalidades secundarias - Implementar después</span>
+            </div>
+        </div>
+
+        <div class="map-container">
+            <div class="central-node">
+                <h2>📊 REPORTES Y ANALÍTICA</h2>
+                <p>Sistema completo de dashboard ejecutivo, métricas de negocio y reportes financieros para Kelumy</p>
+            </div>
+
+            <div class="branches-container">
+                <!-- Dashboard Principal -->
+                <div class="branch">
+                    <div class="branch-header">
+                        <span class="branch-icon">📈</span>
+                        <span class="branch-title">Dashboard Principal</span>
+                        <span class="priority-badge priority-core">CORE</span>
+                    </div>
+                    <div class="sub-branches">
+                        <div class="sub-branch">
+                            <h4>Métricas en Tiempo Real</h4>
+                            <ul class="functions-list">
+                                <li>Ingresos del día actual</li>
+                                <li>Número de usuarios activos</li>
+                                <li>Cursos más vendidos del día</li>
+                                <li>Conversiones en tiempo real</li>
+                            </ul>
+                        </div>
+                        <div class="sub-branch">
+                            <h4>Gráficas Interactivas</h4>
+                            <ul class="functions-list">
+                                <li>Gráfica de ingresos por período</li>
+                                <li>Evolución de usuarios registrados</li>
+                                <li>Distribución de ventas por curso</li>
+                                <li>Tendencias de crecimiento mensual</li>
+                            </ul>
+                        </div>
+                        <div class="sub-branch">
+                            <h4>Alertas y Notificaciones</h4>
+                            <ul class="functions-list">
+                                <li>Alertas de objetivos alcanzados</li>
+                                <li>Notificaciones de anomalías</li>
+                                <li>Recordatorios de tareas pendientes</li>
+                                <li>Alertas de rendimiento crítico</li>
+                            </ul>
+                        </div>
+                        <div class="sub-branch">
+                            <h4>Widgets Personalizables</h4>
+                            <ul class="functions-list">
+                                <li>Configuración de widgets por usuario</li>
+                                <li>Arrastrar y soltar para reorganizar</li>
+                                <li>Diferentes tamaños de widgets</li>
+                                <li>Guardar configuraciones personalizadas</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reportes Financieros -->
+                <div class="branch">
+                    <div class="branch-header">
+                        <span class="branch-icon">💰</span>
+                        <span class="branch-title">Reportes Financieros</span>
+                        <span class="priority-badge priority-core">CORE</span>
+                    </div>
+                    <div class="table-structure">
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Ingresos por Curso</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Análisis de Ingresos</h5>
+                                    <div class="function-item">Ingresos totales por curso</div>
+                                    <div class="function-item">Comparativa de rendimiento</div>
+                                    <div class="function-item">Análisis de estacionalidad</div>
+                                    <div class="function-item">Proyecciones de ingresos futuros</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Flujo de Caja</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Gestión de Efectivo</h5>
+                                    <div class="function-item">Entradas y salidas de efectivo</div>
+                                    <div class="function-item">Proyección de flujo de caja</div>
+                                    <div class="function-item">Análisis de liquidez</div>
+                                    <div class="function-item">Identificación de períodos críticos</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Análisis de Rentabilidad</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Métricas de Rentabilidad</h5>
+                                    <div class="function-item">Margen de beneficio por curso</div>
+                                    <div class="function-item">ROI de inversiones en marketing</div>
+                                    <div class="function-item">Análisis de costos operativos</div>
+                                    <div class="function-item">Identificación de cursos más rentables</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Exportación de Datos</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Formatos de Exportación</h5>
+                                    <div class="function-item">Exportación a Excel con fórmulas</div>
+                                    <div class="function-item">Generación de PDFs ejecutivos</div>
+                                    <div class="function-item">Exportación de datos a CSV</div>
+                                    <div class="function-item">Integración con sistemas contables</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reportes de Usuarios -->
+                <div class="branch">
+                    <div class="branch-header">
+                        <span class="branch-icon">👥</span>
+                        <span class="branch-title">Reportes de Usuarios</span>
+                        <span class="priority-badge priority-second">SECOND</span>
+                    </div>
+                    <div class="sub-branches">
+                        <div class="sub-branch">
+                            <h4>Registros por Período</h4>
+                            <ul class="functions-list">
+                                <li>Nuevos registros diarios/semanales/mensuales</li>
+                                <li>Tendencias de crecimiento de usuarios</li>
+                                <li>Análisis de estacionalidad en registros</li>
+                                <li>Comparativa con períodos anteriores</li>
+                            </ul>
+                        </div>
+                        <div class="sub-branch">
+                            <h4>Análisis de Retención</h4>
+                            <ul class="functions-list">
+                                <li>Tasa de retención por cohorte</li>
+                                <li>Análisis de churn (abandono)</li>
+                                <li>Identificación de usuarios en riesgo</li>
+                                <li>Estrategias de reactivación</li>
+                            </ul>
+                        </div>
+                        <div class="sub-branch">
+                            <h4>Segmentación de Usuarios</h4>
+                            <ul class="functions-list">
+                                <li>Segmentación por comportamiento</li>
+                                <li>Análisis de usuarios por valor</li>
+                                <li>Identificación de usuarios premium</li>
+                                <li>Personalización de estrategias</li>
+                            </ul>
+                        </div>
+                        <div class="sub-branch">
+                            <h4>Análisis de Demografía</h4>
+                            <ul class="functions-list">
+                                <li>Distribución por edad y género</li>
+                                <li>Análisis geográfico de usuarios</li>
+                                <li>Preferencias por tipo de contenido</li>
+                                <li>Patrones de uso por segmento</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reportes de Cursos -->
+                <div class="branch">
+                    <div class="branch-header">
+                        <span class="branch-icon">📚</span>
+                        <span class="branch-title">Reportes de Cursos</span>
+                        <span class="priority-badge priority-second">SECOND</span>
+                    </div>
+                    <div class="sub-branches">
+                        <div class="sub-branch">
+                            <h4>Cursos Más Populares</h4>
+                            <ul class="functions-list">
+                                <li>Ranking de cursos por ventas</li>
+                                <li>Análisis de tendencias de popularidad</li>
+                                <li>Identificación de cursos emergentes</li>
+                                <li>Comparativa de rendimiento</li>
+                            </ul>
+                        </div>
+                        <div class="sub-branch">
+                            <h4>Tasa de Finalización</h4>
+                            <ul class="functions-list">
+                                <li>Métricas de completitud por curso</li>
+                                <li>Análisis de puntos de abandono</li>
+                                <li>Identificación de contenido problemático</li>
+                                <li>Recomendaciones de mejora</li>
+                            </ul>
+                        </div>
+                        <div class="sub-branch">
+                            <h4>Satisfacción de Estudiantes</h4>
+                            <ul class="functions-list">
+                                <li>Calificaciones promedio por curso</li>
+                                <li>Análisis de comentarios y reseñas</li>
+                                <li>Identificación de cursos con baja satisfacción</li>
+                                <li>Métricas de Net Promoter Score</li>
+                            </ul>
+                        </div>
+                        <div class="sub-branch">
+                            <h4>Análisis de Contenido</h4>
+                            <ul class="functions-list">
+                                <li>Tiempo promedio de visualización</li>
+                                <li>Análisis de interacciones con contenido</li>
+                                <li>Identificación de contenido más efectivo</li>
+                                <li>Optimización de estructura de cursos</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reportes de Marketing -->
+                <div class="branch">
+                    <div class="branch-header">
+                        <span class="branch-icon">📢</span>
+                        <span class="branch-title">Reportes de Marketing</span>
+                        <span class="priority-badge priority-second">SECOND</span>
+                    </div>
+                    <div class="sub-branches">
+                        <div class="sub-branch">
+                            <h4>Efectividad de Campañas</h4>
+                            <ul class="functions-list">
+                                <li>ROI de campañas de email marketing</li>
+                                <li>Análisis de conversiones por canal</li>
+                                <li>Efectividad de campañas en redes sociales</li>
+                                <li>Optimización de presupuesto de marketing</li>
+                            </ul>
+                        </div>
+                        <div class="sub-branch">
+                            <h4>Análisis de Adquisición</h4>
+                            <ul class="functions-list">
+                                <li>Canales de adquisición más efectivos</li>
+                                <li>Costo de adquisición por canal</li>
+                                <li>Análisis de embudos de conversión</li>
+                                <li>Optimización de estrategias de adquisición</li>
+                            </ul>
+                        </div>
+                        <div class="sub-branch">
+                            <h4>Métricas de Engagement</h4>
+                            <ul class="functions-list">
+                                <li>Tasa de apertura de emails</li>
+                                <li>Tasa de clics en campañas</li>
+                                <li>Interacciones en redes sociales</li>
+                                <li>Análisis de comportamiento de usuarios</li>
+                            </ul>
+                        </div>
+                        <div class="sub-branch">
+                            <h4>Análisis de Competencia</h4>
+                            <ul class="functions-list">
+                                <li>Comparativa de precios con competencia</li>
+                                <li>Análisis de posicionamiento en mercado</li>
+                                <li>Identificación de oportunidades</li>
+                                <li>Estrategias de diferenciación</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script-details-expansion.js"></script>
+</body>
+</html>

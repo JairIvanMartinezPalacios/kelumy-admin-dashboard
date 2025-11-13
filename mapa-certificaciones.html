@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kelumy - Mapa Certificaciones</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .map-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+
+        .central-node {
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .central-node h2 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .central-node p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .branches-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 25px;
+        }
+
+        .branch {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border-left: 5px solid #3498db;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .branch:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .branch-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #ecf0f1;
+        }
+
+        .branch-icon {
+            font-size: 1.5rem;
+            margin-right: 10px;
+        }
+
+        .branch-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .priority-badge {
+            display: inline-block;
+            padding: 3px 6px;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            margin-left: auto;
+        }
+
+        .priority-core {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .priority-second {
+            background: #f39c12;
+            color: white;
+        }
+
+        /* Estructura tipo tabla */
+        .table-structure {
+            display: table;
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .table-row {
+            display: table-row;
+        }
+
+        .table-cell {
+            display: table-cell;
+            vertical-align: top;
+            padding: 15px;
+            border: 1px solid #e9ecef;
+            background: white;
+        }
+
+        .table-cell:first-child {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #2c3e50;
+            width: 30%;
+            border-right: 2px solid #3498db;
+        }
+
+        .table-cell:last-child {
+            width: 70%;
+        }
+
+        .function-group {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+
+        .function-group h5 {
+            color: #2c3e50;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .function-item {
+            background: white;
+            padding: 6px 10px;
+            margin: 4px 0;
+            border-radius: 4px;
+            border-left: 3px solid #3498db;
+            font-size: 0.9rem;
+            color: #495057;
+            transition: all 0.2s ease;
+        }
+
+        .function-item:hover {
+            background: #e3f2fd;
+            transform: translateX(3px);
+        }
+
+        .back-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+
+        .legend {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .legend h4 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .legend-item span:last-child {
+            margin-left: 10px;
+            color: #7f8c8d;
+        }
+
+        /* Estilos para expansión de detalles */
+        .function-item {
+            cursor: pointer;
+            position: relative;
+        }
+
+        .function-item::after {
+            content: "▶";
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #3498db;
+            font-size: 0.8rem;
+            transition: transform 0.3s ease;
+        }
+
+        .function-item.expanded::after {
+            transform: translateY(-50%) rotate(90deg);
+        }
+
+        .function-details {
+            display: none;
+            background: #f8f9fa;
+            border-left: 3px solid #3498db;
+            margin: 8px 0 0 20px;
+            padding: 12px;
+            border-radius: 6px;
+            animation: slideDown 0.3s ease;
+        }
+
+        .function-details.show {
+            display: block;
+        }
+
+        .detail-item {
+            background: white;
+            padding: 8px 12px;
+            margin: 6px 0;
+            border-radius: 4px;
+            border-left: 2px solid #3498db;
+            font-size: 0.85rem;
+            color: #495057;
+            transition: all 0.2s ease;
+        }
+
+        .detail-item:hover {
+            background: #e3f2fd;
+            transform: translateX(2px);
+        }
+
+        .detail-section {
+            margin-bottom: 12px;
+        }
+
+        .detail-section h6 {
+            color: #2c3e50;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            padding-bottom: 3px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .branches-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .table-structure {
+                display: block;
+            }
+            
+            .table-row {
+                display: block;
+                margin-bottom: 15px;
+            }
+            
+            .table-cell {
+                display: block;
+                width: 100%;
+            }
+            
+            .table-cell:first-child {
+                background: #3498db;
+                color: white;
+                font-weight: bold;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🗺️ Kelumy Dashboard</h1>
+            <p>Mapa Conceptual - Certificaciones Digitales</p>
+        </div>
+
+        <a href="index-diagramas.html" class="back-btn">← Volver al Mosaico</a>
+
+        <div class="legend">
+            <h4>📋 Leyenda de Prioridades</h4>
+            <div class="legend-item">
+                <span class="priority-badge priority-core">CORE</span>
+                <span>Funcionalidades esenciales - Implementar primero</span>
+            </div>
+            <div class="legend-item">
+                <span class="priority-badge priority-second">SECOND</span>
+                <span>Funcionalidades secundarias - Implementar después</span>
+            </div>
+        </div>
+
+        <div class="map-container">
+            <div class="central-node">
+                <h2>🏆 CERTIFICACIONES DIGITALES</h2>
+                <p>Sistema completo de generación, validación y gestión de certificados digitales con blockchain</p>
+            </div>
+
+            <div class="branches-container">
+                <!-- Generación de Certificados -->
+                <div class="branch">
+                    <div class="branch-header">
+                        <span class="branch-icon">📜</span>
+                        <span class="branch-title">Generación de Certificados</span>
+                        <span class="priority-badge priority-core">CORE</span>
+                    </div>
+                    <div class="table-structure">
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Generación Automática</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Proceso Automático</h5>
+                                    <div class="function-item">Generación automática al completar curso (100% de progreso)</div>
+                                    <div class="function-item">Verificación de requisitos (examen aprobado, tiempo mínimo)</div>
+                                    <div class="function-item">Validación de identidad del estudiante</div>
+                                    <div class="function-item">Generación de código único (UUID)</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Plantillas Personalizables</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Diseño de Certificados</h5>
+                                    <div class="function-item">Plantillas por tipo de curso (STEM, Educación, Tecnología)</div>
+                                    <div class="function-item">Editor visual de plantillas (drag & drop)</div>
+                                    <div class="function-item">Logos personalizables (institución, curso)</div>
+                                    <div class="function-item">Firmas digitales (instructor, director)</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Datos del Certificado</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Información Incluida</h5>
+                                    <div class="function-item">Nombre completo del estudiante</div>
+                                    <div class="function-item">Título del curso completado</div>
+                                    <div class="function-item">Fecha de finalización</div>
+                                    <div class="function-item">Calificación obtenida</div>
+                                    <div class="function-item">Horas de estudio completadas</div>
+                                    <div class="function-item">Código QR único para verificación</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Validación y Verificación -->
+                <div class="branch">
+                    <div class="branch-header">
+                        <span class="branch-icon">🔍</span>
+                        <span class="branch-title">Validación y Verificación</span>
+                        <span class="priority-badge priority-core">CORE</span>
+                    </div>
+                    <div class="table-structure">
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Verificación Online</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Sistema de Verificación</h5>
+                                    <div class="function-item">Verificación por código QR (escaneo móvil)</div>
+                                    <div class="function-item">Verificación por código único (búsqueda manual)</div>
+                                    <div class="function-item">Verificación por datos del estudiante</div>
+                                    <div class="function-item">API pública para verificación externa</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Blockchain Integration</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Seguridad Blockchain</h5>
+                                    <div class="function-item">Registro en blockchain (Ethereum, Polygon)</div>
+                                    <div class="function-item">Hash único del certificado</div>
+                                    <div class="function-item">Timestamp de generación</div>
+                                    <div class="function-item">Inmutabilidad de registros</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Prevención de Fraude</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Medidas de Seguridad</h5>
+                                    <div class="function-item">Verificación de autenticidad</div>
+                                    <div class="function-item">Detección de duplicados</div>
+                                    <div class="function-item">Validación de firmas digitales</div>
+                                    <div class="function-item">Auditoría de certificados</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gestión de Certificados -->
+                <div class="branch">
+                    <div class="branch-header">
+                        <span class="branch-icon">📋</span>
+                        <span class="branch-title">Gestión de Certificados</span>
+                        <span class="priority-badge priority-core">CORE</span>
+                    </div>
+                    <div class="table-structure">
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Historial de Certificados</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Gestión de Registros</h5>
+                                    <div class="function-item">Lista de certificados emitidos</div>
+                                    <div class="function-item">Búsqueda por estudiante, curso, fecha</div>
+                                    <div class="function-item">Filtros avanzados (estado, tipo, período)</div>
+                                    <div class="function-item">Exportación de reportes (Excel, PDF)</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Estados de Certificados</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Estados del Sistema</h5>
+                                    <div class="function-item">Activo (válido y verificado)</div>
+                                    <div class="function-item">Revocado (invalidado por fraude)</div>
+                                    <div class="function-item">Expirado (certificado con fecha límite)</div>
+                                    <div class="function-item">Pendiente (en proceso de generación)</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Acciones Administrativas</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Gestión Administrativa</h5>
+                                    <div class="function-item">Revocar certificado (por fraude o error)</div>
+                                    <div class="function-item">Reenviar certificado por email</div>
+                                    <div class="function-item">Regenerar certificado (cambios en datos)</div>
+                                    <div class="function-item">Auditoría de certificados emitidos</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Entrega y Distribución -->
+                <div class="branch">
+                    <div class="branch-header">
+                        <span class="branch-icon">📧</span>
+                        <span class="branch-title">Entrega y Distribución</span>
+                        <span class="priority-badge priority-core">CORE</span>
+                    </div>
+                    <div class="table-structure">
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Entrega Automática</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Proceso de Entrega</h5>
+                                    <div class="function-item">Email automático al completar curso</div>
+                                    <div class="function-item">Descarga directa desde plataforma</div>
+                                    <div class="function-item">Notificación push en móvil</div>
+                                    <div class="function-item">Recordatorio de descarga (si no se descarga)</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Formatos de Entrega</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Formatos Disponibles</h5>
+                                    <div class="function-item">PDF de alta calidad (para impresión)</div>
+                                    <div class="function-item">PNG/JPG (para redes sociales)</div>
+                                    <div class="function-item">JSON (datos estructurados)</div>
+                                    <div class="function-item">XML (formato estándar)</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Integración Externa</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Plataformas Externas</h5>
+                                    <div class="function-item">LinkedIn (subir automáticamente)</div>
+                                    <div class="function-item">Portafolio personal (embed)</div>
+                                    <div class="function-item">Sistemas de RRHH (integración API)</div>
+                                    <div class="function-item">Blockchain público (verificación externa)</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analytics y Reportes -->
+                <div class="branch">
+                    <div class="branch-header">
+                        <span class="branch-icon">📊</span>
+                        <span class="branch-title">Analytics y Reportes</span>
+                        <span class="priority-badge priority-second">SECOND</span>
+                    </div>
+                    <div class="table-structure">
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Métricas de Certificación</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Indicadores Clave</h5>
+                                    <div class="function-item">Certificados emitidos por período</div>
+                                    <div class="function-item">Tasa de certificación por curso</div>
+                                    <div class="function-item">Tiempo promedio para completar</div>
+                                    <div class="function-item">Verificaciones realizadas</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Reportes de Calidad</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Análisis de Calidad</h5>
+                                    <div class="function-item">Certificados más verificados</div>
+                                    <div class="function-item">Análisis de fraudes detectados</div>
+                                    <div class="function-item">Satisfacción del estudiante</div>
+                                    <div class="function-item">Impacto en empleabilidad</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Configuración y Personalización -->
+                <div class="branch">
+                    <div class="branch-header">
+                        <span class="branch-icon">⚙️</span>
+                        <span class="branch-title">Configuración y Personalización</span>
+                        <span class="priority-badge priority-second">SECOND</span>
+                    </div>
+                    <div class="table-structure">
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Configuración del Sistema</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Configuración General</h5>
+                                    <div class="function-item">Configuración de blockchain (red, gas fees)</div>
+                                    <div class="function-item">Configuración de email (SMTP, templates)</div>
+                                    <div class="function-item">Configuración de seguridad (encriptación)</div>
+                                    <div class="function-item">Configuración de backup (frecuencia, ubicación)</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Personalización de Marca</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Elementos de Marca</h5>
+                                    <div class="function-item">Logos de la institución</div>
+                                    <div class="function-item">Colores corporativos</div>
+                                    <div class="function-item">Fuentes personalizadas</div>
+                                    <div class="function-item">Firmas digitales</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script-details-expansion.js"></script>
+</body>
+</html>

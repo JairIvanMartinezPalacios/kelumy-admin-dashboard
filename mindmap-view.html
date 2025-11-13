@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kelumy - Vista de Mapa Mental</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .view-toggle {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .view-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .view-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .view-btn.active {
+            background: rgba(255, 255, 255, 0.9);
+            color: #667eea;
+            border-color: rgba(255, 255, 255, 0.9);
+        }
+
+        .mindmap-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            min-height: 80vh;
+        }
+
+        .central-node {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(52, 152, 219, 0.3);
+            position: relative;
+        }
+
+        .central-node h2 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .central-node p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .branches-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 25px;
+            margin-top: 40px;
+        }
+
+        .branch {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border-left: 5px solid #3498db;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .branch:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        .branch.red {
+            border-left-color: #e74c3c;
+        }
+
+        .branch.orange {
+            border-left-color: #f39c12;
+        }
+
+        .branch.green {
+            border-left-color: #27ae60;
+        }
+
+        .branch.blue {
+            border-left-color: #3498db;
+        }
+
+        .branch-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .branch-icon {
+            font-size: 1.8rem;
+            margin-right: 12px;
+        }
+
+        .branch-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .sub-branches {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .sub-branch {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            border-left: 4px solid #3498db;
+            transition: all 0.3s ease;
+        }
+
+        .sub-branch:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+
+        .sub-branch h4 {
+            color: #2c3e50;
+            margin-bottom: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 8px;
+        }
+
+        .functions-list {
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .functions-list li {
+            color: #34495e;
+            font-size: 0.9rem;
+            margin-bottom: 6px;
+            padding-left: 20px;
+            position: relative;
+            line-height: 1.5;
+            background: white;
+            padding: 8px 12px 8px 20px;
+            border-radius: 6px;
+            border-left: 3px solid #3498db;
+            margin-bottom: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .functions-list li:hover {
+            background: #f8f9fa;
+            transform: translateX(3px);
+        }
+
+        .functions-list li::before {
+            content: "▶";
+            color: #3498db;
+            font-weight: bold;
+            position: absolute;
+            left: 8px;
+            font-size: 0.8rem;
+        }
+
+        /* Estructura tipo tabla */
+        .table-structure {
+            display: table;
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .table-row {
+            display: table-row;
+        }
+
+        .table-cell {
+            display: table-cell;
+            vertical-align: top;
+            padding: 15px;
+            border: 1px solid #e9ecef;
+            background: white;
+        }
+
+        .table-cell:first-child {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #2c3e50;
+            width: 30%;
+            border-right: 2px solid #3498db;
+        }
+
+        .table-cell:last-child {
+            width: 70%;
+        }
+
+        .function-group {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+
+        .function-group h5 {
+            color: #2c3e50;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .function-item {
+            background: white;
+            padding: 6px 10px;
+            margin: 4px 0;
+            border-radius: 4px;
+            border-left: 3px solid #3498db;
+            font-size: 0.9rem;
+            color: #495057;
+            transition: all 0.2s ease;
+        }
+
+        .function-item:hover {
+            background: #e3f2fd;
+            transform: translateX(3px);
+        }
+
+        /* Estilos para expansión de detalles */
+        .function-item {
+            cursor: pointer;
+            position: relative;
+        }
+
+        .function-item::after {
+            content: "▶";
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #3498db;
+            font-size: 0.8rem;
+            transition: transform 0.3s ease;
+        }
+
+        .function-item.expanded::after {
+            transform: translateY(-50%) rotate(90deg);
+        }
+
+        .function-details {
+            display: none;
+            background: #f8f9fa;
+            border-left: 3px solid #3498db;
+            margin: 8px 0 0 20px;
+            padding: 12px;
+            border-radius: 6px;
+            animation: slideDown 0.3s ease;
+        }
+
+        .function-details.show {
+            display: block;
+        }
+
+        .detail-item {
+            background: white;
+            padding: 8px 12px;
+            margin: 6px 0;
+            border-radius: 4px;
+            border-left: 2px solid #3498db;
+            font-size: 0.85rem;
+            color: #495057;
+            transition: all 0.2s ease;
+        }
+
+        .detail-item:hover {
+            background: #e3f2fd;
+            transform: translateX(2px);
+        }
+
+        .detail-section {
+            margin-bottom: 12px;
+        }
+
+        .detail-section h6 {
+            color: #2c3e50;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            padding-bottom: 3px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .priority-badge {
+            display: inline-block;
+            padding: 3px 6px;
+            border-radius: 8px;
+            font-size: 9px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-left: 8px;
+        }
+
+        .priority-core {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .priority-second {
+            background: #f39c12;
+            color: white;
+        }
+
+        .priority-future {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .back-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .back-btn:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+
+        .legend {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .legend h4 {
+            margin-bottom: 10px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 5px 0;
+        }
+
+        .color-legend {
+            display: flex;
+            gap: 20px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .color-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .color-box {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        .color-red { background: #e74c3c; }
+        .color-orange { background: #f39c12; }
+        .color-green { background: #27ae60; }
+        .color-blue { background: #3498db; }
+
+        @media (max-width: 768px) {
+            .branches-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sub-branches {
+                grid-template-columns: 1fr;
+            }
+
+            .color-legend {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧠 Kelumy Dashboard</h1>
+            <p>Vista de Mapa Mental - Estructura Completa del Sistema</p>
+            <div class="view-toggle">
+                <a href="index-diagramas.html" class="view-btn">Vista de Mapas</a>
+                <button class="view-btn active">Vista de Mapa Mental</button>
+            </div>
+        </div>
+
+        <div class="legend">
+            <h4>📋 Leyenda de Colores y Prioridades</h4>
+            <div class="color-legend">
+                <div class="color-item">
+                    <div class="color-box color-red"></div>
+                    <span>Autenticación y Estructura</span>
+                </div>
+                <div class="color-item">
+                    <div class="color-box color-orange"></div>
+                    <span>Dashboard y Navegación</span>
+                </div>
+                <div class="color-item">
+                    <div class="color-box color-green"></div>
+                    <span>Módulos Principales</span>
+                </div>
+                <div class="color-item">
+                    <div class="color-box color-blue"></div>
+                    <span>Componentes Transversales</span>
+                </div>
+            </div>
+            <div style="margin-top: 15px;">
+                <div class="legend-item">
+                    <span class="priority-badge priority-core">CORE</span>
+                    <span>Funcionalidades esenciales</span>
+                </div>
+                <div class="legend-item">
+                    <span class="priority-badge priority-second">SECOND</span>
+                    <span>Funcionalidades secundarias</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="mindmap-container">
+            <div class="central-node">
+                <h2>KELUMY Admin Dashboard</h2>
+                <p>Sistema completo de administración para plataforma educativa</p>
+            </div>
+
+            <div class="branches-container">
+                <!-- Autenticación -->
+                <div class="branch red">
+                    <div class="branch-header">
+                        <span class="branch-icon">🔐</span>
+                        <span class="branch-title">Autenticación</span>
+                    </div>
+                    <div class="table-structure">
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Login Tradicional</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Registro Multi-paso</h5>
+                                    <div class="function-item">Datos básicos (nombre, email, teléfono, fecha nacimiento)</div>
+                                    <div class="function-item">Datos académicos (nivel educativo, institución, área de estudio)</div>
+                                    <div class="function-item">Datos del curso (folio automático, tipo de curso, modalidad)</div>
+                                    <div class="function-item">Crear contraseña (validación de seguridad, confirmación)</div>
+                                </div>
+                                <div class="function-group">
+                                    <h5>Verificación y Seguridad</h5>
+                                    <div class="function-item">Verificación por email (código de verificación, enlace de activación)</div>
+                                    <div class="function-item">Recuperación de contraseña (email de recuperación, reset seguro)</div>
+                                    <div class="function-item">Validación de datos (RFC, CURP, documentos de identidad)</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Login Social</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Proveedores de Autenticación</h5>
+                                    <div class="function-item">Login con Google (OAuth 2.0, permisos específicos)</div>
+                                    <div class="function-item">Login con Facebook (Facebook SDK, datos de perfil)</div>
+                                    <div class="function-item">Login con Apple (Sign in with Apple, privacidad)</div>
+                                    <div class="function-item">Login con Twitter (Twitter API, autenticación)</div>
+                                </div>
+                                <div class="function-group">
+                                    <h5>Gestión de Datos</h5>
+                                    <div class="function-item">Sincronización de datos (importar perfil, contactos)</div>
+                                    <div class="function-item">Gestión de permisos (qué datos acceder, revocación)</div>
+                                    <div class="function-item">Mapeo de datos (convertir datos sociales a formato interno)</div>
+                                    <div class="function-item">Fallback a registro tradicional (si falla login social)</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dashboard Principal -->
+                <div class="branch orange">
+                    <div class="branch-header">
+                        <span class="branch-icon">📊</span>
+                        <span class="branch-title">Dashboard Principal</span>
+                    </div>
+                    <div class="table-structure">
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Métricas Principales</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Indicadores Financieros</h5>
+                                    <div class="function-item">Ingresos del día (ventas actuales, comparativa con ayer)</div>
+                                    <div class="function-item">Ingresos mensuales (progreso del mes, objetivo)</div>
+                                    <div class="function-item">Conversiones (tasa de conversión, embudo de ventas)</div>
+                                </div>
+                                <div class="function-group">
+                                    <h5>Indicadores de Usuarios</h5>
+                                    <div class="function-item">Usuarios activos (en línea ahora, sesiones activas)</div>
+                                    <div class="function-item">Nuevos registros (hoy, semana, mes)</div>
+                                    <div class="function-item">Cursos completados (hoy, tasa de finalización)</div>
+                                </div>
+                                <div class="function-group">
+                                    <h5>Indicadores Operativos</h5>
+                                    <div class="function-item">Cursos más vendidos (ranking por ventas, tendencias)</div>
+                                    <div class="function-item">Soporte activo (tickets abiertos, tiempo respuesta)</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Acciones Rápidas</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Gestión de Contenido</h5>
+                                    <div class="function-item">Crear nuevo curso (asistente paso a paso, plantillas)</div>
+                                    <div class="function-item">Gestionar certificados (emitir, validar, historial)</div>
+                                </div>
+                                <div class="function-group">
+                                    <h5>Gestión de Usuarios</h5>
+                                    <div class="function-item">Gestionar usuarios (buscar, editar, roles)</div>
+                                    <div class="function-item">Enviar notificación (email masivo, push, SMS)</div>
+                                </div>
+                                <div class="function-group">
+                                    <h5>Gestión Comercial</h5>
+                                    <div class="function-item">Ver transacciones (pedidos, pagos, reembolsos)</div>
+                                    <div class="function-item">Configurar promociones (cupones, descuentos, fechas)</div>
+                                </div>
+                                <div class="function-group">
+                                    <h5>Reportes y Configuración</h5>
+                                    <div class="function-item">Ver reportes (financieros, usuarios, cursos)</div>
+                                    <div class="function-item">Configurar sistema (ajustes, integraciones, seguridad)</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Gráficas Analíticas</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Análisis Financiero</h5>
+                                    <div class="function-item">Gráfica de ingresos (diaria, semanal, mensual, anual)</div>
+                                    <div class="function-item">Distribución de ventas (por curso, categoría, método pago)</div>
+                                    <div class="function-item">Gráfica de conversiones (embudo completo, puntos de abandono)</div>
+                                </div>
+                                <div class="function-group">
+                                    <h5>Análisis de Usuarios</h5>
+                                    <div class="function-item">Evolución de usuarios (registros, activos, retención)</div>
+                                    <div class="function-item">Análisis de comportamiento (tiempo en plataforma, páginas vistas)</div>
+                                    <div class="function-item">Métricas de engagement (interacciones, completitud de cursos)</div>
+                                </div>
+                                <div class="function-group">
+                                    <h5>Análisis Predictivo</h5>
+                                    <div class="function-item">Tendencias de crecimiento (proyecciones, estacionalidad)</div>
+                                    <div class="function-item">Comparativas temporales (períodos anteriores, benchmarks)</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="branch orange">
+                    <div class="branch-header">
+                        <span class="branch-icon">📋</span>
+                        <span class="branch-title">Sidebar (Menú de Navegación)</span>
+                    </div>
+                    <div class="table-structure">
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Navegación Principal</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Módulos Core</h5>
+                                    <div class="function-item">Inicio (dashboard principal, telemetría en tiempo real)</div>
+                                    <div class="function-item">Gestión de Cursos Online (crear, editar, publicar, categorizar)</div>
+                                    <div class="function-item">Usuarios y Roles (estudiantes, instructores, administradores)</div>
+                                </div>
+                                <div class="function-group">
+                                    <h5>Módulos Comerciales</h5>
+                                    <div class="function-item">E-commerce y Ventas (pedidos, pagos, facturación, promociones)</div>
+                                    <div class="function-item">Productos en Línea (catálogo, precios, inventario, descuentos)</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Funcionalidades Avanzadas</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Certificación y Marketing</h5>
+                                    <div class="function-item">Certificaciones Digitales (generar, validar, blockchain, QR)</div>
+                                    <div class="function-item">Marketing y CRM (campañas, leads, embudos, automatización)</div>
+                                </div>
+                                <div class="function-group">
+                                    <h5>Soporte y Administración</h5>
+                                    <div class="function-item">Soporte y Comunicación (chat, tickets, FAQ, base conocimiento)</div>
+                                    <div class="function-item">Finanzas y Contabilidad (ingresos, egresos, impuestos, reportes)</div>
+                                    <div class="function-item">Administrativo (configuración, usuarios, permisos, auditoría)</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Herramientas</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Análisis y Reportes</h5>
+                                    <div class="function-item">Reportes Financieros (ingresos, gastos, ROI, proyecciones)</div>
+                                </div>
+                                <div class="function-group">
+                                    <h5>Gestión de Contenido</h5>
+                                    <div class="function-item">Gestión de Contenido (blog, artículos, recursos, multimedia)</div>
+                                    <div class="function-item">Calendario y Eventos (webinars, clases en vivo, recordatorios)</div>
+                                </div>
+                                <div class="function-group">
+                                    <h5>Comunicación y Configuración</h5>
+                                    <div class="function-item">Correo Masivo (newsletter, campañas, segmentación, templates)</div>
+                                    <div class="function-item">Configuración y Seguridad (ajustes, integraciones, backup, SSL)</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gestión de Cursos Online -->
+                <div class="branch green">
+                    <div class="branch-header">
+                        <span class="branch-icon">🎓</span>
+                        <span class="branch-title">Gestión de Cursos Online</span>
+                        <span class="priority-badge priority-core">CORE</span>
+                    </div>
+                    <div class="sub-branches">
+                        <div class="sub-branch">
+                            <h4>Vista General</h4>
+                            <ul class="functions-list">
+                                <li>Resumen de cursos (total, activos, borradores, archivados)</li>
+                                <li>Categorías (STEM, Educación, Tecnología, subcategorías)</li>
+                                <li>Editor de contenido (WYSIWYG, drag & drop, multimedia)</li>
+                                <li>Materiales (videos, PDFs, presentaciones, recursos descargables)</li>
+                                <li>Estados de curso (borrador, revisión, publicado, archivado)</li>
+                                <li>Búsqueda y filtros (por categoría, estado, instructor, fecha)</li>
+                                <li>Vista de tabla y tarjetas (paginación, ordenamiento)</li>
+                                <li>Acciones masivas (publicar, archivar, eliminar múltiples)</li>
+                            </ul>
+                        </div>
+                        <div class="sub-branch">
+                            <h4>Gestión de Contenido</h4>
+                            <ul class="functions-list">
+                                <li>Precios (individual, paquetes, descuentos, promociones)</li>
+                                <li>Analítica (visualizaciones, completitud, satisfacción)</li>
+                                <li>Niveles (básico, intermedio, avanzado, experto)</li>
+                                <li>Calificaciones (sistema de puntuación, feedback, certificación)</li>
+                                <li>Prerequisitos (cursos requeridos, conocimientos previos)</li>
+                                <li>Duración estimada (horas de contenido, tiempo de estudio)</li>
+                                <li>Idiomas (español, inglés, subtítulos, traducciones)</li>
+                                <li>Accesibilidad (subtítulos, transcripciones, compatibilidad)</li>
+                            </ul>
+                        </div>
+                        <div class="sub-branch">
+                            <h4>Funcionalidades Avanzadas</h4>
+                            <ul class="functions-list">
+                                <li>Recomendaciones (algoritmo personalizado, cursos relacionados)</li>
+                                <li>Programador (fechas de inicio, horarios, recordatorios)</li>
+                                <li>Demo (versión de prueba, contenido gratuito, preview)</li>
+                                <li>Gestión de contenido (versiones, historial, colaboración)</li>
+                                <li>Automatización (emails automáticos, progreso, certificados)</li>
+                                <li>Integración (LMS, APIs, webhooks, sistemas externos)</li>
+                                <li>Gamificación (badges, puntos, leaderboards, logros)</li>
+                                <li>Colaboración (instructores múltiples, revisión entre pares)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Usuarios y Roles -->
+                <div class="branch green">
+                    <div class="branch-header">
+                        <span class="branch-icon">👥</span>
+                        <span class="branch-title">Usuarios y Roles</span>
+                        <span class="priority-badge priority-core">CORE</span>
+                    </div>
+                    <div class="sub-branches">
+                        <div class="sub-branch">
+                            <h4>Tipos de Usuario</h4>
+                            <ul class="functions-list">
+                                <li>Estudiantes (perfil, progreso, certificados, historial de cursos)</li>
+                                <li>Instructores (perfil, cursos creados, analíticas, ingresos)</li>
+                                <li>Administradores (acceso completo, configuración, usuarios, reportes)</li>
+                                <li>Funciones generales (búsqueda, filtros, acciones masivas, exportación)</li>
+                                <li>Roles personalizados (permisos específicos, acceso limitado)</li>
+                                <li>Gestión de permisos (qué puede hacer cada rol, restricciones)</li>
+                                <li>Auditoría de usuarios (historial de acciones, login, cambios)</li>
+                                <li>Comunicación (notificaciones, emails, mensajes internos)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- E-commerce y Ventas -->
+                <div class="branch green">
+                    <div class="branch-header">
+                        <span class="branch-icon">🛒</span>
+                        <span class="branch-title">E-commerce y Ventas</span>
+                        <span class="priority-badge priority-core">CORE</span>
+                    </div>
+                    <div class="sub-branches">
+                        <div class="sub-branch">
+                            <h4>Gestión de Ventas</h4>
+                            <ul class="functions-list">
+                                <li>Pedidos (lista, detalles, estados, historial, búsqueda)</li>
+                                <li>Métodos de pago (Stripe, PayPal, MercadoPago, OXXO Pay)</li>
+                                <li>Facturación (CFDI automático, PDF, XML, envío por email)</li>
+                                <li>Promociones (cupones, descuentos, fechas, límites de uso)</li>
+                                <li>Reembolsos (procesamiento, políticas, historial, reportes)</li>
+                                <li>Suscripciones (planes, renovación, cancelación, gestión)</li>
+                                <li>Bundles (paquetes de cursos, descuentos por volumen)</li>
+                                <li>Comisiones (cálculo automático, reportes, pagos a instructores)</li>
+                            </ul>
+                        </div>
+                        <div class="sub-branch">
+                            <h4>Reportes</h4>
+                            <ul class="functions-list">
+                                <li>Reportes de ventas (diario, semanal, mensual, anual)</li>
+                                <li>Análisis de ingresos (por curso, categoría, método de pago)</li>
+                                <li>Métricas de conversión (embudo de ventas, tasa de abandono)</li>
+                                <li>Análisis de clientes (comportamiento, valor de vida, segmentación)</li>
+                                <li>Reportes de comisiones (por instructor, período, método)</li>
+                                <li>Análisis de productos (más vendidos, rentabilidad, tendencias)</li>
+                                <li>Reportes fiscales (ingresos, impuestos, retenciones)</li>
+                                <li>Exportación de datos (Excel, PDF, CSV, integraciones)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Productos en Línea -->
+                <div class="branch green">
+                    <div class="branch-header">
+                        <span class="branch-icon">📦</span>
+                        <span class="branch-title">Productos en Línea</span>
+                        <span class="priority-badge priority-second">SECOND</span>
+                    </div>
+                    <div class="sub-branches">
+                        <div class="sub-branch">
+                            <h4>Gestión de Productos</h4>
+                            <ul class="functions-list">
+                                <li>Gestión de productos (crear, editar, duplicar, archivar)</li>
+                                <li>Precios y stock (precios base, descuentos, inventario virtual)</li>
+                                <li>Categorías (jerarquía, subcategorías, etiquetas, filtros)</li>
+                                <li>Analítica (ventas, visualizaciones, conversiones, tendencias)</li>
+                                <li>Catálogo (búsqueda, filtros, ordenamiento, paginación)</li>
+                                <li>Bundles (paquetes, descuentos por volumen, recomendaciones)</li>
+                                <li>Promociones (ofertas especiales, fechas límite, cupones)</li>
+                                <li>Inventario (control de stock, alertas, reposición automática)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Certificaciones Digitales -->
+                <div class="branch green">
+                    <div class="branch-header">
+                        <span class="branch-icon">🏆</span>
+                        <span class="branch-title">Certificaciones Digitales</span>
+                        <span class="priority-badge priority-core">CORE</span>
+                    </div>
+                    <div class="sub-branches">
+                        <div class="sub-branch">
+                            <h4>Gestión de Certificados</h4>
+                            <ul class="functions-list">
+                                <li>Generación (automática al completar curso, plantillas personalizables)</li>
+                                <li>Validación (códigos QR únicos, verificación online, blockchain)</li>
+                                <li>Historial (certificados emitidos, búsqueda, filtros, exportación)</li>
+                                <li>Entrega (email automático, descarga PDF, envío físico)</li>
+                                <li>Plantillas (diseños personalizables, logos, firmas digitales)</li>
+                                <li>Seguridad (encriptación, sellos de autenticidad, prevención falsificación)</li>
+                                <li>Integración (LinkedIn, portafolios, sistemas externos)</li>
+                                <li>Analítica (certificados emitidos, validaciones, tendencias)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Marketing y CRM -->
+                <div class="branch green">
+                    <div class="branch-header">
+                        <span class="branch-icon">📈</span>
+                        <span class="branch-title">Marketing y CRM</span>
+                        <span class="priority-badge priority-second">SECOND</span>
+                    </div>
+                    <div class="sub-branches">
+                        <div class="sub-branch">
+                            <h4>Campañas de Marketing</h4>
+                            <ul class="functions-list">
+                                <li>Campañas email (templates, segmentación, automatización, A/B testing)</li>
+                                <li>Leads (captura, calificación, seguimiento, conversión)</li>
+                                <li>Redes sociales (publicaciones, anuncios, engagement, analytics)</li>
+                                <li>Embudos (flujos de conversión, automatización, optimización)</li>
+                                <li>Automatización (emails automáticos, workflows, triggers)</li>
+                                <li>Segmentación (por comportamiento, demografía, intereses)</li>
+                                <li>Personalización (contenido dinámico, recomendaciones)</li>
+                                <li>Retargeting (usuarios abandonados, remarketing, recuperación)</li>
+                            </ul>
+                        </div>
+                        <div class="sub-branch">
+                            <h4>Analítica</h4>
+                            <ul class="functions-list">
+                                <li>Analítica de campañas (apertura, clics, conversiones, ROI)</li>
+                                <li>ROI de marketing (costo por adquisición, valor de vida, retorno)</li>
+                                <li>Segmentación (análisis de audiencias, comportamiento, preferencias)</li>
+                                <li>Métricas de engagement (interacciones, tiempo en sitio, páginas vistas)</li>
+                                <li>Análisis de embudos (conversiones por etapa, puntos de abandono)</li>
+                                <li>Reportes de marketing (dashboards, exportación, alertas)</li>
+                                <li>Análisis de competencia (benchmarking, posicionamiento)</li>
+                                <li>Optimización (testeo A/B, mejora continua, recomendaciones)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Soporte y Comunicación -->
+                <div class="branch green">
+                    <div class="branch-header">
+                        <span class="branch-icon">💬</span>
+                        <span class="branch-title">Soporte y Comunicación</span>
+                        <span class="priority-badge priority-second">SECOND</span>
+                    </div>
+                    <div class="sub-branches">
+                        <div class="sub-branch">
+                            <h4>Herramientas de Soporte</h4>
+                            <ul class="functions-list">
+                                <li>Chat (en vivo, chat bots, transferencia a agente, historial)</li>
+                                <li>Tickets (creación, asignación, seguimiento, resolución)</li>
+                                <li>Mensajería (notificaciones, emails, SMS, push notifications)</li>
+                                <li>Base de conocimiento (FAQ, artículos, tutoriales, búsqueda)</li>
+                                <li>Gestión de casos (priorización, categorización, SLA)</li>
+                                <li>Automatización (respuestas automáticas, routing, escalación)</li>
+                                <li>Analítica de soporte (tiempo respuesta, satisfacción, resolución)</li>
+                                <li>Integración (CRM, sistemas externos, APIs)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Finanzas y Contabilidad -->
+                <div class="branch green">
+                    <div class="branch-header">
+                        <span class="branch-icon">💰</span>
+                        <span class="branch-title">Finanzas y Contabilidad</span>
+                        <span class="priority-badge priority-core">CORE</span>
+                    </div>
+                    <div class="sub-branches">
+                        <div class="sub-branch">
+                            <h4>Gestión Financiera</h4>
+                            <ul class="functions-list">
+                                <li>Ingresos (ventas, suscripciones, comisiones, análisis por período)</li>
+                                <li>Egresos (gastos operativos, comisiones de pago, marketing, desarrollo)</li>
+                                <li>Reportes (estado de resultados, flujo de caja, balance, proyecciones)</li>
+                                <li>KPIs (margen de beneficio, ROI, CAC, LTV, churn rate)</li>
+                                <li>Presupuestos (planificación, seguimiento, desviaciones, ajustes)</li>
+                                <li>Análisis de rentabilidad (por curso, instructor, canal, segmento)</li>
+                                <li>Gestión de cobranza (facturas pendientes, recordatorios, seguimiento)</li>
+                                <li>Conciliación bancaria (movimientos, saldos, diferencias)</li>
+                            </ul>
+                        </div>
+                        <div class="sub-branch">
+                            <h4>Fiscal</h4>
+                            <ul class="functions-list">
+                                <li>Retenciones e impuestos (ISR, IVA, cálculos automáticos, declaraciones)</li>
+                                <li>Facturación CFDI (generación automática, timbrado, envío, cancelación)</li>
+                                <li>Reportes fiscales (mensuales, anuales, declaraciones, cumplimiento)</li>
+                                <li>Gestión de proveedores (datos fiscales, retenciones, pagos)</li>
+                                <li>Auditoría fiscal (trazabilidad, documentación, cumplimiento)</li>
+                                <li>Integración contable (exportación, importación, sincronización)</li>
+                                <li>Gestión de gastos (comprobantes, categorización, reembolsos)</li>
+                                <li>Análisis de costos (por actividad, producto, canal, período)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Componentes Transversales -->
+                <div class="branch blue">
+                    <div class="branch-header">
+                        <span class="branch-icon">🔧</span>
+                        <span class="branch-title">Componentes Transversales</span>
+                    </div>
+                    <div class="sub-branches">
+                        <div class="sub-branch">
+                            <h4>Interfaz de Usuario</h4>
+                            <ul class="functions-list">
+                                <li>Navbar (navegación principal, búsqueda global, perfil de usuario)</li>
+                                <li>Sidebar (menú lateral, navegación por módulos, estados activos)</li>
+                                <li>Notificaciones (alertas, mensajes, recordatorios, configuración)</li>
+                                <li>Responsive design (adaptación móvil, tablet, desktop)</li>
+                                <li>Temas (claro, oscuro, personalización, accesibilidad)</li>
+                                <li>Breadcrumbs (navegación jerárquica, ubicación actual)</li>
+                                <li>Modales (ventanas emergentes, formularios, confirmaciones)</li>
+                                <li>Tooltips (ayuda contextual, información adicional)</li>
+                            </ul>
+                        </div>
+                        <div class="sub-branch">
+                            <h4>Integraciones</h4>
+                            <ul class="functions-list">
+                                <li>Integraciones externas (Google, Facebook, LinkedIn, Microsoft)</li>
+                                <li>APIs de terceros (Stripe, PayPal, MercadoPago, SendGrid)</li>
+                                <li>Webhooks (eventos automáticos, notificaciones, sincronización)</li>
+                                <li>SDKs (software development kits, librerías, documentación)</li>
+                                <li>Autenticación SSO (single sign-on, federación, tokens)</li>
+                                <li>Sincronización de datos (importación, exportación, mapeo)</li>
+                                <li>Monitoreo (logs, métricas, alertas, debugging)</li>
+                                <li>Versionado (control de versiones, rollback, testing)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Flujo General -->
+                <div class="branch blue">
+                    <div class="branch-header">
+                        <span class="branch-icon">🔄</span>
+                        <span class="branch-title">Flujo General</span>
+                    </div>
+                    <div class="sub-branches">
+                        <div class="sub-branch">
+                            <h4>Navegación del Sistema</h4>
+                            <ul class="functions-list">
+                                <li>Acceso (login, autenticación, autorización, roles)</li>
+                                <li>Dashboard (métricas, acciones rápidas, gráficas, alertas)</li>
+                                <li>Navegación por módulos (sidebar, breadcrumbs, estados activos)</li>
+                                <li>Flujo de usuario (onboarding, tutoriales, ayuda contextual)</li>
+                                <li>Gestión de sesiones (timeout, renovación, logout automático)</li>
+                                <li>Permisos y roles (acceso granular, restricciones, auditoría)</li>
+                                <li>Búsqueda global (búsqueda en tiempo real, filtros, resultados)</li>
+                                <li>Historial de navegación (últimas acciones, favoritos, accesos rápidos)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Estructura de Archivos -->
+                <div class="branch blue">
+                    <div class="branch-header">
+                        <span class="branch-icon">📁</span>
+                        <span class="branch-title">Estructura de Archivos</span>
+                    </div>
+                    <div class="sub-branches">
+                        <div class="sub-branch">
+                            <h4>Archivos Principales</h4>
+                            <ul class="functions-list">
+                                <li>App.jsx (componente principal, routing, estado global)</li>
+                                <li>Navbar.jsx (navegación superior, búsqueda, perfil usuario)</li>
+                                <li>Sidebar.jsx (menú lateral, navegación, estados activos)</li>
+                                <li>Dashboard.jsx (panel principal, métricas, acciones rápidas)</li>
+                                <li>index.js (punto de entrada, configuración, providers)</li>
+                                <li>routes.js (enrutamiento, navegación, protección de rutas)</li>
+                                <li>store.js (gestión de estado, Redux/Zustand, persistencia)</li>
+                                <li>api.js (configuración de APIs, interceptores, manejo de errores)</li>
+                            </ul>
+                        </div>
+                        <div class="sub-branch">
+                            <h4>Componentes</h4>
+                            <ul class="functions-list">
+                                <li>LoginPage.jsx (autenticación, formularios, validación)</li>
+                                <li>RegistrationForm.jsx (registro multi-paso, validación, envío)</li>
+                                <li>modules/ (componentes modulares, organización por funcionalidad)</li>
+                                <li>components/ (componentes reutilizables, UI, formularios)</li>
+                                <li>hooks/ (custom hooks, lógica reutilizable, estado local)</li>
+                                <li>utils/ (utilidades, helpers, funciones comunes)</li>
+                                <li>services/ (servicios de API, integraciones, lógica de negocio)</li>
+                                <li>styles/ (CSS, temas, estilos globales, componentes)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Funcionalidad de expansión de detalles
+        document.addEventListener('DOMContentLoaded', function() {
+            // Agregar event listeners a todos los elementos function-item
+            const functionItems = document.querySelectorAll('.function-item');
+            
+            functionItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Toggle de la clase expanded
+                    this.classList.toggle('expanded');
+                    
+                    // Buscar o crear el div de detalles
+                    let detailsDiv = this.nextElementSibling;
+                    
+                    if (!detailsDiv || !detailsDiv.classList.contains('function-details')) {
+                        // Crear el div de detalles si no existe
+                        detailsDiv = document.createElement('div');
+                        detailsDiv.className = 'function-details';
+                        
+                        // Obtener el texto del elemento para generar detalles específicos
+                        const itemText = this.textContent.trim();
+                        const detailsContent = generateDetailsContent(itemText);
+                        detailsDiv.innerHTML = detailsContent;
+                        
+                        // Insertar después del elemento actual
+                        this.parentNode.insertBefore(detailsDiv, this.nextSibling);
+                    }
+                    
+                    // Toggle de la visibilidad
+                    detailsDiv.classList.toggle('show');
+                });
+            });
+        });
+
+        // Función para generar contenido de detalles basado en el texto del elemento
+        function generateDetailsContent(itemText) {
+            const detailsMap = {
+                // Autenticación
+                'Datos básicos (nombre, email, teléfono, fecha nacimiento)': `
+                    <div class="detail-section">
+                        <h6>📝 Información Requerida</h6>
+                        <div class="detail-item">Nombre completo (validación de caracteres especiales)</div>
+                        <div class="detail-item">Email único (verificación de formato y disponibilidad)</div>
+                        <div class="detail-item">Teléfono (formato internacional opcional)</div>
+                        <div class="detail-item">Fecha de nacimiento (validación de edad mínima)</div>
+                    </div>
+                    <div class="detail-section">
+                        <h6>🔒 Validaciones</h6>
+                        <div class="detail-item">Verificación de email en tiempo real</div>
+                        <div class="detail-item">Validación de formato de teléfono</div>
+                        <div class="detail-item">Verificación de edad mínima (13 años)</div>
+                    </div>
+                `,
+                'Datos académicos (nivel educativo, institución, área de estudio)': `
+                    <div class="detail-section">
+                        <h6>🎓 Información Académica</h6>
+                        <div class="detail-item">Nivel educativo (primaria, secundaria, preparatoria, universidad)</div>
+                        <div class="detail-item">Institución educativa (búsqueda y selección)</div>
+                        <div class="detail-item">Área de estudio (STEM, humanidades, ciencias sociales)</div>
+                        <div class="detail-item">Año de graduación (opcional)</div>
+                    </div>
+                    <div class="detail-section">
+                        <h6>📊 Personalización</h6>
+                        <div class="detail-item">Recomendaciones de cursos basadas en área de estudio</div>
+                        <div class="detail-item">Nivel de dificultad sugerido</div>
+                    </div>
+                `,
+                'Login con Google (OAuth 2.0, permisos específicos)': `
+                    <div class="detail-section">
+                        <h6>🔐 Configuración OAuth</h6>
+                        <div class="detail-item">Client ID y Client Secret de Google</div>
+                        <div class="detail-item">Permisos: email, perfil, información básica</div>
+                        <div class="detail-item">Redirect URI configurado</div>
+                        <div class="detail-item">Scopes: openid, email, profile</div>
+                    </div>
+                    <div class="detail-section">
+                        <h6>🔄 Flujo de Autenticación</h6>
+                        <div class="detail-item">Redirección a Google OAuth</div>
+                        <div class="detail-item">Autorización de permisos</div>
+                        <div class="detail-item">Callback con código de autorización</div>
+                        <div class="detail-item">Intercambio por access token</div>
+                    </div>
+                `,
+                // Dashboard Principal
+                'Ingresos del día (ventas actuales, comparativa con ayer)': `
+                    <div class="detail-section">
+                        <h6>💰 Métricas del Día</h6>
+                        <div class="detail-item">Ventas totales del día actual</div>
+                        <div class="detail-item">Comparativa con día anterior (% de cambio)</div>
+                        <div class="detail-item">Promedio de ventas por hora</div>
+                        <div class="detail-item">Proyección de cierre del día</div>
+                    </div>
+                    <div class="detail-section">
+                        <h6>📈 Análisis</h6>
+                        <div class="detail-item">Tendencia de crecimiento/declive</div>
+                        <div class="detail-item">Horas pico de ventas</div>
+                        <div class="detail-item">Comparativa con mismo día semana anterior</div>
+                    </div>
+                `,
+                'Usuarios activos (en línea ahora, sesiones activas)': `
+                    <div class="detail-section">
+                        <h6>👥 Usuarios en Tiempo Real</h6>
+                        <div class="detail-item">Usuarios conectados en este momento</div>
+                        <div class="detail-item">Sesiones activas en los últimos 15 minutos</div>
+                        <div class="detail-item">Usuarios únicos en las últimas 24 horas</div>
+                        <div class="detail-item">Tiempo promedio de sesión</div>
+                    </div>
+                    <div class="detail-section">
+                        <h6>📊 Actividad</h6>
+                        <div class="detail-item">Páginas más visitadas</div>
+                        <div class="detail-item">Cursos en progreso</div>
+                        <div class="detail-item">Actividad en foros y discusiones</div>
+                    </div>
+                `,
+                'Crear nuevo curso (asistente paso a paso, plantillas)': `
+                    <div class="detail-section">
+                        <h6>🎯 Asistente de Creación</h6>
+                        <div class="detail-item">Paso 1: Información básica (título, descripción, categoría)</div>
+                        <div class="detail-item">Paso 2: Configuración de precios y disponibilidad</div>
+                        <div class="detail-item">Paso 3: Subida de contenido multimedia</div>
+                        <div class="detail-item">Paso 4: Configuración de evaluaciones</div>
+                    </div>
+                    <div class="detail-section">
+                        <h6>📋 Plantillas Disponibles</h6>
+                        <div class="detail-item">Plantilla STEM (ciencias, tecnología, ingeniería, matemáticas)</div>
+                        <div class="detail-item">Plantilla Educación (pedagogía, enseñanza)</div>
+                        <div class="detail-item">Plantilla Tecnología (programación, desarrollo)</div>
+                        <div class="detail-item">Plantilla personalizada (crear desde cero)</div>
+                    </div>
+                `,
+                // E-commerce y Ventas
+                'Pedidos (lista, detalles, estados, historial, búsqueda)': `
+                    <div class="detail-section">
+                        <h6>📋 Gestión de Pedidos</h6>
+                        <div class="detail-item">Lista paginada de todos los pedidos</div>
+                        <div class="detail-item">Filtros por estado, fecha, monto, cliente</div>
+                        <div class="detail-item">Búsqueda avanzada por ID, email, teléfono</div>
+                        <div class="detail-item">Ordenamiento por columnas</div>
+                    </div>
+                    <div class="detail-section">
+                        <h6>🔍 Detalles del Pedido</h6>
+                        <div class="detail-item">Información del cliente completa</div>
+                        <div class="detail-item">Productos/servicios adquiridos</div>
+                        <div class="detail-item">Método de pago utilizado</div>
+                        <div class="detail-item">Historial de cambios de estado</div>
+                    </div>
+                `,
+                'Métodos de pago (Stripe, PayPal, MercadoPago, OXXO Pay)': `
+                    <div class="detail-section">
+                        <h6>💳 Configuración de Pagos</h6>
+                        <div class="detail-item">Stripe: Tarjetas de crédito/débito internacionales</div>
+                        <div class="detail-item">PayPal: Cuenta PayPal y tarjetas vinculadas</div>
+                        <div class="detail-item">MercadoPago: Pagos en efectivo y tarjetas</div>
+                        <div class="detail-item">OXXO Pay: Pagos en efectivo en tiendas OXXO</div>
+                    </div>
+                    <div class="detail-section">
+                        <h6>🔧 Integración</h6>
+                        <div class="detail-item">APIs de cada proveedor configuradas</div>
+                        <div class="detail-item">Webhooks para notificaciones de pago</div>
+                        <div class="detail-item">Manejo de errores y reintentos</div>
+                        <div class="detail-item">Logs de transacciones detallados</div>
+                    </div>
+                `,
+                // Gestión de Cursos
+                'Subida de videos MP4 (hasta 2GB)': `
+                    <div class="detail-section">
+                        <h6>🎥 Configuración de Videos</h6>
+                        <div class="detail-item">Límite de tamaño: 2GB por video</div>
+                        <div class="detail-item">Formatos soportados: MP4, AVI, MOV</div>
+                        <div class="detail-item">Compresión automática para optimización</div>
+                        <div class="detail-item">Progreso de subida en tiempo real</div>
+                    </div>
+                    <div class="detail-section">
+                        <h6>⚡ Optimización</h6>
+                        <div class="detail-item">Transcodificación automática a múltiples calidades</div>
+                        <div class="detail-item">Streaming adaptativo según conexión</div>
+                        <div class="detail-item">CDN para distribución global</div>
+                        <div class="detail-item">Caché inteligente para videos populares</div>
+                    </div>
+                `,
+                'Quizzes de opción múltiple': `
+                    <div class="detail-section">
+                        <h6>❓ Configuración de Quiz</h6>
+                        <div class="detail-item">Múltiples opciones de respuesta (2-6 opciones)</div>
+                        <div class="detail-item">Una o múltiples respuestas correctas</div>
+                        <div class="detail-item">Puntuación personalizable por pregunta</div>
+                        <div class="detail-item">Tiempo límite opcional</div>
+                    </div>
+                    <div class="detail-section">
+                        <h6>📊 Evaluación</h6>
+                        <div class="detail-item">Calificación automática</div>
+                        <div class="detail-item">Retroalimentación inmediata</div>
+                        <div class="detail-item">Intentos limitados configurables</div>
+                        <div class="detail-item">Análisis de respuestas incorrectas</div>
+                    </div>
+                `
+            };
+
+            // Buscar coincidencia exacta o parcial
+            for (const [key, value] of Object.entries(detailsMap)) {
+                if (itemText.includes(key.split(' (')[0])) {
+                    return value;
+                }
+            }
+
+            // Contenido genérico si no hay coincidencia específica
+            return `
+                <div class="detail-section">
+                    <h6>📋 Detalles de Implementación</h6>
+                    <div class="detail-item">Configuración específica para esta funcionalidad</div>
+                    <div class="detail-item">Parámetros y opciones disponibles</div>
+                    <div class="detail-item">Integración con otros módulos</div>
+                    <div class="detail-item">Métricas y seguimiento</div>
+                </div>
+                <div class="detail-section">
+                    <h6>🔧 Consideraciones Técnicas</h6>
+                    <div class="detail-item">Requisitos de base de datos</div>
+                    <div class="detail-item">APIs y servicios externos</div>
+                    <div class="detail-item">Validaciones y seguridad</div>
+                    <div class="detail-item">Optimización de rendimiento</div>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

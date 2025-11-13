@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kelumy - Mapa E-commerce y Ventas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .map-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+
+        .central-node {
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .central-node h2 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .central-node p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .branches-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 25px;
+        }
+
+        .branch {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border-left: 5px solid #3498db;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .branch:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .branch-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #ecf0f1;
+        }
+
+        .branch-icon {
+            font-size: 1.5rem;
+            margin-right: 10px;
+        }
+
+        .branch-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .priority-badge {
+            display: inline-block;
+            padding: 3px 6px;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            margin-left: auto;
+        }
+
+        .priority-core {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .priority-second {
+            background: #f39c12;
+            color: white;
+        }
+
+        /* Estructura tipo tabla */
+        .table-structure {
+            display: table;
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .table-row {
+            display: table-row;
+        }
+
+        .table-cell {
+            display: table-cell;
+            vertical-align: top;
+            padding: 15px;
+            border: 1px solid #e9ecef;
+            background: white;
+        }
+
+        .table-cell:first-child {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #2c3e50;
+            width: 30%;
+            border-right: 2px solid #3498db;
+        }
+
+        .table-cell:last-child {
+            width: 70%;
+        }
+
+        .function-group {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+
+        .function-group h5 {
+            color: #2c3e50;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .function-item {
+            background: white;
+            padding: 6px 10px;
+            margin: 4px 0;
+            border-radius: 4px;
+            border-left: 3px solid #3498db;
+            font-size: 0.9rem;
+            color: #495057;
+            transition: all 0.2s ease;
+        }
+
+        .function-item:hover {
+            background: #e3f2fd;
+            transform: translateX(3px);
+        }
+
+        .back-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+
+        .legend {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .legend h4 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .legend-item span:last-child {
+            margin-left: 10px;
+            color: #7f8c8d;
+        }
+
+        @media (max-width: 768px) {
+            .branches-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .table-structure {
+                display: block;
+            }
+            
+            .table-row {
+                display: block;
+                margin-bottom: 15px;
+            }
+            
+            .table-cell {
+                display: block;
+                width: 100%;
+            }
+            
+            .table-cell:first-child {
+                background: #3498db;
+                color: white;
+                font-weight: bold;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🗺️ Kelumy Dashboard</h1>
+            <p>Mapa Conceptual - E-commerce y Ventas</p>
+        </div>
+
+        <a href="index-diagramas.html" class="back-btn">← Volver al Mosaico</a>
+
+        <div class="legend">
+            <h4>📋 Leyenda de Prioridades</h4>
+            <div class="legend-item">
+                <span class="priority-badge priority-core">CORE</span>
+                <span>Funcionalidades esenciales - Implementar primero</span>
+            </div>
+            <div class="legend-item">
+                <span class="priority-badge priority-second">SECOND</span>
+                <span>Funcionalidades secundarias - Implementar después</span>
+            </div>
+        </div>
+
+        <div class="map-container">
+            <div class="central-node">
+                <h2>🛒 E-COMMERCE Y VENTAS</h2>
+                <p>Sistema completo de gestión de ventas, pagos y facturación para la plataforma educativa Kelumy</p>
+            </div>
+
+            <div class="branches-container">
+                <!-- Panel de Ventas -->
+                <div class="branch">
+                    <div class="branch-header">
+                        <span class="branch-icon">📊</span>
+                        <span class="branch-title">Panel de Ventas</span>
+                        <span class="priority-badge priority-core">CORE</span>
+                    </div>
+                    <div class="table-structure">
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Resumen de Ingresos</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Indicadores Financieros</h5>
+                                    <div class="function-item">Ingresos diarios (ventas del día actual)</div>
+                                    <div class="function-item">Ingresos semanales (comparativa con semana anterior)</div>
+                                    <div class="function-item">Ingresos mensuales (progreso del mes actual)</div>
+                                    <div class="function-item">Proyección de ingresos (basada en tendencias)</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Gráficas Dinámicas</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Visualizaciones</h5>
+                                    <div class="function-item">Gráfica de barras (ingresos por día)</div>
+                                    <div class="function-item">Gráfica de líneas (tendencias temporales)</div>
+                                    <div class="function-item">Gráfica de pastel (ingresos por método de pago)</div>
+                                    <div class="function-item">Gráfica comparativa (períodos anteriores)</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Filtros y Búsqueda</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Filtros Avanzados</h5>
+                                    <div class="function-item">Filtro por curso (seleccionar cursos específicos)</div>
+                                    <div class="function-item">Filtro por fecha (rango de fechas personalizable)</div>
+                                    <div class="function-item">Filtro por método de pago (Stripe, PayPal, etc.)</div>
+                                </div>
+                                <div class="function-group">
+                                    <h5>Exportación</h5>
+                                    <div class="function-item">Exportación de datos (Excel, PDF, CSV)</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pedidos y Transacciones -->
+                <div class="branch">
+                    <div class="branch-header">
+                        <span class="branch-icon">💼</span>
+                        <span class="branch-title">Pedidos y Transacciones</span>
+                        <span class="priority-badge priority-core">CORE</span>
+                    </div>
+                    <div class="table-structure">
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Listado de Pedidos</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Vista y Navegación</h5>
+                                    <div class="function-item">Vista de tabla con paginación (20 pedidos por página)</div>
+                                    <div class="function-item">Buscador avanzado (por ID, email, curso)</div>
+                                    <div class="function-item">Ordenamiento por columnas (fecha, monto, estado)</div>
+                                    <div class="function-item">Vista de tarjetas para móviles</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Estados de Pedidos</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Estados del Sistema</h5>
+                                    <div class="function-item">Pagado (transacción completada exitosamente)</div>
+                                    <div class="function-item">Pendiente (esperando confirmación de pago)</div>
+                                    <div class="function-item">Cancelado (pedido cancelado por usuario)</div>
+                                    <div class="function-item">Reembolsado (dinero devuelto al cliente)</div>
+                                    <div class="function-item">En proceso (procesando el pago)</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Detalles del Pedido</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Información del Cliente</h5>
+                                    <div class="function-item">Información del cliente (nombre, email, teléfono)</div>
+                                </div>
+                                <div class="function-group">
+                                    <h5>Información del Curso</h5>
+                                    <div class="function-item">Cursos incluidos (título, precio, descuentos)</div>
+                                </div>
+                                <div class="function-group">
+                                    <h5>Información de Pago</h5>
+                                    <div class="function-item">Método de pago utilizado</div>
+                                    <div class="function-item">Fecha y hora de la transacción</div>
+                                    <div class="function-item">Historial de cambios de estado</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Acciones Disponibles</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Gestión de Pedidos</h5>
+                                    <div class="function-item">Reembolsar (devolver dinero al cliente)</div>
+                                    <div class="function-item">Descargar factura (PDF/XML)</div>
+                                    <div class="function-item">Reenviar confirmación (email al cliente)</div>
+                                    <div class="function-item">Marcar como procesado</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Métodos de Pago -->
+                <div class="branch">
+                    <div class="branch-header">
+                        <span class="branch-icon">💳</span>
+                        <span class="branch-title">Métodos de Pago</span>
+                        <span class="priority-badge priority-core">CORE</span>
+                    </div>
+                    <div class="table-structure">
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Procesadores de Pago</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Integraciones Principales</h5>
+                                    <div class="function-item">Stripe (tarjetas de crédito/débito internacionales)</div>
+                                    <div class="function-item">PayPal (cuenta PayPal, tarjetas vinculadas)</div>
+                                    <div class="function-item">MercadoPago (América Latina, OXXO Pay)</div>
+                                    <div class="function-item">OXXO Pay (pago en tiendas físicas)</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Configuración de Pagos</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Configuración</h5>
+                                    <div class="function-item">Monedas soportadas (MXN, USD, EUR)</div>
+                                    <div class="function-item">Comisiones por método de pago</div>
+                                    <div class="function-item">Configuración de webhooks</div>
+                                    <div class="function-item">Modo sandbox/producción</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Facturación CFDI -->
+                <div class="branch">
+                    <div class="branch-header">
+                        <span class="branch-icon">🧾</span>
+                        <span class="branch-title">Facturación CFDI</span>
+                        <span class="priority-badge priority-core">CORE</span>
+                    </div>
+                    <div class="table-structure">
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Generación Automática</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Proceso de Facturación</h5>
+                                    <div class="function-item">Generación automática al confirmar pago</div>
+                                    <div class="function-item">Timbrado con PAC autorizado</div>
+                                    <div class="function-item">Envío automático por email</div>
+                                    <div class="function-item">Almacenamiento en nube</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Configuración Fiscal</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Datos Fiscales</h5>
+                                    <div class="function-item">RFC de la empresa</div>
+                                    <div class="function-item">Certificado de sello digital</div>
+                                    <div class="function-item">Configuración de PAC</div>
+                                    <div class="function-item">Validación de datos fiscales</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Promociones y Descuentos -->
+                <div class="branch">
+                    <div class="branch-header">
+                        <span class="branch-icon">🎯</span>
+                        <span class="branch-title">Promociones y Descuentos</span>
+                        <span class="priority-badge priority-second">SECOND</span>
+                    </div>
+                    <div class="table-structure">
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Tipos de Promociones</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Descuentos</h5>
+                                    <div class="function-item">Descuento por porcentaje (10%, 20%, 50%)</div>
+                                    <div class="function-item">Descuento por monto fijo ($100, $500)</div>
+                                    <div class="function-item">Descuento por cantidad (2x1, 3x2)</div>
+                                </div>
+                                <div class="function-group">
+                                    <h5>Cupones</h5>
+                                    <div class="function-item">Cupones de descuento (códigos únicos)</div>
+                                    <div class="function-item">Cupones de envío gratis</div>
+                                    <div class="function-item">Cupones de regalo</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Configuración</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Configuración de Promociones</h5>
+                                    <div class="function-item">Fechas de vigencia (inicio y fin)</div>
+                                    <div class="function-item">Límites de uso (por usuario, total)</div>
+                                    <div class="function-item">Cursos aplicables (todos, específicos)</div>
+                                    <div class="function-item">Condiciones especiales</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reportes y Analytics -->
+                <div class="branch">
+                    <div class="branch-header">
+                        <span class="branch-icon">📈</span>
+                        <span class="branch-title">Reportes y Analytics</span>
+                        <span class="priority-badge priority-second">SECOND</span>
+                    </div>
+                    <div class="table-structure">
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Reportes Financieros</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Reportes de Ingresos</h5>
+                                    <div class="function-item">Reporte diario de ventas</div>
+                                    <div class="function-item">Reporte mensual consolidado</div>
+                                    <div class="function-item">Análisis de tendencias</div>
+                                    <div class="function-item">Comparativa con períodos anteriores</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Analytics de Conversión</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Métricas de Conversión</h5>
+                                    <div class="function-item">Tasa de conversión por curso</div>
+                                    <div class="function-item">Embudo de ventas completo</div>
+                                    <div class="function-item">Análisis de abandono de carrito</div>
+                                    <div class="function-item">ROI por canal de marketing</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

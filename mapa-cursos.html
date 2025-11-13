@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kelumy - Mapa Gestión de Cursos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .map-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+
+        .central-node {
+            background: linear-gradient(135deg, #27ae60, #229954);
+            color: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(39, 174, 96, 0.3);
+        }
+
+        .central-node h2 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .central-node p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .branches-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .branch {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border-left: 5px solid #27ae60;
+            transition: all 0.3s ease;
+        }
+
+        .branch:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        .branch-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .branch-icon {
+            font-size: 2rem;
+            margin-right: 15px;
+        }
+
+        .branch-title {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .priority-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-left: 10px;
+        }
+
+        .priority-core {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .priority-second {
+            background: #f39c12;
+            color: white;
+        }
+
+        .sub-branches {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .sub-branch {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            border-left: 3px solid #27ae60;
+        }
+
+        .sub-branch h4 {
+            color: #34495e;
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+
+        .functions-list {
+            list-style: none;
+        }
+
+        .functions-list li {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+            padding-left: 15px;
+            position: relative;
+        }
+
+        .functions-list li::before {
+            content: "•";
+            color: #27ae60;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        .back-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .back-btn:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+
+        .legend {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .legend h4 {
+            margin-bottom: 10px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 5px 0;
+        }
+
+        /* Estilos para expansión de detalles */
+        .function-item {
+            cursor: pointer;
+            position: relative;
+        }
+
+        .function-item::after {
+            content: "▶";
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #3498db;
+            font-size: 0.8rem;
+            transition: transform 0.3s ease;
+        }
+
+        .function-item.expanded::after {
+            transform: translateY(-50%) rotate(90deg);
+        }
+
+        .function-details {
+            display: none;
+            background: #f8f9fa;
+            border-left: 3px solid #3498db;
+            margin: 8px 0 0 20px;
+            padding: 12px;
+            border-radius: 6px;
+            animation: slideDown 0.3s ease;
+        }
+
+        .function-details.show {
+            display: block;
+        }
+
+        .detail-item {
+            background: white;
+            padding: 8px 12px;
+            margin: 6px 0;
+            border-radius: 4px;
+            border-left: 2px solid #3498db;
+            font-size: 0.85rem;
+            color: #495057;
+            transition: all 0.2s ease;
+        }
+
+        .detail-item:hover {
+            background: #e3f2fd;
+            transform: translateX(2px);
+        }
+
+        .detail-section {
+            margin-bottom: 12px;
+        }
+
+        .detail-section h6 {
+            color: #2c3e50;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            padding-bottom: 3px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .branches-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sub-branches {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🗺️ Kelumy Dashboard</h1>
+            <p>Mapa Conceptual - Gestión de Cursos</p>
+        </div>
+
+        <a href="index-diagramas.html" class="back-btn">← Volver al Mosaico</a>
+
+        <div class="legend">
+            <h4>📋 Leyenda de Prioridades</h4>
+            <div class="legend-item">
+                <span class="priority-badge priority-core">CORE</span>
+                <span>Funcionalidades esenciales - Implementar primero</span>
+            </div>
+            <div class="legend-item">
+                <span class="priority-badge priority-second">SECOND</span>
+                <span>Funcionalidades secundarias - Implementar después</span>
+            </div>
+        </div>
+
+        <div class="map-container">
+            <div class="central-node">
+                <h2>🎓 GESTIÓN DE CURSOS</h2>
+                <p>Sistema completo de administración de contenido educativo, instructores y analítica de aprendizaje para Kelumy</p>
+            </div>
+
+            <div class="branches-container">
+                <!-- Catálogo de Cursos -->
+                <div class="branch">
+                    <div class="branch-header">
+                        <span class="branch-icon">📚</span>
+                        <span class="branch-title">Catálogo de Cursos</span>
+                        <span class="priority-badge priority-core">CORE</span>
+                    </div>
+                    <div class="sub-branches">
+                        <div class="sub-branch">
+                            <h4>Creación y Edición</h4>
+                            <ul class="functions-list">
+                                <li>Editor de cursos con interfaz intuitiva</li>
+                                <li>Plantillas predefinidas por categoría</li>
+                                <li>Editor de descripción y objetivos</li>
+                                <li>Configuración de requisitos previos</li>
+                            </ul>
+                        </div>
+                        <div class="sub-branch">
+                            <h4>Estados de Publicación</h4>
+                            <ul class="functions-list">
+                                <li>Borrador (curso en desarrollo)</li>
+                                <li>Publicado (disponible para compra)</li>
+                                <li>Archivado (curso descontinuado)</li>
+                                <li>En revisión (pendiente de aprobación)</li>
+                            </ul>
+                        </div>
+                        <div class="sub-branch">
+                            <h4>Categorización</h4>
+                            <ul class="functions-list">
+                                <li>Categorías principales (STEM, Educación)</li>
+                                <li>Subcategorías específicas (Arduino, Programación)</li>
+                                <li>Etiquetas personalizables</li>
+                                <li>Sistema de búsqueda por categorías</li>
+                            </ul>
+                        </div>
+                        <div class="sub-branch">
+                            <h4>Gestión de Precios</h4>
+                            <ul class="functions-list">
+                                <li>Precios base por curso</li>
+                                <li>Descuentos por volumen</li>
+                                <li>Precios especiales por región</li>
+                                <li>Promociones temporales</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gestión de Contenido -->
+                <div class="branch">
+                    <div class="branch-header">
+                        <span class="branch-icon">📹</span>
+                        <span class="branch-title">Gestión de Contenido</span>
+                        <span class="priority-badge priority-core">CORE</span>
+                    </div>
+                    <div class="table-structure">
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Videos y Multimedia</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Gestión de Videos</h5>
+                                    <div class="function-item">Subida de videos MP4 (hasta 2GB)</div>
+                                    <div class="function-item">Streaming optimizado para diferentes velocidades</div>
+                                    <div class="function-item">Subtítulos y transcripciones automáticas</div>
+                                    <div class="function-item">Controles de reproducción avanzados</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Documentos y Materiales</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Gestión de Documentos</h5>
+                                    <div class="function-item">Subida de PDFs y documentos</div>
+                                    <div class="function-item">Visualizador integrado de documentos</div>
+                                    <div class="function-item">Materiales descargables por módulo</div>
+                                    <div class="function-item">Biblioteca de recursos compartidos</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Sistema de Evaluaciones</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Tipos de Evaluación</h5>
+                                    <div class="function-item">Quizzes de opción múltiple</div>
+                                    <div class="function-item">Evaluaciones de verdadero/falso</div>
+                                    <div class="function-item">Preguntas abiertas y ensayos</div>
+                                    <div class="function-item">Evaluaciones prácticas con Arduino</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Organización del Contenido</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Estructura y Secuencia</h5>
+                                    <div class="function-item">Estructura modular por lecciones</div>
+                                    <div class="function-item">Secuenciación de contenido</div>
+                                    <div class="function-item">Prerequisitos entre módulos</div>
+                                    <div class="function-item">Progreso automático del estudiante</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analítica de Cursos -->
+                <div class="branch">
+                    <div class="branch-header">
+                        <span class="branch-icon">📊</span>
+                        <span class="branch-title">Analítica de Cursos</span>
+                        <span class="priority-badge priority-second">SECOND</span>
+                    </div>
+                    <div class="table-structure">
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Progreso de Estudiantes</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Seguimiento Individual</h5>
+                                    <div class="function-item">Tracking de progreso por estudiante</div>
+                                    <div class="function-item">Tiempo invertido por módulo</div>
+                                    <div class="function-item">Puntos de abandono más comunes</div>
+                                    <div class="function-item">Alertas de estudiantes en riesgo</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Tasa de Finalización</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Métricas de Completitud</h5>
+                                    <div class="function-item">Métricas de completitud por curso</div>
+                                    <div class="function-item">Comparativas entre diferentes cursos</div>
+                                    <div class="function-item">Análisis de factores de abandono</div>
+                                    <div class="function-item">Recomendaciones de mejora</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Calificaciones y Rendimiento</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Análisis de Rendimiento</h5>
+                                    <div class="function-item">Distribución de calificaciones</div>
+                                    <div class="function-item">Análisis de respuestas incorrectas</div>
+                                    <div class="function-item">Identificación de conceptos difíciles</div>
+                                    <div class="function-item">Reportes de rendimiento por instructor</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Feedback y Satisfacción</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Medición de Satisfacción</h5>
+                                    <div class="function-item">Encuestas de satisfacción automáticas</div>
+                                    <div class="function-item">Análisis de comentarios y reseñas</div>
+                                    <div class="function-item">Métricas de Net Promoter Score (NPS)</div>
+                                    <div class="function-item">Identificación de áreas de mejora</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gestión de Instructores -->
+                <div class="branch">
+                    <div class="branch-header">
+                        <span class="branch-icon">👨‍🏫</span>
+                        <span class="branch-title">Gestión de Instructores</span>
+                        <span class="priority-badge priority-core">CORE</span>
+                    </div>
+                    <div class="table-structure">
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Perfiles de Instructores</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Información Profesional</h5>
+                                    <div class="function-item">Información profesional y experiencia</div>
+                                    <div class="function-item">Especializaciones y áreas de expertise</div>
+                                    <div class="function-item">Certificaciones y credenciales</div>
+                                    <div class="function-item">Portfolio de cursos creados</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Gestión de Permisos</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Control de Acceso</h5>
+                                    <div class="function-item">Roles y permisos por instructor</div>
+                                    <div class="function-item">Acceso a herramientas de creación</div>
+                                    <div class="function-item">Permisos de edición y publicación</div>
+                                    <div class="function-item">Control de acceso a analíticas</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Colaboración en Contenido</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Flujo de Trabajo</h5>
+                                    <div class="function-item">Sistema de revisión entre pares</div>
+                                    <div class="function-item">Comentarios y sugerencias</div>
+                                    <div class="function-item">Flujo de aprobación de contenido</div>
+                                    <div class="function-item">Historial de cambios y versiones</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Métricas de Instructores</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Evaluación de Desempeño</h5>
+                                    <div class="function-item">Rendimiento de cursos por instructor</div>
+                                    <div class="function-item">Satisfacción de estudiantes</div>
+                                    <div class="function-item">Tiempo de respuesta a consultas</div>
+                                    <div class="function-item">Participación en foros y discusiones</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Configuración de Precios -->
+                <div class="branch">
+                    <div class="branch-header">
+                        <span class="branch-icon">🎯</span>
+                        <span class="branch-title">Configuración de Precios</span>
+                        <span class="priority-badge priority-core">CORE</span>
+                    </div>
+                    <div class="sub-branches">
+                        <div class="sub-branch">
+                            <h4>Estrategias de Precios</h4>
+                            <ul class="functions-list">
+                                <li>Precios fijos por curso</li>
+                                <li>Precios dinámicos según demanda</li>
+                                <li>Precios diferenciados por región</li>
+                                <li>Precios basados en valor percibido</li>
+                            </ul>
+                        </div>
+                        <div class="sub-branch">
+                            <h4>Descuentos y Promociones</h4>
+                            <ul class="functions-list">
+                                <li>Descuentos por primera compra</li>
+                                <li>Promociones por temporada</li>
+                                <li>Descuentos por volumen de cursos</li>
+                                <li>Ofertas especiales para estudiantes</li>
+                            </ul>
+                        </div>
+                        <div class="sub-branch">
+                            <h4>Modelos de Monetización</h4>
+                            <ul class="functions-list">
+                                <li>Venta individual de cursos</li>
+                                <li>Suscripciones mensuales/anuales</li>
+                                <li>Paquetes y bundles de cursos</li>
+                                <li>Modelo freemium con contenido premium</li>
+                            </ul>
+                        </div>
+                        <div class="sub-branch">
+                            <h4>Análisis de Precios</h4>
+                            <ul class="functions-list">
+                                <li>Comparativa de precios con competencia</li>
+                                <li>Análisis de elasticidad de precios</li>
+                                <li>Optimización de precios por curso</li>
+                                <li>Reportes de ingresos por estrategia</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script-details-expansion.js"></script>
+</body>
+</html>

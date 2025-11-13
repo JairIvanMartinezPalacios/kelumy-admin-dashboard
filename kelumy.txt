@@ -1,0 +1,92 @@
+KELUMY
+La plataforma de ciencias que inspira la creatividad y la tecnología
+
+
+🔹 Panel de Administrador General – Kelumy (Online Courses)
+1.	Inicio / Dashboard
+
+○	Vista general (ventas del día, cursos más vendidos, usuarios activos, inscripciones recientes, soporte pendiente).
+
+○	Gráficas dinámicas (ingresos, tráfico web, conversiones).
+
+2.	Gestión de Cursos Online
+
+○	Crear / editar cursos.
+
+○	Subida de materiales (videos, pdf, quizzes, SCORM).
+
+○	Control de precios, descuentos y bundles.
+
+○	Estado (borrador, publicado, destacado).
+
+3.	Usuarios y Roles
+
+○	Estudiantes (seguimiento de progreso, calificaciones, certificaciones).
+
+○	Instructores (perfil, cursos asignados, pagos por regalías).
+
+○	Administradores y sub-roles (gestión de permisos).
+
+4.	Ventas y E-commerce
+
+○	Pedidos y transacciones en tiempo real.
+
+○	Métodos de pago integrados (tarjeta, PayPal, Stripe, transferencias).
+
+○	Facturación automática y comprobantes fiscales (para MX).
+
+○	Códigos de descuento, cupones, promociones.
+
+5.	Certificaciones Digitales
+
+○	Generación automática con firma electrónica / QR de validación.
+
+○	Historial de certificados emitidos.
+
+6.	Marketing y CRM
+
+○	Campañas de correo masivo (noticias, promociones, recordatorios).
+
+○	Integración con redes sociales / pixel de seguimiento.
+
+○	Embudos de conversión (captura de leads → inscripción).
+
+7.	Soporte y Comunicación
+
+○	Chat en vivo / tickets de soporte.
+
+○	Mensajería interna con estudiantes e instructores.
+
+○	FAQs y base de conocimiento.
+
+8.	Reportes Financieros y Analítica
+
+○	Ventas por curso / por categoría / por instructor.
+
+○	Flujo de ingresos y egresos.
+
+○	Tendencias de inscripción y retención de alumnos.
+
+9.	Gestión de Contenido y Blog
+
+○	Publicación de artículos SEO para atraer tráfico.
+
+○	Noticias y actualizaciones de la plataforma.
+
+10.	Configuración y Seguridad
+
+●	Personalización de marca (logo, colores, dominios).
+
+●	Políticas y términos de uso.
+
+●	Seguridad (2FA, roles restringidos).
+
+●	Conexión con la página web de ventas (API).
+
+11.	Calendario y Eventos Online
+
+●	Programación de clases en vivo (Zoom, Meet, integrado).
+
+●	Recordatorios automáticos para estudiantes.
+
+12.	Cerrar Sesión

@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kelumy - Diagramas Funcionales</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .mosaic-menu {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .mosaic-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            color: white;
+        }
+
+        .mosaic-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .mosaic-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .mosaic-card p {
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+        .diagram-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            display: none;
+        }
+
+        .diagram-container.active {
+            display: block;
+        }
+
+        .diagram-title {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .tree {
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.8;
+            color: #333;
+        }
+
+        .main-branch {
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 16px;
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sub-branch {
+            margin-left: 20px;
+            color: #34495e;
+            font-size: 14px;
+        }
+
+        .function {
+            margin-left: 40px;
+            color: #7f8c8d;
+            font-size: 13px;
+            position: relative;
+        }
+
+        .function::before {
+            content: "├─ ";
+            color: #bdc3c7;
+        }
+
+        .function:last-child::before {
+            content: "└─ ";
+        }
+
+        .priority-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-left: 10px;
+        }
+
+        .priority-core {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .priority-second {
+            background: #f39c12;
+            color: white;
+        }
+
+        .priority-future {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .icon {
+            font-size: 18px;
+        }
+
+        .back-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+
+        .legend {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .legend h4 {
+            margin-bottom: 10px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🗺️ Kelumy Dashboard</h1>
+            <p>Diagramas Funcionales del Sistema</p>
+        </div>
+
+        <!-- Menú Mosaico -->
+        <div class="mosaic-menu">
+            <div class="mosaic-card" onclick="showDiagram('ecommerce')">
+                <h3>🛒 E-commerce y Ventas</h3>
+                <p>Gestión de ventas, pagos, facturación y suscripciones. Funcionalidades core para monetización.</p>
+            </div>
+            
+            <div class="mosaic-card" onclick="showDiagram('certificaciones')">
+                <h3>🏆 Certificaciones</h3>
+                <p>Sistema de certificados digitales con validación QR y blockchain para autenticidad.</p>
+            </div>
+            
+            <div class="mosaic-card" onclick="showDiagram('marketing')">
+                <h3>📈 Marketing y CRM</h3>
+                <p>Campañas de email, embudos de conversión y gestión de relaciones con clientes.</p>
+            </div>
+            
+            <div class="mosaic-card" onclick="showDiagram('cursos')">
+                <h3>🎓 Gestión de Cursos</h3>
+                <p>Administración de contenido educativo, instructores y analítica de aprendizaje.</p>
+            </div>
+            
+            <div class="mosaic-card" onclick="showDiagram('reportes')">
+                <h3>📊 Reportes y Analítica</h3>
+                <p>Dashboard ejecutivo, métricas de negocio y reportes financieros.</p>
+            </div>
+            
+            <div class="mosaic-card" onclick="showDiagram('configuracion')">
+                <h3>⚙️ Configuración</h3>
+                <p>Configuración del sistema, seguridad y personalización de la plataforma.</p>
+            </div>
+        </div>
+
+        <!-- Leyenda -->
+        <div class="legend">
+            <h4>📋 Leyenda de Prioridades</h4>
+            <div class="legend-item">
+                <span class="priority-badge priority-core">CORE</span>
+                <span>Funcionalidades esenciales - Implementar primero</span>
+            </div>
+            <div class="legend-item">
+                <span class="priority-badge priority-second">SECOND</span>
+                <span>Funcionalidades secundarias - Implementar después</span>
+            </div>
+            <div class="legend-item">
+                <span class="priority-badge priority-future">FUTURE</span>
+                <span>Referencia futura - No prioritarias</span>
+            </div>
+        </div>
+
+        <!-- Diagrama E-commerce -->
+        <div id="ecommerce" class="diagram-container">
+            <button class="back-btn" onclick="showMosaic()">← Volver al Mosaico</button>
+            <h2 class="diagram-title">🛒 E-COMMERCE Y VENTAS</h2>
+            <div class="tree">
+                <div class="main-branch">
+                    <span class="icon">📊</span> Panel de Ventas
+                    <span class="priority-badge priority-core">CORE</span>
+                </div>
+                <div class="function">├─ Resumen de ingresos (diario/semanal/mensual)</div>
+                <div class="function">├─ Gráficas básicas (Chart.js)</div>
+                <div class="function">└─ Filtros por curso y fecha</div>
+
+                <div class="main-branch">
+                    <span class="icon">💼</span> Pedidos y Transacciones
+                    <span class="priority-badge priority-core">CORE</span>
+                </div>
+                <div class="function">├─ Lista de pedidos con buscador</div>
+                <div class="function">├─ Estados: Pagado/Pendiente/Cancelado</div>
+                <div class="function">├─ Detalles del pedido</div>
+                <div class="function">└─ Botones: Reembolsar/Descargar factura</div>
+
+                <div class="main-branch">
+                    <span class="icon">💳</span> Métodos de Pago
+                    <span class="priority-badge priority-core">CORE</span>
+                </div>
+                <div class="function">├─ Configurar Stripe/PayPal/MercadoPago</div>
+                <div class="function">├─ Credenciales API (sandbox/producción)</div>
+                <div class="function">└─ Gestión básica de comisiones</div>
+
+                <div class="main-branch">
+                    <span class="icon">🧾</span> Facturación (México)
+                    <span class="priority-badge priority-core">CORE</span>
+                </div>
+                <div class="function">├─ Generación automática CFDI</div>
+                <div class="function">├─ Descargar PDF/XML</div>
+                <div class="function">└─ Configuración fiscal básica</div>
+
+                <div class="main-branch">
+                    <span class="icon">🎟️</span> Cupones y Promociones
+                    <span class="priority-badge priority-second">SECOND</span>
+                </div>
+                <div class="function">├─ Crear cupón (% o monto fijo)</div>
+                <div class="function">├─ Fechas de vigencia</div>
+                <div class="function">└─ Asignar a cursos específicos</div>
+
+                <div class="main-branch">
+                    <span class="icon">📦</span> Bundles Básicos
+                    <span class="priority-badge priority-second">SECOND</span>
+                </div>
+                <div class="function">├─ Crear paquetes de cursos</div>
+                <div class="function">└─ Mostrar ahorro total</div>
+
+                <div class="main-branch">
+                    <span class="icon">💳</span> Suscripciones
+                    <span class="priority-badge priority-core">CORE</span>
+                </div>
+                <div class="function">├─ Planes mensuales/anuales</div>
+                <div class="function">├─ Estados: activo/vencido</div>
+                <div class="function">└─ Renovación automática</div>
+            </div>
+        </div>
+
+        <!-- Diagrama Certificaciones -->
+        <div id="certificaciones" class="diagram-container">
+            <button class="back-btn" onclick="showMosaic()">← Volver al Mosaico</button>
+            <h2 class="diagram-title">🏆 CERTIFICACIONES DIGITALES</h2>
+            <div class="tree">
+                <div class="main-branch">
+                    <span class="icon">🏆</span> Generación de Certificados
+                    <span class="priority-badge priority-core">CORE</span>
+                </div>
+                <div class="function">├─ Plantillas básicas</div>
+                <div class="function">├─ Datos del estudiante y curso</div>
+                <div class="function">└─ Generación automática al completar</div>
+
+                <div class="main-branch">
+                    <span class="icon">🔍</span> Validación por QR
+                    <span class="priority-badge priority-core">CORE</span>
+                </div>
+                <div class="function">├─ Códigos QR únicos</div>
+                <div class="function">└─ Verificación online básica</div>
+
+                <div class="main-branch">
+                    <span class="icon">📜</span> Historial de Certificados
+                    <span class="priority-badge priority-second">SECOND</span>
+                </div>
+                <div class="function">├─ Lista de certificados emitidos</div>
+                <div class="function">├─ Filtros por fecha/curso</div>
+                <div class="function">└─ Reenvío de certificados</div>
+
+                <div class="main-branch">
+                    <span class="icon">⚙️</span> Configuración Básica
+                    <span class="priority-badge priority-second">SECOND</span>
+                </div>
+                <div class="function">├─ Plantillas personalizables</div>
+                <div class="function">└─ Configuración de datos</div>
+            </div>
+        </div>
+
+        <!-- Diagrama Marketing -->
+        <div id="marketing" class="diagram-container">
+            <button class="back-btn" onclick="showMosaic()">← Volver al Mosaico</button>
+            <h2 class="diagram-title">📈 MARKETING Y CRM</h2>
+            <div class="tree">
+                <div class="main-branch">
+                    <span class="icon">📢</span> Panel de Marketing
+                    <span class="priority-badge priority-core">CORE</span>
+                </div>
+                <div class="function">├─ Campañas activas</div>
+                <div class="function">├─ Métricas básicas (apertura/clics)</div>
+                <div class="function">└─ Comparativas por canal</div>
+
+                <div class="main-branch">
+                    <span class="icon">✉️</span> Campañas de Correo
+                    <span class="priority-badge priority-core">CORE</span>
+                </div>
+                <div class="function">├─ Crear campaña básica</div>
+                <div class="function">├─ Editor simple de texto</div>
+                <div class="function">├─ Segmentación por tipo de usuario</div>
+                <div class="function">└─ Programación de envío</div>
+
+                <div class="main-branch">
+                    <span class="icon">🧩</span> Plantillas de Correo
+                    <span class="priority-badge priority-second">SECOND</span>
+                </div>
+                <div class="function">├─ Plantillas predefinidas</div>
+                <div class="function">├─ Editor básico HTML</div>
+                <div class="function">└─ Preview simple</div>
+
+                <div class="main-branch">
+                    <span class="icon">🧭</span> Embudos Básicos
+                    <span class="priority-badge priority-second">SECOND</span>
+                </div>
+                <div class="function">├─ Flujo de bienvenida</div>
+                <div class="function">├─ Reactivación de inactivos</div>
+                <div class="function">└─ Upsell simple</div>
+
+                <div class="main-branch">
+                    <span class="icon">👥</span> CRM de Alumnos
+                    <span class="priority-badge priority-core">CORE</span>
+                </div>
+                <div class="function">├─ Lista de contactos</div>
+                <div class="function">├─ Información básica del usuario</div>
+                <div class="function">├─ Historial de cursos</div>
+                <div class="function">└─ Notas simples</div>
+
+                <div class="main-branch">
+                    <span class="icon">🔗</span> Integraciones Básicas
+                    <span class="priority-badge priority-second">SECOND</span>
+                </div>
+                <div class="function">├─ Google Analytics</div>
+                <div class="function">├─ Facebook Pixel</div>
+                <div class="function">└─ SendGrid/Mailchimp</div>
+            </div>
+        </div>
+
+        <!-- Diagrama Cursos -->
+        <div id="cursos" class="diagram-container">
+            <button class="back-btn" onclick="showMosaic()">← Volver al Mosaico</button>
+            <h2 class="diagram-title">🎓 GESTIÓN DE CURSOS</h2>
+            <div class="tree">
+                <div class="main-branch">
+                    <span class="icon">📚</span> Catálogo de Cursos
+                    <span class="priority-badge priority-core">CORE</span>
+                </div>
+                <div class="function">├─ Crear/editar cursos</div>
+                <div class="function">├─ Estados: borrador/publicado</div>
+                <div class="function">├─ Categorización básica</div>
+                <div class="function">└─ Precios y descuentos</div>
+
+                <div class="main-branch">
+                    <span class="icon">📹</span> Gestión de Contenido
+                    <span class="priority-badge priority-core">CORE</span>
+                </div>
+                <div class="function">├─ Subir videos (MP4)</div>
+                <div class="function">├─ Documentos PDF</div>
+                <div class="function">├─ Quizzes básicos</div>
+                <div class="function">└─ Materiales descargables</div>
+
+                <div class="main-branch">
+                    <span class="icon">📊</span> Analítica Básica
+                    <span class="priority-badge priority-second">SECOND</span>
+                </div>
+                <div class="function">├─ Progreso de estudiantes</div>
+                <div class="function">├─ Tasa de finalización</div>
+                <div class="function">└─ Calificaciones</div>
+
+                <div class="main-branch">
+                    <span class="icon">🎯</span> Configuración de Precios
+                    <span class="priority-badge priority-core">CORE</span>
+                </div>
+                <div class="function">├─ Precios por curso</div>
+                <div class="function">├─ Descuentos básicos</div>
+                <div class="function">└─ Promociones temporales</div>
+            </div>
+        </div>
+
+        <!-- Diagrama Reportes -->
+        <div id="reportes" class="diagram-container">
+            <button class="back-btn" onclick="showMosaic()">← Volver al Mosaico</button>
+            <h2 class="diagram-title">📊 REPORTES Y ANALÍTICA</h2>
+            <div class="tree">
+                <div class="main-branch">
+                    <span class="icon">📈</span> Dashboard Principal
+                    <span class="priority-badge priority-core">CORE</span>
+                </div>
+                <div class="function">├─ Métricas clave en tiempo real</div>
+                <div class="function">├─ Gráficas básicas</div>
+                <div class="function">└─ Alertas simples</div>
+
+                <div class="main-branch">
+                    <span class="icon">💰</span> Reportes Financieros
+                    <span class="priority-badge priority-core">CORE</span>
+                </div>
+                <div class="function">├─ Ingresos por curso</div>
+                <div class="function">├─ Flujo de caja básico</div>
+                <div class="function">└─ Exportación a Excel</div>
+
+                <div class="main-branch">
+                    <span class="icon">👥</span> Reportes de Usuarios
+                    <span class="priority-badge priority-second">SECOND</span>
+                </div>
+                <div class="function">├─ Registros por período</div>
+                <div class="function">├─ Retención básica</div>
+                <div class="function">└─ Segmentación simple</div>
+
+                <div class="main-branch">
+                    <span class="icon">📚</span> Reportes de Cursos
+                    <span class="priority-badge priority-second">SECOND</span>
+                </div>
+                <div class="function">├─ Cursos más populares</div>
+                <div class="function">├─ Tasa de finalización</div>
+                <div class="function">└─ Satisfacción básica</div>
+            </div>
+        </div>
+
+        <!-- Diagrama Configuración -->
+        <div id="configuracion" class="diagram-container">
+            <button class="back-btn" onclick="showMosaic()">← Volver al Mosaico</button>
+            <h2 class="diagram-title">⚙️ CONFIGURACIÓN Y SEGURIDAD</h2>
+            <div class="tree">
+                <div class="main-branch">
+                    <span class="icon">🎨</span> Personalización Básica
+                    <span class="priority-badge priority-core">CORE</span>
+                </div>
+                <div class="function">├─ Logo y colores</div>
+                <div class="function">├─ Dominio personalizado</div>
+                <div class="function">└─ Configuración básica</div>
+
+                <div class="main-branch">
+                    <span class="icon">👥</span> Gestión de Usuarios
+                    <span class="priority-badge priority-core">CORE</span>
+                </div>
+                <div class="function">├─ Roles básicos (Admin/Usuario)</div>
+                <div class="function">├─ Autenticación simple</div>
+                <div class="function">└─ Gestión de sesiones</div>
+
+                <div class="main-branch">
+                    <span class="icon">🔒</span> Seguridad Básica
+                    <span class="priority-badge priority-core">CORE</span>
+                </div>
+                <div class="function">├─ Encriptación de datos</div>
+                <div class="function">├─ Certificados SSL</div>
+                <div class="function">└─ Backup automático</div>
+
+                <div class="main-branch">
+                    <span class="icon">📋</span> Políticas Básicas
+                    <span class="priority-badge priority-second">SECOND</span>
+                </div>
+                <div class="function">├─ Términos de servicio</div>
+                <div class="function">├─ Política de privacidad</div>
+                <div class="function">└─ Política de reembolsos</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showDiagram(diagramId) {
+            // Ocultar todos los diagramas
+            const diagrams = document.querySelectorAll('.diagram-container');
+            diagrams.forEach(diagram => {
+                diagram.classList.remove('active');
+            });
+
+            // Ocultar el mosaico
+            const mosaic = document.querySelector('.mosaic-menu');
+            const legend = document.querySelector('.legend');
+            mosaic.style.display = 'none';
+            legend.style.display = 'none';
+
+            // Mostrar el diagrama seleccionado
+            const selectedDiagram = document.getElementById(diagramId);
+            selectedDiagram.classList.add('active');
+        }
+
+        function showMosaic() {
+            // Ocultar todos los diagramas
+            const diagrams = document.querySelectorAll('.diagram-container');
+            diagrams.forEach(diagram => {
+                diagram.classList.remove('active');
+            });
+
+            // Mostrar el mosaico
+            const mosaic = document.querySelector('.mosaic-menu');
+            const legend = document.querySelector('.legend');
+            mosaic.style.display = 'grid';
+            legend.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

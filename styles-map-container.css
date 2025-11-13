@@ -1,0 +1,197 @@
+/* Estilos adicionales para el contenedor de mapas dinámico */
+
+#map-content .branches-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+    margin-top: 30px;
+}
+
+#map-content .branch {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    border-left: 5px solid #3498db;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+#map-content .branch:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 35px rgba(0,0,0,0.15);
+}
+
+#map-content .branch-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+    justify-content: space-between;
+}
+
+#map-content .branch-icon {
+    font-size: 1.5rem;
+}
+
+#map-content .branch-title {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+#map-content .table-structure {
+    display: table;
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+#map-content .table-row {
+    display: table-row;
+}
+
+#map-content .table-cell {
+    display: table-cell;
+    vertical-align: top;
+    padding: 15px;
+    border: 1px solid #e9ecef;
+    background: white;
+}
+
+#map-content .table-cell:first-child {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: #2c3e50;
+    width: 30%;
+    border-right: 2px solid #3498db;
+}
+
+#map-content .table-cell:last-child {
+    width: 70%;
+}
+
+#map-content .function-group {
+    margin-bottom: 15px;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #3498db;
+}
+
+#map-content .function-group h5 {
+    color: #2c3e50;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+#map-content .function-item {
+    background: white;
+    padding: 8px 12px;
+    margin: 6px 0;
+    border-radius: 4px;
+    border-left: 3px solid #3498db;
+    font-size: 0.9rem;
+    color: #495057;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    position: relative;
+    padding-right: 30px;
+}
+
+#map-content .function-item::after {
+    content: "▶";
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #3498db;
+    font-size: 0.8rem;
+    transition: transform 0.3s ease;
+}
+
+#map-content .function-item.expanded::after {
+    transform: translateY(-50%) rotate(90deg);
+}
+
+#map-content .function-item:hover {
+    background: #e3f2fd;
+    transform: translateX(3px);
+}
+
+#map-content .function-details {
+    display: none;
+    background: #f8f9fa;
+    border-left: 3px solid #3498db;
+    margin: 8px 0 0 20px;
+    padding: 12px;
+    border-radius: 6px;
+    animation: slideDownDetails 0.3s ease;
+}
+
+#map-content .function-details.show {
+    display: block;
+}
+
+#map-content .detail-item {
+    background: white;
+    padding: 8px 12px;
+    margin: 6px 0;
+    border-radius: 4px;
+    border-left: 2px solid #3498db;
+    font-size: 0.85rem;
+    color: #495057;
+    transition: all 0.2s ease;
+}
+
+#map-content .detail-item:hover {
+    background: #e3f2fd;
+    transform: translateX(2px);
+}
+
+#map-content .detail-section {
+    margin-bottom: 12px;
+}
+
+#map-content .detail-section h6 {
+    color: #2c3e50;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+    padding-bottom: 3px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+#map-content .priority-badge {
+    display: inline-block;
+    padding: 3px 6px;
+    border-radius: 8px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    margin-left: auto;
+}
+
+#map-content .priority-core {
+    background: #e74c3c;
+    color: white;
+}
+
+#map-content .priority-second {
+    background: #f39c12;
+    color: white;
+}
+
+@keyframes slideDownDetails {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+

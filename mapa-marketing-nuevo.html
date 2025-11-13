@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kelumy - Mapa Marketing y CRM</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .map-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+
+        .central-node {
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .central-node h2 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .central-node p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .branches-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 25px;
+        }
+
+        .branch {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border-left: 5px solid #3498db;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .branch:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .branch-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #ecf0f1;
+        }
+
+        .branch-icon {
+            font-size: 1.5rem;
+            margin-right: 10px;
+        }
+
+        .branch-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .priority-badge {
+            display: inline-block;
+            padding: 3px 6px;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            margin-left: auto;
+        }
+
+        .priority-core {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .priority-second {
+            background: #f39c12;
+            color: white;
+        }
+
+        /* Estructura tipo tabla */
+        .table-structure {
+            display: table;
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .table-row {
+            display: table-row;
+        }
+
+        .table-cell {
+            display: table-cell;
+            vertical-align: top;
+            padding: 15px;
+            border: 1px solid #e9ecef;
+            background: white;
+        }
+
+        .table-cell:first-child {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #2c3e50;
+            width: 30%;
+            border-right: 2px solid #3498db;
+        }
+
+        .table-cell:last-child {
+            width: 70%;
+        }
+
+        .function-group {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+
+        .function-group h5 {
+            color: #2c3e50;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .function-item {
+            background: white;
+            padding: 6px 10px;
+            margin: 4px 0;
+            border-radius: 4px;
+            border-left: 3px solid #3498db;
+            font-size: 0.9rem;
+            color: #495057;
+            transition: all 0.2s ease;
+        }
+
+        .function-item:hover {
+            background: #e3f2fd;
+            transform: translateX(3px);
+        }
+
+        .back-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+
+        .legend {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .legend h4 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .legend-item span:last-child {
+            margin-left: 10px;
+            color: #7f8c8d;
+        }
+
+        @media (max-width: 768px) {
+            .branches-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .table-structure {
+                display: block;
+            }
+            
+            .table-row {
+                display: block;
+                margin-bottom: 15px;
+            }
+            
+            .table-cell {
+                display: block;
+                width: 100%;
+            }
+            
+            .table-cell:first-child {
+                background: #3498db;
+                color: white;
+                font-weight: bold;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🗺️ Kelumy Dashboard</h1>
+            <p>Mapa Conceptual - Marketing y CRM</p>
+        </div>
+
+        <a href="index-diagramas.html" class="back-btn">← Volver al Mosaico</a>
+
+        <div class="legend">
+            <h4>📋 Leyenda de Prioridades</h4>
+            <div class="legend-item">
+                <span class="priority-badge priority-core">CORE</span>
+                <span>Funcionalidades esenciales - Implementar primero</span>
+            </div>
+            <div class="legend-item">
+                <span class="priority-badge priority-second">SECOND</span>
+                <span>Funcionalidades secundarias - Implementar después</span>
+            </div>
+        </div>
+
+        <div class="map-container">
+            <div class="central-node">
+                <h2>📈 MARKETING Y CRM</h2>
+                <p>Sistema completo de marketing digital, gestión de leads y automatización de campañas</p>
+            </div>
+
+            <div class="branches-container">
+                <!-- Email Marketing -->
+                <div class="branch">
+                    <div class="branch-header">
+                        <span class="branch-icon">📧</span>
+                        <span class="branch-title">Email Marketing</span>
+                        <span class="priority-badge priority-core">CORE</span>
+                    </div>
+                    <div class="table-structure">
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Campañas de Email</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Gestión de Campañas</h5>
+                                    <div class="function-item">Crear campañas (nuevo curso, promociones, newsletter)</div>
+                                    <div class="function-item">Templates personalizables (drag & drop editor)</div>
+                                    <div class="function-item">Programación de envíos (fecha y hora específica)</div>
+                                    <div class="function-item">A/B testing (sujetos, contenido, horarios)</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Segmentación</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Segmentación Avanzada</h5>
+                                    <div class="function-item">Por comportamiento (cursos vistos, completados)</div>
+                                    <div class="function-item">Por demografía (edad, ubicación, profesión)</div>
+                                    <div class="function-item">Por intereses (categorías de cursos)</div>
+                                    <div class="function-item">Por etapa del embudo (lead, prospecto, cliente)</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Automatización</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Workflows Automáticos</h5>
+                                    <div class="function-item">Bienvenida automática (al registrarse)</div>
+                                    <div class="function-item">Seguimiento de cursos (recordatorios, progreso)</div>
+                                    <div class="function-item">Recuperación de carrito abandonado</div>
+                                    <div class="function-item">Reactivación de usuarios inactivos</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gestión de Leads -->
+                <div class="branch">
+                    <div class="branch-header">
+                        <span class="branch-icon">🎯</span>
+                        <span class="branch-title">Gestión de Leads</span>
+                        <span class="priority-badge priority-core">CORE</span>
+                    </div>
+                    <div class="table-structure">
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Captura de Leads</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Formularios de Captura</h5>
+                                    <div class="function-item">Formularios en landing pages</div>
+                                    <div class="function-item">Pop-ups inteligentes (exit-intent, tiempo)</div>
+                                    <div class="function-item">Formularios en redes sociales</div>
+                                    <div class="function-item">Integración con Google Ads/Facebook</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Calificación de Leads</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Sistema de Scoring</h5>
+                                    <div class="function-item">Puntuación automática (comportamiento, datos)</div>
+                                    <div class="function-item">Clasificación por temperatura (frío, tibio, caliente)</div>
+                                    <div class="function-item">Identificación de leads cualificados</div>
+                                    <div class="function-item">Alertas de leads de alta prioridad</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Seguimiento de Leads</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Gestión de Contactos</h5>
+                                    <div class="function-item">Historial de interacciones</div>
+                                    <div class="function-item">Notas y comentarios del equipo</div>
+                                    <div class="function-item">Recordatorios de seguimiento</div>
+                                    <div class="function-item">Conversión a cliente</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Redes Sociales -->
+                <div class="branch">
+                    <div class="branch-header">
+                        <span class="branch-icon">📱</span>
+                        <span class="branch-title">Redes Sociales</span>
+                        <span class="priority-badge priority-second">SECOND</span>
+                    </div>
+                    <div class="table-structure">
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Gestión de Contenido</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Publicaciones</h5>
+                                    <div class="function-item">Programación de posts (Facebook, Instagram, Twitter)</div>
+                                    <div class="function-item">Calendario editorial (planificación de contenido)</div>
+                                    <div class="function-item">Templates para redes sociales</div>
+                                    <div class="function-item">Reprogramación de contenido</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Análisis de Redes</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Métricas Sociales</h5>
+                                    <div class="function-item">Alcance e impresiones</div>
+                                    <div class="function-item">Engagement (likes, comentarios, shares)</div>
+                                    <div class="function-item">Clicks y conversiones</div>
+                                    <div class="function-item">Análisis de audiencia</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Content Marketing -->
+                <div class="branch">
+                    <div class="branch-header">
+                        <span class="branch-icon">📝</span>
+                        <span class="branch-title">Content Marketing</span>
+                        <span class="priority-badge priority-second">SECOND</span>
+                    </div>
+                    <div class="table-structure">
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Blog y Artículos</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Gestión de Contenido</h5>
+                                    <div class="function-item">Editor de artículos (WYSIWYG)</div>
+                                    <div class="function-item">Categorías y etiquetas</div>
+                                    <div class="function-item">Programación de publicaciones</div>
+                                    <div class="function-item">SEO optimization (meta tags, keywords)</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Recursos Educativos</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Contenido Educativo</h5>
+                                    <div class="function-item">Ebooks y guías descargables</div>
+                                    <div class="function-item">Webinars y clases en vivo</div>
+                                    <div class="function-item">Tutoriales y videos</div>
+                                    <div class="function-item">Infografías y presentaciones</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analytics y Reportes -->
+                <div class="branch">
+                    <div class="branch-header">
+                        <span class="branch-icon">📊</span>
+                        <span class="branch-title">Analytics y Reportes</span>
+                        <span class="priority-badge priority-core">CORE</span>
+                    </div>
+                    <div class="table-structure">
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Métricas de Marketing</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>KPIs Principales</h5>
+                                    <div class="function-item">ROI de campañas (retorno de inversión)</div>
+                                    <div class="function-item">CAC (costo de adquisición de cliente)</div>
+                                    <div class="function-item">LTV (valor de vida del cliente)</div>
+                                    <div class="function-item">Tasa de conversión por canal</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Reportes Automáticos</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Reportes Programados</h5>
+                                    <div class="function-item">Reportes semanales automáticos</div>
+                                    <div class="function-item">Dashboards en tiempo real</div>
+                                    <div class="function-item">Alertas de métricas importantes</div>
+                                    <div class="function-item">Comparativas con períodos anteriores</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Automatización Avanzada -->
+                <div class="branch">
+                    <div class="branch-header">
+                        <span class="branch-icon">🤖</span>
+                        <span class="branch-title">Automatización Avanzada</span>
+                        <span class="priority-badge priority-second">SECOND</span>
+                    </div>
+                    <div class="table-structure">
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>Workflows Complejos</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Automatización Inteligente</h5>
+                                    <div class="function-item">Workflows condicionales (si/entonces)</div>
+                                    <div class="function-item">Integración con CRM externo</div>
+                                    <div class="function-item">Triggers basados en comportamiento</div>
+                                    <div class="function-item">Personalización dinámica de contenido</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <strong>IA y Machine Learning</strong>
+                            </div>
+                            <div class="table-cell">
+                                <div class="function-group">
+                                    <h5>Inteligencia Artificial</h5>
+                                    <div class="function-item">Predicción de churn (abandono)</div>
+                                    <div class="function-item">Recomendaciones de contenido</div>
+                                    <div class="function-item">Optimización automática de horarios</div>
+                                    <div class="function-item">Segmentación automática</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
