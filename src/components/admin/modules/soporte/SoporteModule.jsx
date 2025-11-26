@@ -1,185 +1,132 @@
-// ========================================
-// IMPORTS - Importaciones de dependencias
-// ========================================
-
-// Importa React y el hook useState para manejo de estado del componente
-import React, { useState } from 'react'
-
-// Importa iconos de la librería Lucide React para la interfaz de usuario
-import { 
-  MessageCircle,  // Icono de mensaje para tickets y chat
-  Plus,           // Icono de agregar para crear tickets
-  Search,         // Icono de búsqueda para filtrar tickets
-  Filter,         // Icono de filtros para ordenar tickets
-  Eye,            // Icono de vista para ver detalles
-  Edit,           // Icono de editar para modificar tickets
-  Trash2,         // Icono de eliminar para borrar tickets
-  CheckCircle,    // Icono de check para tickets resueltos
-  Clock,          // Icono de reloj para tickets pendientes
-  AlertCircle,    // Icono de alerta para tickets urgentes
-  Users,          // Icono de usuarios para agentes de soporte
-  Calendar        // Icono de calendario para fechas
+import React, { useState, useRef } from 'react'
+import {
+  MessageCircle,
+  MessageSquare,
+  HelpCircle,
+  BookOpen,
+  Users,
+  FileText,
+  BarChart3,
+  Settings,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react'
 
-// ========================================
-// COMPONENTE PRINCIPAL - SupportManagement
-// ========================================
+// Importar componentes
+import GestionTickets from './components/GestionTickets'
+import ChatEnVivo from './components/ChatEnVivo'
+import GestionFAQ from './components/GestionFAQ'
+import BaseConocimiento from './components/BaseConocimiento'
+import AgentesSoporte from './components/AgentesSoporte'
+import PlantillasRespuestas from './components/PlantillasRespuestas'
+import EstadisticasSoporte from './components/EstadisticasSoporte'
+import ConfiguracionSoporte from './components/ConfiguracionSoporte'
 
-// Define el componente funcional SupportManagement que gestiona el sistema de soporte
-// Incluye funcionalidades para tickets, chat en vivo, FAQ y comunicación con usuarios
-const SupportManagement = () => {
-  
-  // ========================================
-  // ESTADO DEL COMPONENTE - Hooks de React
-  // ========================================
-  
-  // Estado para controlar qué pestaña está activa en la interfaz
-  // 'tickets': tickets, 'chat': chat en vivo, 'faq': preguntas frecuentes
+const SoporteModule = () => {
   const [activeTab, setActiveTab] = useState('tickets')
-  
-  // ========================================
-  // DATOS ESTÁTICOS - Tickets de soporte
-  // ========================================
-  
-  // Array que contiene los tickets de soporte activos y resueltos
-  // Cada ticket incluye información del cliente, estado y prioridad
-  const tickets = [
-    {
-      id: 'TKT-001',                           // Identificador único del ticket
-      subject: 'Problema con acceso al curso',  // Asunto del ticket
-      customer: 'Juan Pérez',                   // Nombre del cliente
-      status: 'open',                          // Estado: 'open', 'in_progress', 'resolved', 'closed'
-      priority: 'high',                        // Prioridad: 'low', 'medium', 'high', 'urgent'
-      createdAt: '2024-01-20',                // Fecha de creación
-      lastUpdate: '2024-01-20'                // Última actualización
-    },
-    {
-      id: 'TKT-002',                           // Identificador único del ticket
-      subject: 'Error en el pago',             // Asunto del ticket
-      customer: 'María García',                // Nombre del cliente
-      status: 'in_progress',                   // Estado: 'open', 'in_progress', 'resolved', 'closed'
-      priority: 'medium',                      // Prioridad: 'low', 'medium', 'high', 'urgent'
-      createdAt: '2024-01-19',                // Fecha de creación
-      lastUpdate: '2024-01-20'                // Última actualización
-    }
-  ]
-  
-  // ========================================
-  // DATOS ESTÁTICOS - Configuración de pestañas
-  // ========================================
-  
-  // Array que define las pestañas disponibles en la interfaz
-  // Cada objeto contiene: id (identificador), label (etiqueta visible), icon (componente de icono)
+  const scrollContainerRef = useRef(null)
+
   const tabs = [
-    { id: 'tickets', label: 'Tickets', icon: MessageCircle },     // Pestaña de gestión de tickets
-    { id: 'chat', label: 'Chat en Vivo', icon: MessageCircle },   // Pestaña de chat en vivo
-    { id: 'faq', label: 'FAQ', icon: MessageCircle }              // Pestaña de preguntas frecuentes
+    { id: 'tickets', label: 'Tickets', icon: MessageCircle },
+    { id: 'chat', label: 'Chat en Vivo', icon: MessageSquare },
+    { id: 'faq', label: 'FAQ', icon: HelpCircle },
+    { id: 'base-conocimiento', label: 'Base de Conocimiento', icon: BookOpen },
+    { id: 'agentes', label: 'Agentes', icon: Users },
+    { id: 'plantillas', label: 'Plantillas', icon: FileText },
+    { id: 'estadisticas', label: 'Estadísticas', icon: BarChart3 },
+    { id: 'configuracion', label: 'Configuración', icon: Settings }
   ]
-  
+
+  const scrollTabs = (direction) => {
+    if (scrollContainerRef.current) {
+      const scrollAmount = 200
+      scrollContainerRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      })
+    }
+  }
+
+  const renderContent = () => {
+    switch (activeTab) {
+      case 'tickets':
+        return <GestionTickets />
+      case 'chat':
+        return <ChatEnVivo />
+      case 'faq':
+        return <GestionFAQ />
+      case 'base-conocimiento':
+        return <BaseConocimiento />
+      case 'agentes':
+        return <AgentesSoporte />
+      case 'plantillas':
+        return <PlantillasRespuestas />
+      case 'estadisticas':
+        return <EstadisticasSoporte />
+      case 'configuracion':
+        return <ConfiguracionSoporte />
+      default:
+        return <GestionTickets />
+    }
+  }
+
   return (
-    <div className="p-6">
-      <div className="mb-8">
-        <h1 className="text-2xl font-semibold text-gray-900 mb-2">Soporte y Comunicación</h1>
-        <p className="text-gray-600">Gestiona tickets de soporte y comunicación con usuarios</p>
-      </div>
-      
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900/20 to-gray-900 p-4 sm:p-6">
+      {/* Header */}
       <div className="mb-6">
-        <div className="border-b border-gray-200">
-          <nav className="-mb-px flex space-x-8">
-            {tabs.map((tab) => {
-              const Icon = tab.icon
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`py-2 px-1 border-b-2 font-medium text-sm flex items-center gap-2 ${
-                    activeTab === tab.id
-                      ? 'border-primary-500 text-primary-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  }`}
-                >
-                  <Icon size={18} />
-                  {tab.label}
-                </button>
-              )
-            })}
-          </nav>
+        <h1 className="text-3xl font-bold text-white mb-2">Soporte y Atención al Cliente</h1>
+        <p className="text-white/70">Gestiona tickets, chat, FAQ y todo el sistema de soporte</p>
+      </div>
+
+      {/* Tabs Navigation */}
+      <div className="mb-6 relative">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => scrollTabs('left')}
+            className="p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors flex-shrink-0 z-10"
+          >
+            <ChevronLeft className="w-5 h-5 text-white" />
+          </button>
+          <div
+            ref={scrollContainerRef}
+            className="flex-1 overflow-x-auto scrollbar-hide"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          >
+            <div className="flex space-x-1 bg-white/10 backdrop-blur-xl rounded-xl p-1 border border-white/20 min-w-max">
+              {tabs.map((tab) => {
+                const Icon = tab.icon
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-all whitespace-nowrap ${
+                      activeTab === tab.id
+                        ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg'
+                        : 'text-white/70 hover:text-white hover:bg-white/10'
+                    }`}
+                  >
+                    <Icon className="w-4 h-4" />
+                    {tab.label}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+          <button
+            onClick={() => scrollTabs('right')}
+            className="p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors flex-shrink-0 z-10"
+          >
+            <ChevronRight className="w-5 h-5 text-white" />
+          </button>
         </div>
       </div>
-      
-      <div className="min-h-96">
-        {activeTab === 'tickets' && (
-          <div className="space-y-4">
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-lg font-semibold text-gray-900">Tickets de Soporte</h3>
-              <button className="btn-primary flex items-center gap-2">
-                <Plus size={16} />
-                Nuevo Ticket
-              </button>
-            </div>
-            
-            <div className="grid gap-4">
-              {tickets.map((ticket) => (
-                <div key={ticket.id} className="bg-white rounded-lg border border-gray-200 p-6">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <h4 className="text-lg font-semibold text-gray-900">{ticket.subject}</h4>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 text-sm text-gray-600">
-                        <div>
-                          <p><strong>Cliente:</strong> {ticket.customer}</p>
-                          <p><strong>Prioridad:</strong> {ticket.priority}</p>
-                        </div>
-                        <div>
-                          <p><strong>Estado:</strong> 
-                            <span className={`ml-2 px-2 py-1 rounded-full text-xs font-medium ${
-                              ticket.status === 'open' ? 'text-red-600 bg-red-100' : 
-                              ticket.status === 'in_progress' ? 'text-yellow-600 bg-yellow-100' : 
-                              'text-green-600 bg-green-100'
-                            }`}>
-                              {ticket.status === 'open' ? 'Abierto' : 
-                               ticket.status === 'in_progress' ? 'En Progreso' : 'Cerrado'}
-                            </span>
-                          </p>
-                        </div>
-                        <div>
-                          <p><strong>Creado:</strong> {new Date(ticket.createdAt).toLocaleDateString()}</p>
-                        </div>
-                        <div>
-                          <p><strong>Última actualización:</strong> {new Date(ticket.lastUpdate).toLocaleDateString()}</p>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2 ml-4">
-                      <button className="p-2 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg">
-                        <Eye size={18} />
-                      </button>
-                      <button className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg">
-                        <Edit size={18} />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-        
-        {activeTab === 'chat' && (
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Chat en Vivo</h3>
-            <p className="text-gray-600">Aquí se implementará el chat en vivo.</p>
-          </div>
-        )}
-        
-        {activeTab === 'faq' && (
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Preguntas Frecuentes</h3>
-            <p className="text-gray-600">Aquí se implementará la gestión de FAQ.</p>
-          </div>
-        )}
+
+      {/* Content */}
+      <div className="min-h-[calc(100vh-250px)]">
+        {renderContent()}
       </div>
     </div>
   )
 }
 
-export default SupportManagement
+export default SoporteModule

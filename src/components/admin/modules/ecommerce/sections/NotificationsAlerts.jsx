@@ -28,6 +28,29 @@ const NotificationsAlerts = () => {
   useEffect(() => {
     setIsVisible(true)
   }, [])
+
+  // Funciones de notificaciones
+  const handleMarkAsRead = (id) => {
+    setNotifications(notifications.map(n => 
+      n.id === id ? { ...n, read: true } : n
+    ))
+    alert(`Notificación ${id} marcada como leída`)
+  }
+
+  const handleMarkAllAsRead = () => {
+    setNotifications(notifications.map(n => ({ ...n, read: true })))
+    alert('Todas las notificaciones marcadas como leídas')
+  }
+
+  const handleDeleteNotification = (id) => {
+    setNotifications(notifications.filter(n => n.id !== id))
+    alert(`Notificación ${id} eliminada`)
+  }
+
+  const handleConfigureAlerts = () => {
+    alert('Configurando preferencias de alertas...')
+  }
+
   const [notifications, setNotifications] = useState([
     {
       id: 1,

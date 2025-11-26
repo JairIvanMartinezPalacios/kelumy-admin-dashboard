@@ -114,6 +114,42 @@ const PaymentMethods = () => {
     }).format(amount)
   }
 
+  // Funciones de interacción
+  const handleCopyKey = (key) => {
+    navigator.clipboard.writeText(key)
+    alert('Clave copiada al portapapeles')
+  }
+
+  const handleSaveChanges = () => {
+    alert(`Cambios guardados para ${activeMethodData.name}`)
+  }
+
+  const handleRotateKeys = () => {
+    if (confirm('¿Estás seguro de que quieres rotar las claves? Esta acción no se puede deshacer.')) {
+      const newKey = `pk_test_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+      setKeyHistory({
+        ...keyHistory,
+        [activeMethod]: [
+          { key: newKey, rotatedAt: new Date().toISOString(), status: 'active' },
+          ...(keyHistory[activeMethod] || []).map(k => ({ ...k, status: 'inactive' }))
+        ]
+      })
+      alert('Claves rotadas exitosamente')
+    }
+  }
+
+  const handleToggleMethod = (methodId) => {
+    alert(`Método ${methodId} ${paymentMethods.find(m => m.id === methodId).enabled ? 'desactivado' : 'activado'}`)
+  }
+
+  const handleViewReport = () => {
+    alert('Generando reporte de comisiones...')
+  }
+
+  const handleUpdateStats = () => {
+    alert('Actualizando estadísticas en tiempo real...')
+  }
+
   return (
     <div className="space-y-6 w-full max-w-full overflow-x-hidden min-w-0">
       {/* Estilos de animación avanzados */}
@@ -250,7 +286,10 @@ const PaymentMethods = () => {
                       readOnly
                       className="flex-1 px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white text-sm"
                     />
-                    <button className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-all border border-white/20">
+                    <button 
+                      onClick={() => handleCopyKey(activeMethodData.publicKey)}
+                      className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-all border border-white/20"
+                    >
                       Copiar
                     </button>
                   </div>
@@ -265,7 +304,10 @@ const PaymentMethods = () => {
                       readOnly
                       className="flex-1 px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white text-sm"
                     />
-                    <button className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-all border border-white/20">
+                    <button 
+                      onClick={() => handleCopyKey(activeMethodData.publicKey)}
+                      className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-all border border-white/20"
+                    >
                       Copiar
                     </button>
                   </div>
@@ -282,7 +324,10 @@ const PaymentMethods = () => {
                   </select>
                 </div>
 
-                <button className="w-full px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all flex items-center justify-center gap-2">
+                <button 
+                  onClick={handleSaveChanges}
+                  className="w-full px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all flex items-center justify-center gap-2"
+                >
                   <Save size={18} />
                   Guardar Cambios
                 </button>
@@ -374,7 +419,10 @@ const PaymentMethods = () => {
                   </div>
                 )}
 
-                <button className="w-full px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-all border border-white/20 flex items-center justify-center gap-2">
+                <button 
+                  onClick={handleRotateKeys}
+                  className="w-full px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-all border border-white/20 flex items-center justify-center gap-2"
+                >
                   <RotateCcw size={18} />
                   Rotar Claves Manualmente
                 </button>
@@ -416,7 +464,10 @@ const PaymentMethods = () => {
 
                 <div>
                   <label className="text-white/70 text-sm mb-2 block">Reportes Mensuales</label>
-                  <button className="w-full px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-all border border-white/20 flex items-center justify-center gap-2">
+                  <button 
+                    onClick={handleViewReport}
+                    className="w-full px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-all border border-white/20 flex items-center justify-center gap-2"
+                  >
                     <BarChart3 size={18} />
                     Ver Reporte de Comisiones
                   </button>
@@ -513,7 +564,10 @@ const PaymentMethods = () => {
               <p className="text-white/70 text-sm mb-4">
                 El sistema optimiza automáticamente los métodos de pago según costo y tasa de éxito.
               </p>
-              <button className="w-full px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-all border border-white/20 flex items-center justify-center gap-2">
+              <button 
+                onClick={handleUpdateStats}
+                className="w-full px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-all border border-white/20 flex items-center justify-center gap-2"
+              >
                 <RefreshCw size={18} />
                 Actualizar Estadísticas
               </button>

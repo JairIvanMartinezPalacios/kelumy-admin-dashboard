@@ -261,13 +261,43 @@ function showMap(mapId) {
         
         if (fileName) {
             // Crear un iframe para cargar el mapa
-            mapContent.innerHTML = `
-                <iframe 
-                    src="${fileName}" 
-                    style="width: 100%; height: 100vh; border: none; border-radius: 15px; background: white;"
-                    onload="this.style.height = this.contentWindow.document.body.scrollHeight + 'px';"
-                ></iframe>
-            `;
+            mapContent.innerHTML = '';
+
+            const iframe = document.createElement('iframe');
+            iframe.src = fileName;
+            iframe.style.width = '100%';
+            iframe.style.height = '100vh';
+            iframe.style.border = 'none';
+            iframe.style.borderRadius = '15px';
+            iframe.style.background = 'transparent';
+
+            iframe.addEventListener('load', () => {
+                const doc = iframe.contentDocument || iframe.contentWindow.document;
+                if (!doc) return;
+
+                iframe.style.height = doc.body.scrollHeight + 'px';
+
+                const elementsToHide = doc.querySelectorAll('.header, .legend, .back-btn');
+                elementsToHide.forEach(element => {
+                    if (element) {
+                        element.style.display = 'none';
+                    }
+                });
+
+                if (doc.body) {
+                    doc.body.style.background = 'transparent';
+                    doc.body.style.padding = '0';
+                }
+
+                const container = doc.querySelector('.container');
+                if (container) {
+                    container.style.maxWidth = '100%';
+                    container.style.margin = '0';
+                    container.style.paddingTop = '0';
+                }
+            });
+
+            mapContent.appendChild(iframe);
             
             // Scroll suave al contenedor
             setTimeout(() => {

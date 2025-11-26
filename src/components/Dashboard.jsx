@@ -21,6 +21,7 @@ import {
   ContenidoModule,
   CalendarioModule,
   CorreoModule,
+  NotificationsModule,
   ConfiguracionModule
 } from './admin/modules'
 
@@ -47,6 +48,9 @@ import BuenasPracticas from './admin/modules/investigacion/BuenasPracticas'
 import AdminProfile from './admin/modules/profile/AdminProfile'
 import AdminSettings from './admin/modules/settings/AdminSettings'
 
+// Importa el contexto de la aplicación
+import { useAppContext } from '../context/AppContext'
+
 // Importa iconos de la librería Lucide React para las métricas y secciones
 import {
   Home,           // Icono de inicio para el sidebar
@@ -72,7 +76,11 @@ import {
   ChevronDown,    // Icono de flecha hacia abajo
   LogOut,         // Icono de cerrar sesión
   X,              // Icono de cerrar
-  TestTube        // Icono de probeta para modelos de negocio
+  TestTube,       // Icono de probeta para modelos de negocio
+  CheckCircle,
+  AlertCircle,
+  XCircle,
+  Info
 } from 'lucide-react'
 
 // ========================================
@@ -85,6 +93,7 @@ const Dashboard = ({ user, onLogout }) => {
   // ESTADO DEL COMPONENTE - Hooks de React
   // ========================================
   
+  const { notifications, markAllNotificationsRead } = useAppContext()
   const [activeSection, setActiveSection] = useState('inicio')
   const [showNotifications, setShowNotifications] = useState(false)
   const [showUserMenu, setShowUserMenu] = useState(false)
@@ -153,7 +162,8 @@ const Dashboard = ({ user, onLogout }) => {
     { id: 'calendario', label: 'Calendario', icon: Calendar },
     { id: 'correo', label: 'Correo', icon: Mail },
     { id: 'configuracion', label: 'Configuración', icon: Settings },
-    { id: 'investigacion', label: 'Investigación', icon: BookOpen }
+    { id: 'investigacion', label: 'Investigación', icon: BookOpen },
+    { id: 'notificaciones', label: 'Notificaciones', icon: Bell }
   ]
 
   // ========================================
@@ -272,6 +282,12 @@ const Dashboard = ({ user, onLogout }) => {
         return <InvestigacionMosaico onNavigateToModule={setActiveSection} />
 
       // ========================================
+      // SECCIÓN NOTIFICACIONES - Centro de notificaciones
+      // ========================================
+      case 'notificaciones':
+        return <NotificationsModule />
+
+      // ========================================
       // MÓDULO 1: MODELOS DE NEGOCIO - Previsualización
       // ========================================
       case 'modelos-negocio':
@@ -320,6 +336,25 @@ const Dashboard = ({ user, onLogout }) => {
             <p className="text-gray-600">La sección seleccionada no existe.</p>
           </div>
         )
+    }
+  }
+
+  // Helper para obtener icono según tipo
+  const getNotificationIcon = (type) => {
+    switch(type) {
+      case 'success': return CheckCircle;
+      case 'warning': return AlertCircle;
+      case 'error': return XCircle;
+      default: return Info;
+    }
+  }
+
+  const getNotificationColor = (type) => {
+    switch(type) {
+      case 'success': return 'text-green-400';
+      case 'warning': return 'text-yellow-400';
+      case 'error': return 'text-red-400';
+      default: return 'text-blue-400';
     }
   }
 
@@ -406,9 +441,9 @@ const Dashboard = ({ user, onLogout }) => {
       </div>
 
       {/* Contenido Principal */}
-      <div className={`flex-1 flex flex-col transition-all duration-300 overflow-x-hidden min-w-0 ${
+      <div className={`flex-1 flex flex-col transition-all duration-300 ${
         sidebarHovered ? 'lg:ml-64' : 'lg:ml-16'
-      }`}>
+      } w-full max-w-full overflow-x-hidden`} style={{ maxWidth: '100%' }}>
         {/* Navbar Superior Estático */}
         <nav 
           className="fixed top-0 right-0 backdrop-blur-2xl border-b border-purple-400/30 px-3 sm:px-4 md:px-6 py-3 sm:py-4 z-50 flex-shrink-0 shadow-2xl"
@@ -504,50 +539,73 @@ const Dashboard = ({ user, onLogout }) => {
                       }}
                     >
                       <Bell className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-                      <span className="absolute -top-0.5 -right-0.5 sm:-top-1 sm:-right-1 w-2.5 h-2.5 sm:w-3 sm:h-3 bg-red-500 rounded-full text-[10px] flex items-center justify-center text-white">3</span>
+                      {notifications.filter(n => !n.isRead).length > 0 && (
+                        <span className="absolute -top-0.5 -right-0.5 sm:-top-1 sm:-right-1 w-2.5 h-2.5 sm:w-3 sm:h-3 bg-red-500 rounded-full text-[10px] flex items-center justify-center text-white">
+                          {notifications.filter(n => !n.isRead).length}
+                        </span>
+                      )}
                     </button>
                 
                 {/* Dropdown de notificaciones */}
                 {showNotifications && (
                   <div 
-                    className="fixed right-2 sm:right-4 md:right-6 top-16 sm:top-20 w-[calc(100vw-1rem)] sm:w-80 max-w-sm backdrop-blur-2xl rounded-lg shadow-2xl z-[99999]"
+                    className="fixed right-2 sm:right-4 md:right-6 top-16 sm:top-20 w-[calc(100vw-1rem)] sm:w-96 max-w-sm backdrop-blur-2xl rounded-2xl shadow-2xl z-[99999] overflow-hidden animate-in fade-in slide-in-from-top-5 duration-200"
                     style={{
-                      background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%)',
-                      backdropFilter: 'blur(20px) saturate(180%)',
-                      WebkitBackdropFilter: 'blur(20px) saturate(180%)',
-                      border: '1px solid rgba(255, 255, 255, 0.2)',
-                      boxShadow: '0 8px 32px rgba(0,0,0,0.3)'
+                      background: 'linear-gradient(135deg, rgba(30, 8, 29, 0.95) 0%, rgba(42, 15, 41, 0.90) 100%)',
+                      border: '1px solid rgba(255, 255, 255, 0.1)',
+                      boxShadow: '0 20px 50px rgba(0,0,0,0.5)'
                     }}
                   >
-                    <div className="p-4 border-b border-white/20">
-                      <h3 className="text-white font-semibold">Notificaciones</h3>
+                    {/* Header */}
+                    <div className="p-4 border-b border-white/10 flex justify-between items-center bg-white/5">
+                      <h3 className="text-white font-semibold text-base">Notificaciones</h3>
+                      <button 
+                        onClick={markAllNotificationsRead}
+                        className="text-xs text-purple-300 hover:text-purple-200 transition-colors font-medium"
+                      >
+                        Marcar todo como leído
+                      </button>
                     </div>
-                    <div className="p-4 space-y-3">
-                      <div className="flex items-start space-x-3 p-3 bg-white/5 rounded-lg">
-                        <div className="w-2 h-2 bg-blue-400 rounded-full mt-2"></div>
-                        <div>
-                          <p className="text-white text-sm">Nuevo estudiante registrado</p>
-                          <p className="text-white/60 text-xs">Hace 5 minutos</p>
+
+                    {/* List */}
+                    <div className="p-2 space-y-1 max-h-[400px] overflow-y-auto custom-scrollbar">
+                      {notifications.length === 0 ? (
+                        <div className="p-8 text-center text-white/50 text-sm">
+                          No hay notificaciones
                         </div>
-                      </div>
-                      <div className="flex items-start space-x-3 p-3 bg-white/5 rounded-lg">
-                        <div className="w-2 h-2 bg-green-400 rounded-full mt-2"></div>
-                        <div>
-                          <p className="text-white text-sm">Curso completado</p>
-                          <p className="text-white/60 text-xs">Hace 1 hora</p>
-                        </div>
-                      </div>
-                      <div className="flex items-start space-x-3 p-3 bg-white/5 rounded-lg">
-                        <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2"></div>
-                        <div>
-                          <p className="text-white text-sm">Pago pendiente</p>
-                          <p className="text-white/60 text-xs">Hace 2 horas</p>
-                        </div>
-                      </div>
+                      ) : (
+                        notifications.slice(0, 5).map((notification, index) => {
+                          const Icon = getNotificationIcon(notification.type)
+                          const colorClass = getNotificationColor(notification.type)
+                          
+                          return (
+                            <div key={notification.id} className="group flex items-start space-x-3 p-3 hover:bg-white/5 rounded-xl transition-all duration-200 cursor-pointer border border-transparent hover:border-white/5">
+                              <div className={`w-10 h-10 rounded-full bg-white/5 flex items-center justify-center flex-shrink-0 border border-white/10 group-hover:border-white/20 transition-colors`}>
+                                 <Icon className={`w-5 h-5 ${colorClass}`} />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex justify-between items-start">
+                                  <p className={`text-white text-sm font-medium truncate pr-2 ${notification.isRead ? 'text-white/70' : ''}`}>{notification.title}</p>
+                                  {!notification.isRead && (
+                                    <span className={`w-2 h-2 rounded-full mt-1.5 shadow-[0_0_8px_rgba(255,255,255,0.3)] bg-purple-500`}></span>
+                                  )}
+                                </div>
+                                <p className="text-white/70 text-xs line-clamp-2 mt-0.5">{notification.message}</p>
+                                <p className="text-white/40 text-[10px] mt-1.5 font-medium">
+                                  {new Date(notification.timestamp || Date.now()).toLocaleString('es-MX')}
+                                </p>
+                              </div>
+                            </div>
+                          )
+                        })
+                      )}
                     </div>
-                    <div className="p-4 border-t border-white/20">
-                      <button className="w-full text-center text-purple-300 hover:text-purple-200 text-sm">
+
+                    {/* Footer */}
+                    <div className="p-3 border-t border-white/10 bg-white/5">
+                      <button className="w-full py-2 text-center text-white/80 hover:text-white text-xs font-medium hover:bg-white/10 rounded-lg transition-all duration-200 flex items-center justify-center group">
                         Ver todas las notificaciones
+                        <ChevronDown className="w-3 h-3 ml-1 transform -rotate-90 group-hover:translate-x-1 transition-transform" />
                       </button>
                     </div>
                   </div>
@@ -644,7 +702,7 @@ const Dashboard = ({ user, onLogout }) => {
         </nav>
 
         {/* Área de Contenido Scrolleable */}
-        <div className="flex-1 overflow-y-auto overflow-x-hidden pt-14 sm:pt-16">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden pt-14 sm:pt-16 w-full max-w-full" style={{ maxWidth: '100%' }}>
       {renderDashboardContent()}
         </div>
       </div>

@@ -233,6 +233,16 @@ const CourseInfoView = ({ course, onBack, onEdit }) => {
     setEditData({ ...courseInfo })
   }
   
+  const handleSettings = () => {
+    alert('Abriendo configuración avanzada del curso. Aquí se mostrarían opciones como:\n- Configuración de acceso\n- Configuración de certificados\n- Configuración de notificaciones\n- Configuración de integraciones')
+    // En producción, aquí se abriría un modal de configuración avanzada
+  }
+  
+  const handlePreview = () => {
+    alert('Abriendo vista previa del curso. Aquí se mostraría cómo se ve el curso desde la perspectiva del estudiante.')
+    // En producción, aquí se abriría la vista previa del curso
+  }
+  
   const handleInputChange = (path, value) => {
     if (path.includes('.')) {
       const [parent, child] = path.split('.')
@@ -849,10 +859,18 @@ const CourseInfoView = ({ course, onBack, onEdit }) => {
             </div>
             
             <div className="flex items-center gap-3">
-              <button className="p-2 text-white/60 hover:text-white hover:bg-white/20 rounded-lg transition-colors">
+              <button 
+                onClick={handleSettings}
+                className="p-2 text-white/60 hover:text-white hover:bg-white/20 rounded-lg transition-colors"
+                title="Configuración avanzada"
+              >
                 <Settings size={20} />
               </button>
-              <button className="p-2 text-white/60 hover:text-white hover:bg-white/20 rounded-lg transition-colors">
+              <button 
+                onClick={handlePreview}
+                className="p-2 text-white/60 hover:text-white hover:bg-white/20 rounded-lg transition-colors"
+                title="Vista previa del curso"
+              >
                 <Eye size={20} />
               </button>
             </div>
@@ -929,7 +947,24 @@ const CourseInfoView = ({ course, onBack, onEdit }) => {
       
       {/* Modal de planes individuales */}
       {showPricingPlans && (
-        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4 overflow-y-auto animate-fade-in">
+        <div 
+          className="fixed inset-0 bg-black/90 backdrop-blur-md overflow-hidden animate-fade-in"
+          style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center',
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            width: '100vw',
+            height: '100vh',
+            zIndex: 9999,
+            margin: 0,
+            padding: 0
+          }}
+        >
           <div className="bg-white/10 backdrop-blur-2xl rounded-3xl shadow-2xl w-full max-w-6xl my-4 sm:my-8 max-h-[95vh] sm:max-h-[90vh] flex flex-col animate-scale-in border border-white/30 relative overflow-hidden scrollbar-hide">
             {/* Efectos de fondo líquido */}
             <div className="absolute inset-0 bg-gradient-to-br from-[#e9d1e6]/20 via-transparent to-[#d0008b]/20"></div>

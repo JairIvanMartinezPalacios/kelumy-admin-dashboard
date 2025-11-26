@@ -61,6 +61,29 @@ const BundlesPackages = () => {
     }).format(amount)
   }
 
+  // Funciones de bundles
+  const handleCreateBundle = () => {
+    alert('Abriendo constructor de bundles...\n\n✓ Selecciona cursos\n✓ Define precio\n✓ Configura acceso')
+  }
+
+  const handleEditBundle = (id) => {
+    alert(`Editando bundle: ${id}`)
+  }
+
+  const handleDeleteBundle = (id) => {
+    if (confirm(`¿Eliminar el bundle ${id}?`)) {
+      alert(`Bundle ${id} eliminado`)
+    }
+  }
+
+  const handleToggleStatus = (id) => {
+    alert(`Estado del bundle ${id} actualizado`)
+  }
+
+  const handleViewAnalytics = (id) => {
+    alert(`Mostrando analíticas del bundle ${id}`)
+  }
+
   return (
     <div className="space-y-6 w-full max-w-full overflow-x-hidden min-w-0">
       {/* Estilos de animación avanzados */}

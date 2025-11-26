@@ -37,6 +37,12 @@ const CourseRating = ({ courseId, onRatingSubmit }) => {
   const [isSubmitting, setIsSubmitting] = useState(false)  // Estado de envío en progreso
   const [showThankYou, setShowThankYou] = useState(false)  // Mostrar mensaje de agradecimiento
   
+  // Estados para interacciones con reseñas
+  const [helpfulReviews, setHelpfulReviews] = useState(new Set())  // Reseñas marcadas como útiles
+  const [notHelpfulReviews, setNotHelpfulReviews] = useState(new Set())  // Reseñas marcadas como no útiles
+  const [replyToReview, setReplyToReview] = useState(null)  // ID de la reseña a la que se está respondiendo
+  const [replyText, setReplyText] = useState('')  // Texto de la respuesta
+  
   // ========================================
   // DATOS DE EJEMPLO - Reseñas existentes
   // ========================================
@@ -153,6 +159,76 @@ const CourseRating = ({ courseId, onRatingSubmit }) => {
     if (rating >= 4) return 'text-green-500'
     return 'text-gray-300'
   }, [])
+  
+  // Función para marcar una reseña como útil
+  const handleHelpful = useCallback((reviewId) => {
+    setHelpfulReviews(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(reviewId)) {
+        newSet.delete(reviewId)
+      } else {
+        newSet.add(reviewId)
+        // Si estaba marcada como no útil, quitarla
+        setNotHelpfulReviews(prevNot => {
+          const newNotSet = new Set(prevNot)
+          newNotSet.delete(reviewId)
+          return newNotSet
+        })
+      }
+      return newSet
+    })
+    // Simular actualización en el servidor
+    console.log(`Reseña ${reviewId} marcada como útil`)
+  }, [])
+  
+  // Función para marcar una reseña como no útil
+  const handleNotHelpful = useCallback((reviewId) => {
+    setNotHelpfulReviews(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(reviewId)) {
+        newSet.delete(reviewId)
+      } else {
+        newSet.add(reviewId)
+        // Si estaba marcada como útil, quitarla
+        setHelpfulReviews(prevHelp => {
+          const newHelpSet = new Set(prevHelp)
+          newHelpSet.delete(reviewId)
+          return newHelpSet
+        })
+      }
+      return newSet
+    })
+    // Simular actualización en el servidor
+    console.log(`Reseña ${reviewId} marcada como no útil`)
+  }, [])
+  
+  // Función para abrir/cerrar el formulario de respuesta
+  const handleReply = useCallback((reviewId) => {
+    if (replyToReview === reviewId) {
+      setReplyToReview(null)
+      setReplyText('')
+    } else {
+      setReplyToReview(reviewId)
+      setReplyText('')
+    }
+  }, [replyToReview])
+  
+  // Función para enviar una respuesta
+  const handleSubmitReply = useCallback(async (reviewId, e) => {
+    e.preventDefault()
+    if (!replyText.trim()) {
+      alert('Por favor, escribe una respuesta')
+      return
+    }
+    
+    // Simular envío de respuesta
+    console.log(`Enviando respuesta a reseña ${reviewId}:`, replyText)
+    alert(`Respuesta enviada exitosamente a la reseña ${reviewId}`)
+    
+    // Limpiar el formulario
+    setReplyText('')
+    setReplyToReview(null)
+  }, [replyText])
   
   // ========================================
   // COMPONENTES INTERNOS
@@ -289,21 +365,78 @@ const CourseRating = ({ courseId, onRatingSubmit }) => {
           
           <p className="text-gray-700 mb-4">{review.review}</p>
           
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4 text-sm text-gray-500">
-              <button className="flex items-center gap-1 hover:text-primary-600 transition-colors">
-                <ThumbsUp size={16} />
-                <span>Útil ({review.helpful})</span>
-              </button>
-              <button className="flex items-center gap-1 hover:text-primary-600 transition-colors">
-                <ThumbsDown size={16} />
-                <span>No útil</span>
-              </button>
-              <button className="flex items-center gap-1 hover:text-primary-600 transition-colors">
-                <MessageCircle size={16} />
-                <span>Responder</span>
-              </button>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4 text-sm text-gray-500">
+                <button 
+                  onClick={() => handleHelpful(review.id)}
+                  className={`flex items-center gap-1 transition-colors ${
+                    helpfulReviews.has(review.id)
+                      ? 'text-green-600 font-semibold'
+                      : 'hover:text-primary-600'
+                  }`}
+                >
+                  <ThumbsUp size={16} className={helpfulReviews.has(review.id) ? 'fill-current' : ''} />
+                  <span>Útil ({review.helpful + (helpfulReviews.has(review.id) ? 1 : 0)})</span>
+                </button>
+                <button 
+                  onClick={() => handleNotHelpful(review.id)}
+                  className={`flex items-center gap-1 transition-colors ${
+                    notHelpfulReviews.has(review.id)
+                      ? 'text-red-600 font-semibold'
+                      : 'hover:text-primary-600'
+                  }`}
+                >
+                  <ThumbsDown size={16} className={notHelpfulReviews.has(review.id) ? 'fill-current' : ''} />
+                  <span>No útil</span>
+                </button>
+                <button 
+                  onClick={() => handleReply(review.id)}
+                  className={`flex items-center gap-1 transition-colors ${
+                    replyToReview === review.id
+                      ? 'text-primary-600 font-semibold'
+                      : 'hover:text-primary-600'
+                  }`}
+                >
+                  <MessageCircle size={16} />
+                  <span>{replyToReview === review.id ? 'Cancelar' : 'Responder'}</span>
+                </button>
+              </div>
             </div>
+            
+            {/* Formulario de respuesta */}
+            {replyToReview === review.id && (
+              <form onSubmit={(e) => handleSubmitReply(review.id, e)} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                <textarea
+                  value={replyText}
+                  onChange={(e) => setReplyText(e.target.value)}
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent mb-3"
+                  placeholder="Escribe tu respuesta..."
+                  maxLength={500}
+                />
+                <div className="flex items-center justify-between">
+                  <div className="text-xs text-gray-500">
+                    {replyText.length}/500 caracteres
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => handleReply(review.id)}
+                      className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 transition-colors"
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-4 py-2 text-sm bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+                    >
+                      Enviar Respuesta
+                    </button>
+                  </div>
+                </div>
+              </form>
+            )}
           </div>
         </div>
       ))}
@@ -312,7 +445,24 @@ const CourseRating = ({ courseId, onRatingSubmit }) => {
   
   // Componente para el mensaje de agradecimiento
   const ThankYouMessage = () => (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div 
+      className="fixed inset-0 bg-black/90 backdrop-blur-md overflow-hidden"
+      style={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center',
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        width: '100vw',
+        height: '100vh',
+        zIndex: 9999,
+        margin: 0,
+        padding: 0
+      }}
+    >
       <div className="bg-white rounded-xl p-8 text-center max-w-md mx-4">
         <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
           <CheckCircle size={32} className="text-green-600" />

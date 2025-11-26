@@ -66,8 +66,9 @@ const DashboardInicio = () => {
 
   return (
     // Contenedor principal de la página de inicio
-    // p-3 sm:p-4 md:p-6: padding adaptativo
-    <div className="p-3 sm:p-4 md:p-6 min-h-screen relative overflow-hidden" style={{background: '#1e081d'}}>
+    // px-4 sm:px-6 md:px-8 lg:px-12: padding horizontal más amplio
+    // py-3 sm:py-4 md:py-6: padding vertical
+    <div className="px-4 sm:px-6 md:px-8 lg:px-12 py-3 sm:py-4 md:py-6 min-h-screen relative overflow-hidden" style={{background: '#1e081d'}}>
       {/* Efectos de fondo */}
       <div className="absolute inset-0 bg-gradient-to-br from-purple-900/30 via-transparent to-pink-900/20"></div>
       <div className="absolute inset-0 bg-gradient-to-tl from-[#e9d1e6]/15 via-transparent to-[#d0008b]/25"></div>
@@ -116,28 +117,28 @@ const DashboardInicio = () => {
           md:grid-cols-4: 4 columnas en pantallas medianas y grandes
           gap-2: espacio de 8px entre elementos
           mb-6: margen inferior de 24px */}
-      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3 mb-6 max-w-4xl mx-auto">
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-8">
         {/* Botón principal para reporte mensual
             btn-primary: clase personalizada para botón primario
             text-xs sm:text-sm: tamaño de texto extra pequeño en móviles, pequeño en desktop
             px-3 sm:px-4 py-2: padding horizontal adaptativo, vertical de 8px */}
-        <button className="bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xs sm:text-sm px-3 sm:px-4 py-2 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 backdrop-blur-sm border border-white/20 whitespace-nowrap">
+        <button className="bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xs sm:text-sm px-4 sm:px-5 md:px-6 py-2.5 md:py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 backdrop-blur-sm border border-white/20 whitespace-nowrap">
           Reporte Mensual
         </button>
         
         {/* Botón secundario para reporte anual
             btn-secondary: clase personalizada para botón secundario */}
-        <button className="bg-white/10 backdrop-blur-sm text-white text-xs sm:text-sm px-3 sm:px-4 py-2 rounded-lg border border-white/30 hover:bg-white/20 transition-all duration-300 whitespace-nowrap">
+        <button className="bg-white/10 backdrop-blur-sm text-white text-xs sm:text-sm px-4 sm:px-5 md:px-6 py-2.5 md:py-3 rounded-lg border border-white/30 hover:bg-white/20 transition-all duration-300 whitespace-nowrap">
           Reporte Anual
         </button>
         
         {/* Botón secundario para calendario */}
-        <button className="bg-white/10 backdrop-blur-sm text-white text-xs sm:text-sm px-3 sm:px-4 py-2 rounded-lg border border-white/30 hover:bg-white/20 transition-all duration-300 whitespace-nowrap">
+        <button className="bg-white/10 backdrop-blur-sm text-white text-xs sm:text-sm px-4 sm:px-5 md:px-6 py-2.5 md:py-3 rounded-lg border border-white/30 hover:bg-white/20 transition-all duration-300 whitespace-nowrap">
           Calendario
         </button>
         
         {/* Botón secundario para alertas */}
-        <button className="bg-white/10 backdrop-blur-sm text-white text-xs sm:text-sm px-3 sm:px-4 py-2 rounded-lg border border-white/30 hover:bg-white/20 transition-all duration-300 whitespace-nowrap">
+        <button className="bg-white/10 backdrop-blur-sm text-white text-xs sm:text-sm px-4 sm:px-5 md:px-6 py-2.5 md:py-3 rounded-lg border border-white/30 hover:bg-white/20 transition-all duration-300 whitespace-nowrap">
           Alertas
         </button>
       </div>
@@ -155,7 +156,7 @@ const DashboardInicio = () => {
           xl:grid-cols-6: 6 columnas en pantallas extra grandes (1280px+)
           gap-3: espacio de 12px entre elementos
           mb-8: margen inferior de 32px */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-6 gap-3 sm:gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-6 gap-4 sm:gap-5 md:gap-6 mb-8">
         {/* Mapea cada métrica para crear una tarjeta individual
             metrics.map: itera sobre el array de métricas
             (metric, index): cada métrica y su índice */}
@@ -168,7 +169,7 @@ const DashboardInicio = () => {
             // metric-card: clase personalizada para el estilo de la tarjeta
             <div 
               key={index} 
-              className="bg-white/10 backdrop-blur-xl rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 border border-white/20 shadow-2xl hover:bg-white/15 transition-all duration-300 relative overflow-hidden"
+              className="bg-white/10 backdrop-blur-xl rounded-xl sm:rounded-2xl p-5 sm:p-6 md:p-7 border border-white/20 shadow-2xl hover:bg-white/15 transition-all duration-300 relative overflow-hidden"
             >
               {/* Contenedor flex para organizar el contenido de la tarjeta
                   flex: layout flexbox
@@ -226,8 +227,8 @@ const DashboardInicio = () => {
       {/* Contenedor de gráficos con layout de grid responsivo
           grid-cols-1: una columna en móviles
           lg:grid-cols-2: dos columnas en pantallas grandes
-          gap-4: espacio de 16px entre elementos */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          gap-6 md:gap-8: espacio más amplio entre elementos */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
         
         {/* ========================================
             GRÁFICO DE INGRESOS VS EGRESOS
@@ -242,15 +243,15 @@ const DashboardInicio = () => {
             shadow-2xl: sombra extra grande
             hover:bg-white/15: efecto hover con más opacidad
             transition-all duration-300: transición suave */}
-        <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20 shadow-2xl hover:bg-white/15 transition-all duration-300">
+        <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 md:p-8 border border-white/20 shadow-2xl hover:bg-white/15 transition-all duration-300">
           {/* Título del gráfico
               text-base: tamaño de texto base
               font-semibold: peso de fuente semi-negrita
               text-white: color blanco
               mb-3: margen inferior de 12px
               drop-shadow-lg: sombra del texto */}
-          <h3 className="text-base font-semibold text-white mb-3 drop-shadow-lg">Ingresos vs Egresos</h3>
-          <div className="h-36 bg-white/5 backdrop-blur-sm rounded-lg flex items-center justify-center border border-white/10">
+          <h3 className="text-lg font-semibold text-white mb-4 drop-shadow-lg">Ingresos vs Egresos</h3>
+          <div className="h-48 md:h-56 bg-white/5 backdrop-blur-sm rounded-lg flex items-center justify-center border border-white/10">
             <div className="text-center">
               <BarChart3 size={32} className="text-white/60 mx-auto mb-2" />
               <p className="text-white/70 text-xs drop-shadow-sm">Gráfico de Ingresos vs Egresos</p>
@@ -275,14 +276,14 @@ const DashboardInicio = () => {
         {/* Tarjeta del gráfico de distribución de costos
             Misma estructura que el gráfico anterior
             Incluye botones para cambiar entre vista mensual y anual */}
-        <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20 shadow-2xl hover:bg-white/15 transition-all duration-300">
+        <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 md:p-8 border border-white/20 shadow-2xl hover:bg-white/15 transition-all duration-300">
           {/* Título del gráfico de distribución de costos */}
-          <h3 className="text-base font-semibold text-white mb-3 drop-shadow-lg">Distribución de Costos</h3>
-          <div className="flex justify-center mb-3 space-x-2">
-            <button className="bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xs px-2 py-1 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 backdrop-blur-sm border border-white/20">Mensual</button>
-            <button className="bg-white/10 backdrop-blur-sm text-white text-xs px-2 py-1 rounded-lg border border-white/30 hover:bg-white/20 transition-all duration-300">Anual</button>
+          <h3 className="text-lg font-semibold text-white mb-4 drop-shadow-lg">Distribución de Costos</h3>
+          <div className="flex justify-center mb-4 space-x-2">
+            <button className="bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xs px-3 py-1.5 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 backdrop-blur-sm border border-white/20">Mensual</button>
+            <button className="bg-white/10 backdrop-blur-sm text-white text-xs px-3 py-1.5 rounded-lg border border-white/30 hover:bg-white/20 transition-all duration-300">Anual</button>
           </div>
-          <div className="h-36 bg-white/5 backdrop-blur-sm rounded-lg flex items-center justify-center border border-white/10">
+          <div className="h-48 md:h-56 bg-white/5 backdrop-blur-sm rounded-lg flex items-center justify-center border border-white/10">
             <div className="text-center">
               <div className="w-20 h-20 bg-white/10 rounded-full mx-auto mb-2 border border-white/20"></div>
               <p className="text-white/70 text-xs drop-shadow-sm">Gráfico de Distribución</p>

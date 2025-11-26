@@ -30,6 +30,7 @@ const ActionTypes = {
   SET_NOTIFICATIONS: 'SET_NOTIFICATIONS',
   ADD_NOTIFICATION: 'ADD_NOTIFICATION',
   MARK_NOTIFICATION_READ: 'MARK_NOTIFICATION_READ',
+  MARK_ALL_NOTIFICATIONS_READ: 'MARK_ALL_NOTIFICATIONS_READ',
   
   // Configuración global
   SET_APP_CONFIG: 'SET_APP_CONFIG',
@@ -217,6 +218,16 @@ const appReducer = (state, action) => {
         notifications: state.notifications.map(notification =>
           notification.id === action.payload ? { ...notification, isRead: true, readAt: new Date().toISOString() } : notification
         )
+      };
+
+    case ActionTypes.MARK_ALL_NOTIFICATIONS_READ:
+      return {
+        ...state,
+        notifications: state.notifications.map(notification => ({
+          ...notification,
+          isRead: true,
+          readAt: new Date().toISOString()
+        }))
       };
     
     // Configuración global
@@ -430,6 +441,7 @@ export const AppProvider = ({ children }) => {
       type: ActionTypes.MARK_NOTIFICATION_READ, 
       payload: notificationId 
     }),
+    markAllNotificationsRead: () => dispatch({ type: ActionTypes.MARK_ALL_NOTIFICATIONS_READ }),
     
     // Funciones específicas para usuario
     setCurrentUser: (user) => dispatch({ type: ActionTypes.SET_CURRENT_USER, payload: user }),

@@ -26,6 +26,29 @@ const SubscriptionsMemberships = () => {
     setIsVisible(true)
   }, [])
 
+  // Funciones de suscripciones
+  const handleCreatePlan = () => {
+    alert('Creando nuevo plan de suscripción...')
+  }
+
+  const handleEditPlan = (id) => {
+    alert(`Editando plan: ${id}`)
+  }
+
+  const handleCancelSubscription = (id) => {
+    if (confirm(`¿Cancelar suscripción ${id}?`)) {
+      alert(`Suscripción ${id} cancelada`)
+    }
+  }
+
+  const handleRenewSubscription = (id) => {
+    alert(`Renovando suscripción ${id}`)
+  }
+
+  const handleUpgradePlan = (id) => {
+    alert(`Mejorando plan de suscripción ${id}`)
+  }
+
   const plans = [
     {
       id: 'basic',

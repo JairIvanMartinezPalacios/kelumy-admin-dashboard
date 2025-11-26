@@ -736,7 +736,24 @@ const ContentManagement = ({ course, onClose, onSave }) => {
   // ========================================
   
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div 
+      className="fixed inset-0 bg-black/90 backdrop-blur-md overflow-hidden"
+      style={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center',
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        width: '100vw',
+        height: '100vh',
+        zIndex: 9999,
+        margin: 0,
+        padding: 0
+      }}
+    >
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-7xl h-5/6 flex">
         {/* Barra lateral */}
         <SectionSidebar />

@@ -32,7 +32,13 @@ import {
   Atom,        // Icono de átomo para ciencias
   Laptop,      // Icono de laptop para tecnología
   GraduationCap, // Icono de graduación para educación
-  ChevronRight // Icono de chevron derecha para navegación
+  ChevronRight, // Icono de chevron derecha para navegación
+  X,           // Icono de X para cerrar
+  Check,       // Icono de check para confirmar
+  FileText,    // Icono de documento para descripción
+  User,        // Icono de usuario para instructor
+  AlertCircle,  // Icono de alerta para información
+  Download     // Icono de descarga para exportaciones
 } from 'lucide-react'
 
 // Importa los subcomponentes especializados del módulo de cursos
@@ -83,6 +89,23 @@ const CourseManagement = () => {
   // Estado para controlar la visibilidad del modal de niveles del curso
   // true: modal visible, false: modal oculto
   const [showCourseLevels, setShowCourseLevels] = useState(false)
+  
+  // Estado para controlar el modal de crear nuevo curso
+  const [showCreateCourseModal, setShowCreateCourseModal] = useState(false)
+  
+  // Estado para el formulario de nuevo curso
+  const [newCourseData, setNewCourseData] = useState({
+    title: '',
+    description: '',
+    category: 'ciencias',
+    level: 'Principiante',
+    duration: '',
+    price: '',
+    instructor: ''
+  })
+  
+  // Estado para resaltar métricas en el panel de resumen por estado
+  const [overviewStatusFilter, setOverviewStatusFilter] = useState('all')
   
   // ========================================
   // DATOS ESTÁTICOS - Categorías y cursos de ejemplo
@@ -465,6 +488,132 @@ const CourseManagement = () => {
     }
   ]
   
+  const getDurationHours = (duration) => {
+    if (typeof duration === 'number') return duration
+    if (typeof duration === 'string') {
+      const match = duration.match(/\d+/)
+      return match ? parseInt(match[0], 10) : 0
+    }
+    return 0
+  }
+
+  const totalStudents = useMemo(
+    () => allCourses.reduce((sum, course) => sum + course.students, 0),
+    [allCourses]
+  )
+
+  const totalRevenue = useMemo(
+    () => allCourses.reduce((sum, course) => sum + course.revenue, 0),
+    [allCourses]
+  )
+
+  const averageRating = useMemo(
+    () => (allCourses.reduce((sum, course) => sum + course.rating, 0) / allCourses.length).toFixed(1),
+    [allCourses]
+  )
+
+  const averageCompletion = useMemo(
+    () => Math.round(allCourses.reduce((sum, course) => sum + course.completionRate, 0) / allCourses.length),
+    [allCourses]
+  )
+
+  const featuredCount = useMemo(
+    () => allCourses.filter(course => course.featured).length,
+    [allCourses]
+  )
+
+  const totalHours = useMemo(
+    () => allCourses.reduce((sum, course) => sum + getDurationHours(course.duration), 0),
+    [allCourses]
+  )
+
+  const instructorPerformance = useMemo(() => {
+    const stats = {}
+    allCourses.forEach(course => {
+      if (!stats[course.instructor]) {
+        stats[course.instructor] = {
+          instructor: course.instructor,
+          students: 0,
+          revenue: 0,
+          ratingSum: 0,
+          courses: 0
+        }
+      }
+      stats[course.instructor].students += course.students
+      stats[course.instructor].revenue += course.revenue
+      stats[course.instructor].ratingSum += course.rating
+      stats[course.instructor].courses += 1
+    })
+    return Object.values(stats)
+      .map(item => ({
+        ...item,
+        avgRating: (item.ratingSum / item.courses).toFixed(1)
+      }))
+      .sort((a, b) => b.students - a.students)
+  }, [allCourses])
+
+  const courseActivity = useMemo(() => [
+    {
+      id: 1,
+      title: 'Precio actualizado',
+      course: allCourses[0]?.title || 'Nuevo curso MQ',
+      time: 'Hace 2 horas',
+      description: `Precio ajustado a $${allCourses[0]?.price || 0}`,
+      icon: DollarSign,
+      color: 'text-green-400',
+      bg: 'bg-green-500/15'
+    },
+    {
+      id: 2,
+      title: 'Nuevo módulo publicado',
+      course: allCourses[4]?.title || 'Programa avanzado',
+      time: 'Hace 5 horas',
+      description: 'Se agregó el módulo "Integrales aplicadas"',
+      icon: Upload,
+      color: 'text-purple-300',
+      bg: 'bg-purple-500/15'
+    },
+    {
+      id: 3,
+      title: 'Reseñas destacadas',
+      course: allCourses[7]?.title || 'Curso destacado',
+      time: 'Hace 1 día',
+      description: '15 estudiantes calificaron con 5 ⭐',
+      icon: Star,
+      color: 'text-yellow-400',
+      bg: 'bg-yellow-500/15'
+    },
+    {
+      id: 4,
+      title: 'Objetivo alcanzado',
+      course: allCourses[10]?.title || 'Programa estratégico',
+      time: 'Hace 2 días',
+      description: 'Se superó la meta de inscripciones del mes',
+      icon: Target,
+      color: 'text-cyan-300',
+      bg: 'bg-cyan-500/15'
+    }
+  ], [allCourses])
+
+  const conversionMetrics = useMemo(() => {
+    const visits = 35000
+    const leads = 12800
+    const trials = 4800
+    const purchases = totalStudents
+    return { visits, leads, trials, purchases }
+  }, [totalStudents])
+
+  const conversionSteps = useMemo(() => {
+    const { visits, leads, trials, purchases } = conversionMetrics
+    const base = visits || 1
+    return [
+      { label: 'Visitas', value: visits, percentage: 100, color: 'from-purple-500 to-pink-500' },
+      { label: 'Leads captados', value: leads, percentage: Math.round((leads / base) * 100), color: 'from-pink-500 to-orange-500' },
+      { label: 'Pruebas activas', value: trials, percentage: Math.round((trials / base) * 100), color: 'from-orange-500 to-amber-500' },
+      { label: 'Compras confirmadas', value: purchases, percentage: Math.round((purchases / base) * 100), color: 'from-emerald-500 to-green-500' }
+    ]
+  }, [conversionMetrics])
+  
   // ========================================
   // FUNCIONES AUXILIARES - Lógica de negocio (memoizadas)
   // ========================================
@@ -527,6 +676,48 @@ const CourseManagement = () => {
       return matchesSearch && matchesStatus
     })
   }, [allCourses, debouncedSearchTerm, statusFilter])
+  
+  // Estadísticas agregadas por estado del curso
+  const courseStatusStats = useMemo(() => {
+    const mapStats = (list) => ({
+      count: list.length,
+      students: list.reduce((sum, course) => sum + course.students, 0),
+      revenue: list.reduce((sum, course) => sum + course.revenue, 0)
+    })
+    
+    const published = allCourses.filter(course => course.status === 'published')
+    const draft = allCourses.filter(course => course.status === 'draft')
+    const archived = allCourses.filter(course => course.status === 'archived')
+    
+    return {
+      total: allCourses.length || 1,
+      published: mapStats(published),
+      draft: mapStats(draft),
+      archived: mapStats(archived)
+    }
+  }, [allCourses])
+  
+  // Top de cursos por ingresos
+  const topCoursesByRevenue = useMemo(() => {
+    return [...allCourses]
+      .sort((a, b) => b.revenue - a.revenue)
+      .slice(0, 5)
+  }, [allCourses])
+  
+  // Actividad reciente basada en la última actualización de cada curso
+  const recentCourseActivities = useMemo(() => {
+    return [...allCourses]
+      .sort((a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated))
+      .slice(0, 5)
+      .map((course, index) => ({
+        id: `${course.id}-${index}`,
+        courseTitle: course.title,
+        timestamp: new Date(course.lastUpdated).toLocaleDateString('es-MX', { day: 'numeric', month: 'short' }),
+        action: index % 2 === 0 ? 'Actualización de contenido' : 'Nuevo estudiante inscrito',
+        type: index % 2 === 0 ? 'update' : 'enrollment',
+        value: index % 2 === 0 ? `$${course.price}` : `+${Math.max(1, Math.floor(course.students * 0.03))} alumnos`
+      }))
+  }, [allCourses])
   
   // ========================================
   // EFECTOS - useEffect para efectos secundarios
@@ -607,6 +798,51 @@ const CourseManagement = () => {
     setActiveTab('editor')        // Cambia a la pestaña del editor
   }, [])
   
+  // Función para abrir el modal de crear nuevo curso
+  const handleOpenCreateCourseModal = useCallback(() => {
+    setShowCreateCourseModal(true)
+    setNewCourseData({
+      title: '',
+      description: '',
+      category: 'ciencias',
+      level: 'Principiante',
+      duration: '',
+      price: '',
+      instructor: ''
+    })
+  }, [])
+  
+  // Función para cerrar el modal de crear nuevo curso
+  const handleCloseCreateCourseModal = useCallback(() => {
+    setShowCreateCourseModal(false)
+  }, [])
+  
+  // Función para manejar cambios en el formulario de nuevo curso
+  const handleNewCourseChange = useCallback((field, value) => {
+    setNewCourseData(prev => ({
+      ...prev,
+      [field]: value
+    }))
+  }, [])
+  
+  // Función para crear un nuevo curso
+  const handleCreateCourse = useCallback((e) => {
+    e.preventDefault()
+    // Aquí se implementaría la lógica para crear el curso
+    console.log('Creando curso:', newCourseData)
+    setShowCreateCourseModal(false)
+    setActiveTab('editor')
+    setSelectedCourse({
+      id: Date.now(),
+      ...newCourseData,
+      students: 0,
+      rating: 0,
+      status: 'draft',
+      createdAt: new Date().toISOString(),
+      lastUpdated: new Date().toISOString()
+    })
+  }, [newCourseData])
+  
   // ========================================
   // COMPONENTES INTERNOS - Subcomponentes memoizados
   // ========================================
@@ -667,13 +903,13 @@ const CourseManagement = () => {
               {/* Precio */}
               <div className="text-right">
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="text-2xl font-bold text-purple-400">${course.price}</span>
-                  <span className="text-sm text-white/60 line-through">${course.originalPrice}</span>
+                  <span className="text-2xl font-bold text-purple-400">{`$${course.price}`}</span>
+                  <span className="text-sm text-white/60 line-through">{`$${course.originalPrice}`}</span>
                   <span className="text-xs bg-red-500/20 text-red-400 px-2 py-1 rounded-full border border-red-500/30">
                     -{course.discount}%
                   </span>
                 </div>
-                <p className="text-sm text-white/70">${course.revenue.toLocaleString()} en ventas</p>
+                <p className="text-sm text-white/70">{`$${course.revenue.toLocaleString()} en ventas`}</p>
               </div>
             </div>
             
@@ -731,125 +967,819 @@ const CourseManagement = () => {
   CourseItem.displayName = 'CourseItem'
   
   // Componente para el dashboard de cursos
-  const CourseOverview = () => (
-    <div className="space-y-6">
+  const CourseOverview = () => {
+    const statusFilters = [
+      { id: 'all', label: 'Todos' },
+      { id: 'published', label: 'Publicados' },
+      { id: 'draft', label: 'Borradores' },
+      { id: 'archived', label: 'Archivados' }
+    ]
+    
+    const statusCards = [
+      {
+        id: 'published',
+        label: 'Cursos publicados',
+        description: 'Disponibles para los estudiantes',
+        icon: CheckCircle,
+        accent: 'from-emerald-500/30 via-emerald-500/10 to-transparent',
+        data: courseStatusStats.published
+      },
+      {
+        id: 'draft',
+        label: 'Cursos en borrador',
+        description: 'Pendientes de publicación',
+        icon: Clock,
+        accent: 'from-amber-500/30 via-amber-500/10 to-transparent',
+        data: courseStatusStats.draft
+      },
+      {
+        id: 'archived',
+        label: 'Cursos archivados',
+        description: 'Fuera del catálogo activo',
+        icon: Trash2,
+        accent: 'from-purple-500/20 via-purple-500/5 to-transparent',
+        data: courseStatusStats.archived
+      }
+    ]
+    
+    const totalStudentsByStatus = courseStatusStats.published.students + courseStatusStats.draft.students + courseStatusStats.archived.students
+    const totalRevenueByStatus = courseStatusStats.published.revenue + courseStatusStats.draft.revenue + courseStatusStats.archived.revenue
+    
+    const activityTypeMeta = {
+      update: {
+        label: 'Actualización',
+        badge: 'bg-blue-500/15 text-blue-200',
+        icon: Edit
+      },
+      enrollment: {
+        label: 'Inscripción',
+        badge: 'bg-green-500/15 text-green-200',
+        icon: Users
+      }
+    }
+    
+    const highlightedStatus = overviewStatusFilter === 'all'
+      ? {
+          label: 'Todos los cursos',
+          count: courseStatusStats.total,
+          students: totalStudentsByStatus,
+          revenue: totalRevenueByStatus
+        }
+      : {
+          label: statusCards.find(card => card.id === overviewStatusFilter)?.label || '',
+          count: courseStatusStats[overviewStatusFilter].count,
+          students: courseStatusStats[overviewStatusFilter].students,
+          revenue: courseStatusStats[overviewStatusFilter].revenue
+        };
+    
+    return (
+      <div className="space-y-8">
       {/* Métricas principales */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 border border-blue-200">
+        <div className="bg-white/10 backdrop-blur-xl rounded-xl p-6 border border-white/20 shadow-lg hover:bg-white/15 transition-all duration-300 group">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-blue-600">Total Cursos</p>
-              <p className="text-3xl font-bold text-blue-900">{allCourses.length}</p>
-              <p className="text-xs text-blue-600 mt-1">+2 este mes</p>
+              <p className="text-sm font-medium text-blue-400">Total Cursos</p>
+              <p className="text-3xl font-bold text-white drop-shadow-lg">{allCourses.length}</p>
+              <p className="text-xs text-green-400 mt-1 flex items-center gap-1">
+                <TrendingUp size={12} />
+                +2 este mes
+              </p>
             </div>
-            <BookOpen size={32} className="text-blue-600" />
+            <div className="w-14 h-14 rounded-xl bg-blue-500/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+              <BookOpen size={28} className="text-blue-400" />
+            </div>
           </div>
         </div>
         
-        <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6 border border-green-200">
+        <div className="bg-white/10 backdrop-blur-xl rounded-xl p-6 border border-white/20 shadow-lg hover:bg-white/15 transition-all duration-300 group">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-green-600">Estudiantes Activos</p>
-              <p className="text-3xl font-bold text-green-900">
-                {allCourses.reduce((sum, course) => sum + course.students, 0).toLocaleString()}
+              <p className="text-sm font-medium text-green-400">Estudiantes Activos</p>
+              <p className="text-3xl font-bold text-white drop-shadow-lg">
+                {totalStudents.toLocaleString()}
               </p>
-              <p className="text-xs text-green-600 mt-1">+15% este mes</p>
+              <p className="text-xs text-green-400 mt-1 flex items-center gap-1">
+                <TrendingUp size={12} />
+                +15% este mes
+              </p>
             </div>
-            <Users size={32} className="text-green-600" />
+            <div className="w-14 h-14 rounded-xl bg-green-500/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+              <Users size={28} className="text-green-400" />
+            </div>
           </div>
         </div>
         
-        <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6 border border-purple-200">
+        <div className="bg-white/10 backdrop-blur-xl rounded-xl p-6 border border-white/20 shadow-lg hover:bg-white/15 transition-all duration-300 group">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-purple-600">Ingresos Totales</p>
-              <p className="text-3xl font-bold text-purple-900">
-                ${allCourses.reduce((sum, course) => sum + course.revenue, 0).toLocaleString()}
+              <p className="text-sm font-medium text-purple-400">Ingresos Totales</p>
+              <p className="text-3xl font-bold text-white drop-shadow-lg">
+                {`$${totalRevenue.toLocaleString()}`}
               </p>
-              <p className="text-xs text-purple-600 mt-1">+23% este mes</p>
+              <p className="text-xs text-green-400 mt-1 flex items-center gap-1">
+                <TrendingUp size={12} />
+                +23% este mes
+              </p>
             </div>
-            <DollarSign size={32} className="text-purple-600" />
+            <div className="w-14 h-14 rounded-xl bg-purple-500/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+              <DollarSign size={28} className="text-purple-400" />
+            </div>
           </div>
         </div>
         
-        <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-6 border border-orange-200">
+        <div className="bg-white/10 backdrop-blur-xl rounded-xl p-6 border border-white/20 shadow-lg hover:bg-white/15 transition-all duration-300 group">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-orange-600">Calificación Promedio</p>
-              <p className="text-3xl font-bold text-orange-900">
-                {(allCourses.reduce((sum, course) => sum + course.rating, 0) / allCourses.length).toFixed(1)}
+              <p className="text-sm font-medium text-yellow-400">Calificación Promedio</p>
+              <p className="text-3xl font-bold text-white drop-shadow-lg">
+                {averageRating}
               </p>
-              <p className="text-xs text-orange-600 mt-1">⭐ Excelente</p>
+              <p className="text-xs text-yellow-400 mt-1 flex items-center gap-1">
+                <Star size={12} className="fill-yellow-400" />
+                Excelente
+              </p>
             </div>
-            <Award size={32} className="text-orange-600" />
+            <div className="w-14 h-14 rounded-xl bg-yellow-500/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+              <Award size={28} className="text-yellow-400" />
+            </div>
           </div>
         </div>
       </div>
       
-      {/* Cursos destacados */}
+      {/* Estadísticas adicionales */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-white/10 backdrop-blur-xl rounded-xl p-6 border border-white/20 shadow-lg">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="w-12 h-12 rounded-xl bg-pink-500/20 flex items-center justify-center">
+              <Target size={24} className="text-pink-400" />
+            </div>
+            <div>
+              <p className="text-sm text-white/70">Tasa de Finalización</p>
+              <p className="text-2xl font-bold text-white">
+                {averageCompletion}%
+              </p>
+            </div>
+          </div>
+          <div className="w-full bg-white/10 rounded-full h-2">
+            <div 
+              className="bg-gradient-to-r from-pink-500 to-purple-500 h-2 rounded-full transition-all duration-500"
+              style={{ width: `${Math.min(averageCompletion, 100)}%` }}
+            />
+          </div>
+        </div>
+        
+        <div className="bg-white/10 backdrop-blur-xl rounded-xl p-6 border border-white/20 shadow-lg">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="w-12 h-12 rounded-xl bg-cyan-500/20 flex items-center justify-center">
+              <Zap size={24} className="text-cyan-400" />
+            </div>
+            <div>
+              <p className="text-sm text-white/70">Cursos Destacados</p>
+              <p className="text-2xl font-bold text-white">
+                {featuredCount}
+              </p>
+            </div>
+          </div>
+          <p className="text-xs text-white/60">
+            {Math.round((featuredCount / allCourses.length) * 100)}% del total
+          </p>
+        </div>
+        
+        <div className="bg-white/10 backdrop-blur-xl rounded-xl p-6 border border-white/20 shadow-lg">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="w-12 h-12 rounded-xl bg-orange-500/20 flex items-center justify-center">
+              <Clock size={24} className="text-orange-400" />
+            </div>
+            <div>
+              <p className="text-sm text-white/70">Horas de Contenido</p>
+              <p className="text-2xl font-bold text-white">
+                {totalHours}h
+              </p>
+            </div>
+          </div>
+          <p className="text-xs text-white/60">
+            Promedio: {Math.round(totalHours / allCourses.length)}h por curso
+          </p>
+        </div>
+      </div>
+
+      {/* Panel de estados */}
+      <div className="bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 p-6 shadow-lg">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
+          <div>
+            <p className="text-sm text-white/60">Visión rápida</p>
+            <h3 className="text-2xl font-bold text-white drop-shadow-sm">Estado de los cursos</h3>
+            <p className="text-white/70 text-sm mt-1">
+              {`${highlightedStatus.label}: ${highlightedStatus.count} cursos · ${highlightedStatus.students.toLocaleString()} estudiantes · $${highlightedStatus.revenue.toLocaleString()} USD`}
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {statusFilters.map(filterOption => (
+              <button
+                key={filterOption.id}
+                onClick={() => setOverviewStatusFilter(filterOption.id)}
+                className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all border ${
+                  overviewStatusFilter === filterOption.id
+                    ? 'bg-white/20 text-white border-white/40 shadow-lg'
+                    : 'text-white/60 border-white/20 hover:border-white/40'
+                }`}
+              >
+                {filterOption.label}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {statusCards.map(card => {
+            const Icon = card.icon
+            const percentage = Math.round((card.data.count / courseStatusStats.total) * 100)
+            return (
+              <div
+                key={card.id}
+                className={`relative overflow-hidden bg-white/5 border border-white/15 rounded-xl p-5 transition-all duration-300 ${
+                  overviewStatusFilter === card.id ? 'ring-2 ring-white/40' : 'hover:bg-white/10'
+                }`}
+              >
+                <div className={`absolute inset-0 bg-gradient-to-br ${card.accent} opacity-40 pointer-events-none`}></div>
+                <div className="relative flex items-start justify-between mb-4">
+                  <div>
+                    <p className="text-sm text-white/70">{card.label}</p>
+                    <p className="text-3xl font-bold text-white drop-shadow-lg">{card.data.count}</p>
+                    <p className="text-xs text-white/60 mt-1">{card.description}</p>
+                  </div>
+                  <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center">
+                    <Icon size={22} className="text-white" />
+                  </div>
+                </div>
+                <div className="relative z-10">
+                  <div className="flex items-center justify-between text-xs text-white/60 mb-1">
+                    <span>Participación</span>
+                    <span>{percentage}%</span>
+                  </div>
+                  <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-gradient-to-r from-white to-white/50 rounded-full transition-all"
+                      style={{ width: `${percentage}%` }}
+                    />
+                  </div>
+                  <div className="mt-3 flex items-center justify-between text-xs text-white/70">
+                    <span>{card.data.students.toLocaleString()} estudiantes</span>
+                    <span>{`$${card.data.revenue.toLocaleString()}`}</span>
+                  </div>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* Insights estratégicos */}
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        <div className="bg-white/10 backdrop-blur-xl rounded-xl p-6 border border-white/20 shadow-lg">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="text-lg font-semibold text-white">Embudo de conversión</h3>
+              <p className="text-sm text-white/60">Seguimiento mensual MQ+</p>
+            </div>
+            <span className="text-xs text-white/50">Últimos 30 días</span>
+          </div>
+          <div className="space-y-4">
+            {conversionSteps.map(step => (
+              <div key={step.label}>
+                <div className="flex items-center justify-between text-sm text-white/80 mb-1">
+                  <span>{step.label}</span>
+                  <span className="font-semibold">{step.value.toLocaleString()}</span>
+                </div>
+                <div className="w-full bg-white/10 rounded-full h-2">
+                  <div
+                    className={`h-2 rounded-full bg-gradient-to-r ${step.color}`}
+                    style={{ width: `${Math.min(step.percentage, 100)}%` }}
+                  ></div>
+                </div>
+                <p className="text-xs text-white/50 mt-1">{step.percentage}% del total</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="bg-white/10 backdrop-blur-xl rounded-xl p-6 border border-white/20 shadow-lg">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h3 className="text-lg font-semibold text-white">Rendimiento por instructor</h3>
+            <p className="text-sm text-white/60">Top 3 instructores</p>
+          </div>
+          <button className="text-xs text-purple-300 hover:text-white transition-colors">Ver todos</button>
+        </div>
+          <div className="space-y-4">
+            {instructorPerformance.slice(0, 3).map((item, index) => (
+              <div
+                key={item.instructor}
+                className={`flex items-center justify-between ${index !== 0 ? 'pt-4 border-t border-white/10' : ''}`}
+              >
+                <div>
+                  <p className="text-sm font-semibold text-white">{item.instructor}</p>
+                  <p className="text-xs text-white/60">{item.courses} cursos • {item.avgRating}⭐</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm font-semibold text-purple-300">{item.students.toLocaleString()} est.</p>
+                  <p className="text-xs text-white/50">{`$${item.revenue.toLocaleString()} en ventas`}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="bg-white/10 backdrop-blur-xl rounded-xl p-6 border border-white/20 shadow-lg">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="text-lg font-semibold text-white">Actividad reciente</h3>
+              <p className="text-sm text-white/60">Movimientos del equipo</p>
+            </div>
+            <button className="text-xs text-purple-300 hover:text-white transition-colors">Ver historial</button>
+          </div>
+          <div className="space-y-4">
+            {courseActivity.map(activity => {
+              const Icon = activity.icon
+              return (
+                <div key={activity.id} className="flex items-start gap-3">
+                  <div className={`w-10 h-10 rounded-xl ${activity.bg} flex items-center justify-center`}>
+                    <Icon size={18} className={activity.color} />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold text-white">{activity.title}</p>
+                    <p className="text-xs text-white/50">{activity.course} • {activity.time}</p>
+                    <p className="text-xs text-white/60 mt-1">{activity.description}</p>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      </div>
+      
+      {/* Actividad operativa y rendimiento */}
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        <div className="bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 p-6 shadow-lg">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="text-xl font-bold text-white drop-shadow-sm">Actividad operativa</h3>
+              <p className="text-sm text-white/60">Últimos movimientos en el catálogo</p>
+            </div>
+            <button className="text-xs text-white/60 hover:text-white flex items-center gap-1">
+              Ver historial
+              <ChevronRight size={14} />
+            </button>
+          </div>
+          <div className="space-y-4">
+            {recentCourseActivities.map((activity) => {
+              const meta = activityTypeMeta[activity.type]
+              const ActivityIcon = meta.icon
+              return (
+                <div key={activity.id} className="flex items-start gap-3 p-3 rounded-xl bg-white/5 border border-white/5 hover:border-white/20 transition-all">
+                  <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center">
+                    <ActivityIcon size={18} className="text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="text-sm font-semibold text-white">{activity.courseTitle}</span>
+                      <span className={`text-[11px] px-2 py-0.5 rounded-full ${meta.badge}`}>
+                        {meta.label}
+                      </span>
+                    </div>
+                    <p className="text-sm text-white/70">{activity.action} · {activity.value}</p>
+                  </div>
+                  <span className="text-xs text-white/50">{activity.timestamp}</span>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+        
+        <div className="bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 p-6 shadow-lg">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="text-xl font-bold text-white drop-shadow-sm">Top cursos por ingresos</h3>
+              <p className="text-sm text-white/60">Comparativa de los últimos 30 días</p>
+            </div>
+            <button className="text-xs text-white/60 hover:text-white flex items-center gap-1">
+              Exportar
+              <Download size={14} />
+            </button>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm text-left">
+              <thead>
+                <tr className="text-white/60">
+                  <th className="py-2 font-medium">Curso</th>
+                  <th className="py-2 font-medium">Estudiantes</th>
+                  <th className="py-2 font-medium">Rating</th>
+                  <th className="py-2 font-medium">Ingresos</th>
+                  <th className="py-2 font-medium">Actualizado</th>
+                </tr>
+              </thead>
+              <tbody>
+                {topCoursesByRevenue.map((course, index) => (
+                  <tr key={course.id} className="border-t border-white/10 text-white/80">
+                    <td className="py-3">
+                      <div>
+                        <p className="font-semibold text-white flex items-center gap-2">
+                          <span className="text-xs text-white/50">#{index + 1}</span>
+                          {course.title}
+                        </p>
+                        <p className="text-xs text-white/50">{course.category}</p>
+                      </div>
+                    </td>
+                    <td className="py-3">{course.students.toLocaleString()}</td>
+                    <td className="py-3 flex items-center gap-1 text-white">
+                      <Star size={14} className="text-yellow-400 fill-yellow-400" />
+                      {course.rating}
+                    </td>
+                    <td className="py-3">{`$${course.revenue.toLocaleString()}`}</td>
+                    <td className="py-3 text-white/60">
+                      {new Date(course.lastUpdated).toLocaleDateString('es-MX', { day: 'numeric', month: 'short' })}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      
+      {/* Gráficos de tendencias y analíticas */}
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        {/* Gráfico de crecimiento de estudiantes */}
         <div className="bg-white/10 backdrop-blur-xl rounded-xl border border-white/20 p-6 shadow-lg">
         <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-bold text-white drop-shadow-sm">Cursos Destacados</h3>
-            <button className="text-purple-400 hover:text-purple-300 font-medium text-sm transition-colors duration-200">
+            <div>
+              <h3 className="text-lg font-semibold text-white">Crecimiento de Estudiantes</h3>
+              <p className="text-sm text-white/60">Últimos 6 meses</p>
+            </div>
+            <TrendingUp size={20} className="text-green-400" />
+          </div>
+          <div className="space-y-3">
+            {[
+              { month: 'Junio', students: 1200, growth: 12 },
+              { month: 'Julio', students: 1450, growth: 20 },
+              { month: 'Agosto', students: 1680, growth: 15 },
+              { month: 'Septiembre', students: 2100, growth: 25 },
+              { month: 'Octubre', students: 2450, growth: 16 },
+              { month: 'Noviembre', students: totalStudents, growth: 18 }
+            ].map((data, index) => {
+              const maxStudents = totalStudents
+              const percentage = (data.students / maxStudents) * 100
+              return (
+                <div key={data.month} className="space-y-1">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-white/80 font-medium">{data.month}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-white font-semibold">{data.students.toLocaleString()}</span>
+                      <span className="text-xs text-green-400 flex items-center gap-1">
+                        <TrendingUp size={12} />
+                        +{data.growth}%
+                      </span>
+                    </div>
+                  </div>
+                  <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-gradient-to-r from-green-500 to-emerald-500 rounded-full transition-all duration-500"
+                      style={{ width: `${percentage}%` }}
+                    />
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+
+        {/* Distribución por categorías */}
+        <div className="bg-white/10 backdrop-blur-xl rounded-xl border border-white/20 p-6 shadow-lg">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h3 className="text-lg font-semibold text-white">Distribución por Categorías</h3>
+              <p className="text-sm text-white/60">Cursos y estudiantes</p>
+            </div>
+            <BarChart3 size={20} className="text-purple-400" />
+          </div>
+          <div className="space-y-4">
+            {categories.map(category => {
+              const categoryCourses = allCourses.filter(c => c.category === category.id)
+              const categoryStudents = categoryCourses.reduce((sum, c) => sum + c.students, 0)
+              const percentage = (categoryStudents / totalStudents) * 100
+              const Icon = category.icon
+              
+              return (
+                <div key={category.id} className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${category.color} flex items-center justify-center`}>
+                        <Icon size={16} className="text-white" />
+                      </div>
+                      <span className="text-sm font-medium text-white">{category.name}</span>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-semibold text-white">{categoryStudents.toLocaleString()}</p>
+                      <p className="text-xs text-white/60">{categoryCourses.length} cursos</p>
+                    </div>
+                  </div>
+                  <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+                    <div
+                      className={`h-full bg-gradient-to-r ${category.color} rounded-full transition-all duration-500`}
+                      style={{ width: `${percentage}%` }}
+                    />
+                  </div>
+                  <p className="text-xs text-white/50">{percentage.toFixed(1)}% del total</p>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+
+        {/* Métricas de engagement */}
+        <div className="bg-white/10 backdrop-blur-xl rounded-xl border border-white/20 p-6 shadow-lg">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h3 className="text-lg font-semibold text-white">Métricas de Engagement</h3>
+              <p className="text-sm text-white/60">Indicadores clave de rendimiento</p>
+            </div>
+            <Target size={20} className="text-pink-400" />
+          </div>
+          <div className="space-y-6">
+            {[
+              {
+                label: 'Tasa de Inscripción',
+                value: 78,
+                target: 85,
+                color: 'from-blue-500 to-cyan-500',
+                icon: Users
+              },
+              {
+                label: 'Satisfacción del Estudiante',
+                value: 92,
+                target: 90,
+                color: 'from-green-500 to-emerald-500',
+                icon: Star
+              },
+              {
+                label: 'Retención de Cursos',
+                value: 85,
+                target: 80,
+                color: 'from-purple-500 to-pink-500',
+                icon: Target
+              },
+              {
+                label: 'Tiempo Promedio de Estudio',
+                value: 68,
+                target: 75,
+                color: 'from-orange-500 to-red-500',
+                icon: Clock
+              }
+            ].map(metric => {
+              const MetricIcon = metric.icon
+              const isAboveTarget = metric.value >= metric.target
+              
+              return (
+                <div key={metric.label} className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <MetricIcon size={16} className="text-white/70" />
+                      <span className="text-sm text-white/80">{metric.label}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-bold text-white">{metric.value}%</span>
+                      {isAboveTarget ? (
+                        <TrendingUp size={14} className="text-green-400" />
+                      ) : (
+                        <span className="text-xs text-white/50">Meta: {metric.target}%</span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="relative w-full h-2 bg-white/10 rounded-full overflow-hidden">
+                    <div
+                      className={`h-full bg-gradient-to-r ${metric.color} rounded-full transition-all duration-500`}
+                      style={{ width: `${metric.value}%` }}
+                    />
+                    {/* Indicador de meta */}
+                    <div
+                      className="absolute top-0 h-full w-0.5 bg-white/50"
+                      style={{ left: `${metric.target}%` }}
+                    />
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+
+        {/* Comparativa de ingresos */}
+        <div className="bg-white/10 backdrop-blur-xl rounded-xl border border-white/20 p-6 shadow-lg">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h3 className="text-lg font-semibold text-white">Ingresos por Nivel</h3>
+              <p className="text-sm text-white/60">Comparativa de rendimiento</p>
+            </div>
+            <DollarSign size={20} className="text-yellow-400" />
+          </div>
+          <div className="space-y-4">
+            {['Principiante', 'Intermedio', 'Avanzado'].map(level => {
+              const levelCourses = allCourses.filter(c => c.level === level)
+              const levelRevenue = levelCourses.reduce((sum, c) => sum + c.revenue, 0)
+              const levelStudents = levelCourses.reduce((sum, c) => sum + c.students, 0)
+              const avgRevenue = levelCourses.length > 0 ? levelRevenue / levelCourses.length : 0
+              const percentage = (levelRevenue / totalRevenue) * 100
+              
+              return (
+                <div key={level} className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-white">{level}</p>
+                      <p className="text-xs text-white/60">{levelCourses.length} cursos • {levelStudents.toLocaleString()} estudiantes</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-bold text-purple-400">{`$${levelRevenue.toLocaleString()}`}</p>
+                      <p className="text-xs text-white/60">Prom: {`$${Math.round(avgRevenue).toLocaleString()}`}</p>
+                    </div>
+                  </div>
+                  <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full transition-all duration-500"
+                      style={{ width: `${percentage}%` }}
+                    />
+                  </div>
+                  <p className="text-xs text-white/50">{percentage.toFixed(1)}% de los ingresos totales</p>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* Tabla de rendimiento de cursos destacados */}
+      <div className="bg-white/10 backdrop-blur-xl rounded-xl border border-white/20 p-6 shadow-lg">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h3 className="text-xl font-bold text-white drop-shadow-sm">Top Cursos por Rendimiento</h3>
+            <p className="text-sm text-white/60 mt-1">Cursos con mejor desempeño este mes</p>
+          </div>
+          <button 
+            onClick={() => setActiveTab('all-courses')}
+            className="text-purple-400 hover:text-purple-300 font-medium text-sm transition-colors duration-200 flex items-center gap-2"
+          >
+            Ver todos
+            <ChevronRight size={16} />
+          </button>
+        </div>
+        
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-white/10">
+                <th className="text-left py-3 px-2 text-xs font-semibold text-white/70 uppercase tracking-wider">Curso</th>
+                <th className="text-center py-3 px-2 text-xs font-semibold text-white/70 uppercase tracking-wider">Estudiantes</th>
+                <th className="text-center py-3 px-2 text-xs font-semibold text-white/70 uppercase tracking-wider">Rating</th>
+                <th className="text-center py-3 px-2 text-xs font-semibold text-white/70 uppercase tracking-wider">Finalización</th>
+                <th className="text-right py-3 px-2 text-xs font-semibold text-white/70 uppercase tracking-wider">Ingresos</th>
+                <th className="text-center py-3 px-2 text-xs font-semibold text-white/70 uppercase tracking-wider">Tendencia</th>
+              </tr>
+            </thead>
+            <tbody>
+              {allCourses
+                .sort((a, b) => b.revenue - a.revenue)
+                .slice(0, 5)
+                .map((course, index) => (
+                  <tr 
+                    key={course.id} 
+                    className="border-b border-white/5 hover:bg-white/5 transition-colors cursor-pointer"
+                    onClick={() => handleViewCourseInfo(course)}
+                  >
+                    <td className="py-4 px-2">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center flex-shrink-0">
+                          <span className="text-white font-bold text-xs">{index + 1}</span>
+                        </div>
+                        <div>
+                          <p className="text-sm font-semibold text-white line-clamp-1">{course.title}</p>
+                          <p className="text-xs text-white/60">{course.instructor}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="py-4 px-2 text-center">
+                      <div className="flex items-center justify-center gap-1">
+                        <Users size={14} className="text-green-400" />
+                        <span className="text-sm font-semibold text-white">{course.students.toLocaleString()}</span>
+                      </div>
+                    </td>
+                    <td className="py-4 px-2 text-center">
+                      <div className="flex items-center justify-center gap-1">
+                        <Star size={14} className="text-yellow-400 fill-yellow-400" />
+                        <span className="text-sm font-semibold text-white">{course.rating}</span>
+                      </div>
+                    </td>
+                    <td className="py-4 px-2 text-center">
+                      <div className="flex flex-col items-center gap-1">
+                        <span className="text-sm font-semibold text-white">{course.completionRate}%</span>
+                        <div className="w-16 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                          <div 
+                            className="h-full bg-gradient-to-r from-green-500 to-emerald-500 rounded-full"
+                            style={{ width: `${course.completionRate}%` }}
+                          />
+                        </div>
+                      </div>
+                    </td>
+                    <td className="py-4 px-2 text-right">
+                      <span className="text-sm font-bold text-purple-400">{`$${course.revenue.toLocaleString()}`}</span>
+                    </td>
+                    <td className="py-4 px-2 text-center">
+                      <div className="flex items-center justify-center">
+                        <TrendingUp size={16} className="text-green-400" />
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Cursos destacados */}
+      <div className="bg-white/10 backdrop-blur-xl rounded-xl border border-white/20 p-8 shadow-lg">
+        <div className="flex items-center justify-between mb-8">
+          <h3 className="text-2xl font-bold text-white drop-shadow-sm">Cursos Destacados</h3>
+          <button 
+            onClick={() => setActiveTab('all-courses')}
+            className="text-purple-400 hover:text-purple-300 font-medium text-sm transition-colors duration-200"
+          >
             Ver todos
           </button>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {allCourses.filter(course => course.featured).map((course) => (
             <div key={course.id} className="group cursor-pointer">
-              <div className="bg-white/5 backdrop-blur-sm rounded-lg h-48 mb-4 relative overflow-hidden border border-white/20">
+              <div className="bg-white/5 backdrop-blur-sm rounded-xl h-56 mb-5 relative overflow-hidden border border-white/20 shadow-lg">
                 <div className="absolute inset-0 bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center">
-                  <BookOpen size={48} className="text-white" />
+                  <BookOpen size={56} className="text-white" />
                 </div>
-                <div className="absolute top-3 right-3">
-                  <span className="px-2 py-1 bg-yellow-500/90 text-white text-xs font-bold rounded-full backdrop-blur-sm border border-yellow-400/30">
+                <div className="absolute top-4 right-4">
+                  <span className="px-3 py-1.5 bg-yellow-500/90 text-white text-xs font-bold rounded-full backdrop-blur-sm border border-yellow-400/30 shadow-lg">
                     DESTACADO
                   </span>
                 </div>
-                <div className="absolute bottom-3 left-3 right-3">
-                  <div className="flex items-center gap-2 text-white text-sm">
-                    <Play size={16} />
+                <div className="absolute bottom-4 left-4 right-4">
+                  <div className="flex items-center gap-2 text-white text-sm font-medium">
+                    <Play size={18} />
                     <span>{course.duration}</span>
                   </div>
                 </div>
               </div>
               
-              <div className="space-y-2">
-                <h4 className="font-bold text-white group-hover:text-purple-300 transition-colors drop-shadow-sm">
+              <div className="space-y-3">
+                <h4 className="text-lg font-bold text-white group-hover:text-purple-300 transition-colors drop-shadow-sm">
                   {course.title}
                 </h4>
-                <p className="text-sm text-white/80 line-clamp-2 drop-shadow-sm">{course.description}</p>
+                <p className="text-sm text-white/80 line-clamp-2 drop-shadow-sm leading-relaxed">{course.description}</p>
                 
-                <div className="flex items-center gap-4 text-sm text-white/70">
-                  <div className="flex items-center gap-1">
-                    <Users size={14} />
+                <div className="flex items-center gap-5 text-sm text-white/70">
+                  <div className="flex items-center gap-1.5">
+                    <Users size={16} />
                     <span>{course.students.toLocaleString()}</span>
                   </div>
-                  <div className="flex items-center gap-1">
-                    <Star size={14} className="text-yellow-400" />
+                  <div className="flex items-center gap-1.5">
+                    <Star size={16} className="text-yellow-400" />
                     <span>{course.rating}</span>
                   </div>
-                  <div className="flex items-center gap-1">
-                    <TrendingUp size={14} />
+                  <div className="flex items-center gap-1.5">
+                    <TrendingUp size={16} />
                     <span>{course.completionRate}%</span>
                   </div>
                 </div>
                 
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between pt-2">
                   <div className="flex items-center gap-2">
-                    <span className="text-lg font-bold text-purple-400">${course.price}</span>
-                    <span className="text-sm text-white/60 line-through">${course.originalPrice}</span>
-                    <span className="text-xs bg-red-500/20 text-red-400 px-2 py-1 rounded-full border border-red-500/30">
+                    <span className="text-xl font-bold text-purple-400">{`$${course.price}`}</span>
+                    <span className="text-sm text-white/60 line-through">{`$${course.originalPrice}`}</span>
+                    <span className="text-xs bg-red-500/20 text-red-400 px-2.5 py-1 rounded-full border border-red-500/30 font-medium">
                       -{course.discount}%
                     </span>
                   </div>
-                  <div className="flex items-center gap-1">
-                    <button className="p-1 text-white/60 hover:text-purple-400 transition-colors duration-200">
-                      <Eye size={16} />
+                  <div className="flex items-center gap-2">
+                    <button 
+                      onClick={() => handleViewCourseInfo(course)}
+                      className="p-2 text-white/60 hover:text-purple-400 hover:bg-purple-500/20 rounded-lg transition-all duration-200"
+                      title="Ver información"
+                    >
+                      <Eye size={18} />
                     </button>
-                    <button className="p-1 text-white/60 hover:text-blue-400 transition-colors duration-200">
-                      <Edit size={16} />
+                    <button 
+                      onClick={() => {
+                        setSelectedCourse(course)
+                        setActiveTab('editor')
+                      }}
+                      className="p-2 text-white/60 hover:text-blue-400 hover:bg-blue-500/20 rounded-lg transition-all duration-200"
+                      title="Editar curso"
+                    >
+                      <Edit size={18} />
                     </button>
                   </div>
                 </div>
@@ -859,11 +1789,109 @@ const CourseManagement = () => {
         </div>
       </div>
     </div>
-  )
+    );
+  }
   
   // Componente para mostrar todos los cursos por categorías en columnas
-  const AllCoursesView = () => (
-    <div className="space-y-8">
+  const AllCoursesView = () => {
+    const [viewMode, setViewMode] = React.useState('grid') // 'grid' o 'list'
+    const [sortBy, setSortBy] = React.useState('recent') // 'recent', 'popular', 'rating', 'revenue'
+    const [filterLevel, setFilterLevel] = React.useState('all') // 'all', 'Principiante', 'Intermedio', 'Avanzado'
+    
+    const sortedAndFilteredCourses = React.useMemo(() => {
+      let courses = [...allCourses]
+      
+      // Filtrar por nivel
+      if (filterLevel !== 'all') {
+        courses = courses.filter(course => course.level === filterLevel)
+      }
+      
+      // Ordenar
+      switch (sortBy) {
+        case 'popular':
+          courses.sort((a, b) => b.students - a.students)
+          break
+        case 'rating':
+          courses.sort((a, b) => b.rating - a.rating)
+          break
+        case 'revenue':
+          courses.sort((a, b) => b.revenue - a.revenue)
+          break
+        case 'recent':
+        default:
+          courses.sort((a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated))
+          break
+      }
+      
+      return courses
+    }, [sortBy, filterLevel])
+    
+    return (
+    <div className="space-y-6">
+      {/* Barra de filtros y controles */}
+      <div className="bg-white/10 backdrop-blur-xl rounded-xl border border-white/20 p-4 shadow-lg">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex items-center gap-2">
+              <Filter size={18} className="text-white/70" />
+              <span className="text-sm font-medium text-white/80">Filtros:</span>
+            </div>
+            
+            {/* Filtro por nivel */}
+            <select
+              value={filterLevel}
+              onChange={(e) => setFilterLevel(e.target.value)}
+              className="px-3 py-1.5 bg-white/5 border border-white/20 rounded-lg text-sm text-white focus:outline-none focus:border-purple-400 transition-colors"
+            >
+              <option value="all">Todos los niveles</option>
+              <option value="Principiante">Principiante</option>
+              <option value="Intermedio">Intermedio</option>
+              <option value="Avanzado">Avanzado</option>
+            </select>
+            
+            {/* Ordenar por */}
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="px-3 py-1.5 bg-white/5 border border-white/20 rounded-lg text-sm text-white focus:outline-none focus:border-purple-400 transition-colors"
+            >
+              <option value="recent">Más recientes</option>
+              <option value="popular">Más populares</option>
+              <option value="rating">Mejor calificados</option>
+              <option value="revenue">Mayor ingreso</option>
+            </select>
+            
+            <span className="text-sm text-white/60">
+              {sortedAndFilteredCourses.length} curso{sortedAndFilteredCourses.length !== 1 ? 's' : ''}
+            </span>
+          </div>
+          
+          {/* Selector de vista */}
+          <div className="flex items-center gap-2 bg-white/5 rounded-lg p-1">
+            <button
+              onClick={() => setViewMode('grid')}
+              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
+                viewMode === 'grid'
+                  ? 'bg-purple-500/30 text-white'
+                  : 'text-white/60 hover:text-white'
+              }`}
+            >
+              Cuadrícula
+            </button>
+            <button
+              onClick={() => setViewMode('list')}
+              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
+                viewMode === 'list'
+                  ? 'bg-purple-500/30 text-white'
+                  : 'text-white/60 hover:text-white'
+              }`}
+            >
+              Lista
+            </button>
+          </div>
+        </div>
+      </div>
+      
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {categories.map((category, categoryIndex) => {
           const Icon = category.icon
@@ -938,7 +1966,7 @@ const CourseManagement = () => {
                             setSelectedCourse(course)
                             setActiveTab('editor')
                           }}
-                          className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
+                          className="p-2 text-white/60 hover:text-blue-400 hover:bg-blue-500/20 rounded-lg transition-all duration-200"
                           title="Editar curso"
                         >
                           <Edit size={16} />
@@ -948,7 +1976,7 @@ const CourseManagement = () => {
                             setSelectedCourse(course)
                             setActiveTab('materials')
                           }}
-                          className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all duration-200"
+                          className="p-2 text-white/60 hover:text-green-400 hover:bg-green-500/20 rounded-lg transition-all duration-200"
                           title="Gestionar materiales"
                         >
                           <Upload size={16} />
@@ -958,7 +1986,7 @@ const CourseManagement = () => {
                             setSelectedCourse(course)
                             setActiveTab('pricing')
                           }}
-                          className="p-2 text-gray-400 hover:text-yellow-600 hover:bg-yellow-50 rounded-lg transition-all duration-200"
+                          className="p-2 text-white/60 hover:text-yellow-400 hover:bg-yellow-500/20 rounded-lg transition-all duration-200"
                           title="Configurar precios"
                         >
                           <DollarSign size={16} />
@@ -969,14 +1997,14 @@ const CourseManagement = () => {
                     {/* Precio */}
                     <div className="mt-3 flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <span className="text-lg font-bold text-primary-600">${course.price}</span>
-                        <span className="text-sm text-gray-500 line-through">${course.originalPrice}</span>
-                        <span className="px-2 py-1 bg-red-100 text-red-600 text-xs rounded-full">
+                        <span className="text-lg font-bold text-purple-400">{`$${course.price}`}</span>
+                        <span className="text-sm text-white/40 line-through">{`$${course.originalPrice}`}</span>
+                        <span className="px-2 py-1 bg-red-500/20 text-red-400 text-xs rounded-full border border-red-500/30">
                           -{course.discount}%
                         </span>
                       </div>
                       <div className="text-right">
-                        <p className="text-sm text-gray-500">${course.revenue.toLocaleString()} en ventas</p>
+                        <p className="text-sm text-white/60">{`$${course.revenue.toLocaleString()} en ventas`}</p>
                       </div>
                     </div>
                   </div>
@@ -988,6 +2016,7 @@ const CourseManagement = () => {
       </div>
     </div>
   )
+  }
   
   // Componente para la lista de cursos
   const CourseList = () => (
@@ -1066,7 +2095,7 @@ const CourseManagement = () => {
   }
   
   return (
-    <div className="p-6 min-h-screen relative overflow-hidden" style={{background: '#1e081d'}}>
+    <div className="px-4 sm:px-6 md:px-8 lg:px-12 py-6 min-h-screen relative overflow-hidden" style={{background: '#1e081d'}}>
       {/* Efectos de fondo */}
       <div className="absolute inset-0 bg-gradient-to-br from-purple-900/30 via-transparent to-pink-900/20"></div>
       <div className="absolute inset-0 bg-gradient-to-tl from-[#e9d1e6]/15 via-transparent to-[#d0008b]/25"></div>
@@ -1085,15 +2114,84 @@ const CourseManagement = () => {
       <div className="relative z-10">
       {/* Encabezado */}
       <div className="mb-8">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           <div>
               <h1 className="text-3xl font-bold text-white mb-2 drop-shadow-lg">Gestión de Cursos</h1>
               <p className="text-white/80 drop-shadow-md">Crea, edita y administra tus cursos online con las mejores herramientas</p>
           </div>
-            <button className="bg-gradient-to-r from-purple-600 to-pink-600 text-white flex items-center gap-2 px-6 py-3 text-lg rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 backdrop-blur-sm border border-white/20">
+            <button 
+              onClick={handleOpenCreateCourseModal}
+              className="bg-gradient-to-r from-purple-600 to-pink-600 text-white flex items-center gap-2 px-6 py-3 text-lg rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 backdrop-blur-sm border border-white/20 hover:from-purple-700 hover:to-pink-700"
+            >
             <Plus size={20} />
             Crear Nuevo Curso
           </button>
+        </div>
+        
+        {/* Barra de búsqueda mejorada */}
+        <div className="mt-6 max-w-2xl">
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/50" size={20} />
+            <input
+              type="text"
+              placeholder="Buscar cursos por título, instructor, categoría..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-12 pr-4 py-3 bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:border-purple-400 focus:bg-white/15 transition-all shadow-lg"
+            />
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm('')}
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white/50 hover:text-white transition-colors"
+              >
+                <X size={18} />
+              </button>
+            )}
+          </div>
+          
+          {/* Sugerencias de búsqueda */}
+          {searchTerm && debouncedSearchTerm && (
+            <div className="absolute mt-2 w-full max-w-2xl bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl shadow-2xl overflow-hidden z-50">
+              {allCourses
+                .filter(course => 
+                  course.title.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+                  course.instructor.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+                  course.category.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
+                )
+                .slice(0, 5)
+                .map(course => (
+                  <button
+                    key={course.id}
+                    onClick={() => {
+                      handleViewCourseInfo(course)
+                      setSearchTerm('')
+                    }}
+                    className="w-full px-4 py-3 text-left hover:bg-white/10 transition-colors border-b border-white/5 last:border-b-0 flex items-center gap-3"
+                  >
+                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center flex-shrink-0">
+                      <BookOpen size={20} className="text-white" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-white truncate">{course.title}</p>
+                      <p className="text-xs text-white/60">{course.instructor} • {course.category}</p>
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-white/70">
+                      <Users size={12} />
+                      <span>{course.students}</span>
+                    </div>
+                  </button>
+                ))}
+              {allCourses.filter(course => 
+                course.title.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+                course.instructor.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+                course.category.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
+              ).length === 0 && (
+                <div className="px-4 py-6 text-center text-white/60">
+                  <p className="text-sm">No se encontraron cursos</p>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
       
@@ -1139,6 +2237,230 @@ const CourseManagement = () => {
         {activeTab === 'analytics' && <CourseAnalytics courseId={selectedCourse?.id} />}
         </div>
       </div>
+      
+      {/* Modal de Crear Nuevo Curso */}
+      {showCreateCourseModal && (
+        <div 
+          className="fixed inset-0 bg-black/90 backdrop-blur-md animate-fade-in overflow-hidden"
+          style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center',
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            width: '100vw',
+            height: '100vh',
+            zIndex: 9999,
+            margin: 0,
+            padding: 0
+          }}
+        >
+          <div 
+            className="bg-gradient-to-br from-[#1e081d] via-purple-900/20 to-[#1e081d] border border-white/30 rounded-3xl w-[90vw] max-w-3xl h-[85vh] shadow-2xl animate-scale-in flex flex-col overflow-hidden"
+          >
+            
+            {/* Modal Header - Optimizado */}
+            <div className="px-8 py-6 border-b border-white/20 flex items-center justify-between bg-gradient-to-r from-purple-900/40 via-pink-900/30 to-purple-900/40 flex-shrink-0">
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center shadow-lg">
+                  <Plus size={28} className="text-white" />
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bold text-white">Crear Nuevo Curso</h3>
+                  <p className="text-sm text-white/70 mt-1">Completa la información básica del curso</p>
+                </div>
+              </div>
+              <button 
+                onClick={handleCloseCreateCourseModal}
+                className="text-white/60 hover:text-white transition-all p-2.5 hover:bg-white/20 rounded-xl hover:rotate-90 duration-300"
+              >
+                <X size={26} />
+              </button>
+            </div>
+
+            {/* Modal Body - Optimizado con scroll invisible */}
+            <div className="flex-1 overflow-y-auto overflow-x-hidden" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+              <style jsx>{`
+                div::-webkit-scrollbar {
+                  display: none;
+                }
+              `}</style>
+              <form onSubmit={handleCreateCourse} className="p-8 space-y-6">
+              
+              {/* Título del curso */}
+              <div className="space-y-3">
+                <label className="text-sm font-semibold text-white/90 flex items-center gap-2">
+                  <div className="p-1.5 bg-purple-500/20 rounded-lg">
+                    <BookOpen size={16} className="text-purple-400" />
+                  </div>
+                  Título del curso *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={newCourseData.title}
+                  onChange={(e) => handleNewCourseChange('title', e.target.value)}
+                  className="w-full px-5 py-3.5 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/30 focus:bg-white/15 transition-all hover:bg-white/15"
+                  placeholder="Ej. Introducción a la Inteligencia Artificial"
+                />
+              </div>
+
+              {/* Descripción */}
+              <div className="space-y-3">
+                <label className="text-sm font-semibold text-white/90 flex items-center gap-2">
+                  <div className="p-1.5 bg-blue-500/20 rounded-lg">
+                    <FileText size={16} className="text-blue-400" />
+                  </div>
+                  Descripción breve *
+                </label>
+                <textarea
+                  required
+                  rows={4}
+                  value={newCourseData.description}
+                  onChange={(e) => handleNewCourseChange('description', e.target.value)}
+                  className="w-full px-5 py-3.5 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/30 focus:bg-white/15 transition-all resize-none hover:bg-white/15"
+                  placeholder="Describe brevemente de qué trata el curso..."
+                />
+              </div>
+
+              {/* Grid de 2 columnas - Optimizado */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                {/* Categoría */}
+                <div className="space-y-3">
+                  <label className="text-sm font-semibold text-white/90 flex items-center gap-2">
+                    <div className="p-1.5 bg-green-500/20 rounded-lg">
+                      <Target size={16} className="text-green-400" />
+                    </div>
+                    Categoría *
+                  </label>
+                  <select
+                    required
+                    value={newCourseData.category}
+                    onChange={(e) => handleNewCourseChange('category', e.target.value)}
+                    className="w-full px-5 py-3.5 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/30 focus:bg-white/15 transition-all hover:bg-white/15"
+                  >
+                    <option value="ciencias" className="bg-gray-900">🔬 Ciencias</option>
+                    <option value="tecnologia" className="bg-gray-900">💻 Tecnología</option>
+                    <option value="educacion" className="bg-gray-900">📚 Educación</option>
+                    <option value="arte" className="bg-gray-900">🎨 Arte y Diseño</option>
+                    <option value="negocios" className="bg-gray-900">💼 Negocios</option>
+                    <option value="idiomas" className="bg-gray-900">🌍 Idiomas</option>
+                  </select>
+                </div>
+
+                {/* Nivel */}
+                <div className="space-y-3">
+                  <label className="text-sm font-semibold text-white/90 flex items-center gap-2">
+                    <div className="p-1.5 bg-yellow-500/20 rounded-lg">
+                      <Award size={16} className="text-yellow-400" />
+                    </div>
+                    Nivel *
+                  </label>
+                  <select
+                    required
+                    value={newCourseData.level}
+                    onChange={(e) => handleNewCourseChange('level', e.target.value)}
+                    className="w-full px-5 py-3.5 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/30 focus:bg-white/15 transition-all hover:bg-white/15"
+                  >
+                    <option value="Principiante" className="bg-gray-900">🌱 Principiante</option>
+                    <option value="Intermedio" className="bg-gray-900">🚀 Intermedio</option>
+                    <option value="Avanzado" className="bg-gray-900">⚡ Avanzado</option>
+                  </select>
+                </div>
+
+                {/* Duración */}
+                <div className="space-y-3">
+                  <label className="text-sm font-semibold text-white/90 flex items-center gap-2">
+                    <div className="p-1.5 bg-orange-500/20 rounded-lg">
+                      <Clock size={16} className="text-orange-400" />
+                    </div>
+                    Duración (horas) *
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    min="1"
+                    value={newCourseData.duration}
+                    onChange={(e) => handleNewCourseChange('duration', e.target.value)}
+                    className="w-full px-5 py-3.5 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/30 focus:bg-white/15 transition-all hover:bg-white/15"
+                    placeholder="Ej. 40"
+                  />
+                </div>
+
+                {/* Precio */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-white/90 flex items-center gap-2">
+                    <DollarSign size={16} />
+                    Precio (USD) *
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    min="0"
+                    step="0.01"
+                    value={newCourseData.price}
+                    onChange={(e) => handleNewCourseChange('price', e.target.value)}
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-purple-500 focus:bg-white/10 transition-all"
+                    placeholder="Ej. 199.99"
+                  />
+                </div>
+              </div>
+
+              {/* Instructor */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-white/90 flex items-center gap-2">
+                  <User size={16} />
+                  Instructor *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={newCourseData.instructor}
+                  onChange={(e) => handleNewCourseChange('instructor', e.target.value)}
+                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-purple-500 focus:bg-white/10 transition-all"
+                  placeholder="Ej. Dr. María González"
+                />
+              </div>
+
+              {/* Nota informativa */}
+              <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4 flex gap-3">
+                <AlertCircle size={20} className="text-blue-400 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm text-blue-300 font-medium mb-1">Información importante</p>
+                  <p className="text-xs text-blue-200/80">
+                    Después de crear el curso, podrás agregar contenido detallado, materiales, 
+                    configurar precios avanzados y mucho más en el editor de cursos.
+                  </p>
+                </div>
+              </div>
+
+              {/* Botones de acción */}
+              <div className="flex items-center gap-3 pt-4 border-t border-white/10">
+                <button
+                  type="button"
+                  onClick={handleCloseCreateCourseModal}
+                  className="flex-1 py-3 px-4 bg-white/5 hover:bg-white/10 text-white rounded-xl font-medium transition-colors border border-white/10"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 py-3 px-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-xl font-medium transition-all shadow-lg hover:shadow-purple-500/25 flex items-center justify-center gap-2"
+                >
+                  <Check size={20} />
+                  Crear y Continuar
+                </button>
+              </div>
+
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

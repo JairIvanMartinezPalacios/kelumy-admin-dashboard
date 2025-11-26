@@ -46,34 +46,45 @@ import AdvancedReports from './sections/AdvancedReports'
 
 const EcommerceModule = () => {
   const [activeSection, setActiveSection] = useState('sales')
-  const [showNavArrowLeft, setShowNavArrowLeft] = useState(false)
-  const [showNavArrowRight, setShowNavArrowRight] = useState(false)
-  const navContainerRef = useRef(null)
+  const navRef = useRef(null)
+  const [showScrollButtons, setShowScrollButtons] = useState(false)
+  const [canScrollLeft, setCanScrollLeft] = useState(false)
+  const [canScrollRight, setCanScrollRight] = useState(false)
+
+  const updateScrollButtons = () => {
+    const navElement = navRef.current
+    if (!navElement) {
+      setShowScrollButtons(false)
+      setCanScrollLeft(false)
+      setCanScrollRight(false)
+      return
+    }
+    const { scrollWidth, clientWidth, scrollLeft } = navElement
+    const hasOverflow = scrollWidth > clientWidth + 1
+    setShowScrollButtons(hasOverflow)
+    setCanScrollLeft(scrollLeft > 0)
+    setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 1)
+  }
 
   useEffect(() => {
-    const container = navContainerRef.current
-    if (!container) return
-
-    const updateNavArrows = () => {
-      const { scrollLeft, scrollWidth, clientWidth } = container
-      setShowNavArrowLeft(scrollLeft > 8)
-      setShowNavArrowRight(scrollLeft + clientWidth < scrollWidth - 8)
+    updateScrollButtons()
+    const navElement = navRef.current
+    if (navElement) {
+      navElement.addEventListener('scroll', updateScrollButtons)
     }
-
-    updateNavArrows()
-    container.addEventListener('scroll', updateNavArrows)
-    window.addEventListener('resize', updateNavArrows)
-
+    window.addEventListener('resize', updateScrollButtons)
     return () => {
-      container.removeEventListener('scroll', updateNavArrows)
-      window.removeEventListener('resize', updateNavArrows)
+      if (navElement) {
+        navElement.removeEventListener('scroll', updateScrollButtons)
+      }
+      window.removeEventListener('resize', updateScrollButtons)
     }
   }, [])
 
-  const handleNavScroll = (direction) => {
-    const container = navContainerRef.current
-    if (!container) return
-    container.scrollBy({ left: direction * 240, behavior: 'smooth' })
+  const scrollTabs = (direction) => {
+    if (!navRef.current) return
+    const offset = direction === 'left' ? -240 : 240
+    navRef.current.scrollBy({ left: offset, behavior: 'smooth' })
   }
 
   // Configuración de secciones según el diagrama + funcionalidades adicionales
@@ -159,8 +170,8 @@ const EcommerceModule = () => {
 
   const activeSectionData = sections.find(s => s.id === activeSection)
   const ActiveComponent = activeSectionData?.component
-
-  return (
+    
+    return (
     <div className="p-3 sm:p-4 md:p-6 min-h-screen relative overflow-x-hidden w-full" style={{background: '#1e081d', maxWidth: '100vw'}}>
       {/* Efectos de fondo mejorados */}
       <div className="absolute inset-0 bg-gradient-to-br from-purple-900/30 via-transparent to-pink-900/20 pointer-events-none"></div>
@@ -183,63 +194,62 @@ const EcommerceModule = () => {
             Gestión integral de ventas, pagos, facturación y suscripciones
           </p>
         </div>
-
+        
         {/* Contenedor unificado con tabs horizontales compactos */}
         <div className="bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 shadow-xl overflow-hidden w-full" style={{maxWidth: '100%'}}>
           {/* Tabs horizontales compactos */}
-          <div className="border-b border-white/10 relative">
-            {showNavArrowLeft && (
-              <button
-                type="button"
-                onClick={() => handleNavScroll(-1)}
-                className="absolute left-2 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-9 h-9 rounded-full bg-gradient-to-r from-purple-700/80 to-pink-600/70 border border-white/20 shadow-lg hover:from-purple-600 hover:to-pink-500 transition-all"
-              >
-                <ChevronLeft className="w-4 h-4 text-white" />
-              </button>
-            )}
-
-            {showNavArrowRight && (
-              <button
-                type="button"
-                onClick={() => handleNavScroll(1)}
-                className="absolute right-2 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-9 h-9 rounded-full bg-gradient-to-r from-purple-700/80 to-pink-600/70 border border-white/20 shadow-lg hover:from-purple-600 hover:to-pink-500 transition-all"
-              >
-                <ChevronRight className="w-4 h-4 text-white" />
-              </button>
-            )}
-
-            <div
-              ref={navContainerRef}
-              className="overflow-x-auto scrollbar-hide px-1 sm:px-10"
+          <div className="border-b border-white/10 overflow-hidden relative">
+            <button
+              type="button"
+              aria-label="Desplazar tabs a la izquierda"
+              onClick={() => scrollTabs('left')}
+              className={`absolute left-2 top-1/2 -translate-y-1/2 z-20 p-2 rounded-full border border-white/30 text-white shadow-lg backdrop-blur-md transition ${canScrollLeft ? 'bg-white/25 hover:bg-white/35' : 'bg-white/10 opacity-60 cursor-not-allowed'}`}
+              disabled={!canScrollLeft}
             >
-              <nav className="flex min-w-0 gap-1 sm:gap-2">
-                {sections.map((section, index) => {
-                  const Icon = section.icon
-                  const isActive = activeSection === section.id
-                  const cornerClasses = [
-                    index === 0 ? 'rounded-tl-2xl' : '',
-                    index === sections.length - 1 ? 'rounded-tr-2xl' : ''
-                  ].join(' ')
-                  const stateClasses = isActive
-                    ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg'
-                    : 'bg-transparent text-white/70 hover:text-white hover:bg-white/5'
-
-                  return (
-                    <button
-                      key={section.id}
-                      onClick={() => setActiveSection(section.id)}
-                      className={`group relative flex items-center gap-2 px-4 sm:px-5 md:px-6 py-3 sm:py-3.5 font-semibold text-sm sm:text-base transition-all duration-300 whitespace-nowrap flex-shrink-0 ${cornerClasses} ${stateClasses}`}
-                    >
-                      <Icon size={18} className={`flex-shrink-0 transition-transform duration-300 ${isActive ? 'scale-110' : 'group-hover:scale-110'}`} />
-                      <span className="relative z-10">{section.label}</span>
-                      {isActive && (
-                        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-white/30"></div>
-                      )}
+              <ChevronLeft size={18} />
+            </button>
+            <button
+              type="button"
+              aria-label="Desplazar tabs a la derecha"
+              onClick={() => scrollTabs('right')}
+              className={`absolute right-2 top-1/2 -translate-y-1/2 z-20 p-2 rounded-full border border-white/30 text-white shadow-lg backdrop-blur-md transition ${canScrollRight ? 'bg-white/25 hover:bg-white/35' : 'bg-white/10 opacity-60 cursor-not-allowed'}`}
+              disabled={!canScrollRight}
+            >
+              <ChevronRight size={18} />
+            </button>
+            <div className={`pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-[#1e081d] via-[#1e081d]/70 to-transparent transition-opacity ${showScrollButtons ? 'opacity-100' : 'opacity-0'}`}></div>
+            <div className={`pointer-events-none absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-[#1e081d] via-[#1e081d]/70 to-transparent transition-opacity ${showScrollButtons ? 'opacity-100' : 'opacity-0'}`}></div>
+            <nav ref={navRef} className="flex overflow-x-auto scrollbar-hide min-w-0 w-full px-10 sm:px-12">
+              {sections.map((section, index) => {
+                const Icon = section.icon
+                const isActive = activeSection === section.id
+                const isFirst = index === 0
+                const isLast = index === sections.length - 1
+            
+            return (
+                  <button
+                    key={section.id}
+                    onClick={() => setActiveSection(section.id)}
+                    className={`
+                      group relative flex items-center gap-2 px-4 sm:px-5 md:px-6 py-3 sm:py-3.5 font-semibold text-sm sm:text-base
+                      transition-all duration-300 whitespace-nowrap flex-shrink-0
+                      ${isFirst ? 'rounded-tl-2xl' : ''}
+                      ${isLast ? 'rounded-tr-2xl' : ''}
+                      ${isActive
+                        ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg'
+                        : 'bg-transparent text-white/70 hover:text-white hover:bg-white/5'
+                      }
+                    `}
+                  >
+                    <Icon size={18} className={`flex-shrink-0 transition-transform duration-300 ${isActive ? 'scale-110' : 'group-hover:scale-110'}`} />
+                    <span className="relative z-10">{section.label}</span>
+                    {isActive && (
+                      <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-white/30"></div>
+                    )}
                     </button>
-                  )
-                })}
-              </nav>
-            </div>
+                )
+              })}
+            </nav>
           </div>
 
           {/* Contenido de la sección activa */}
@@ -250,7 +260,7 @@ const EcommerceModule = () => {
           </div>
         </div>
       </div>
-
+      
       {/* Estilos de animación */}
       <style jsx>{`
         @keyframes fadeIn {

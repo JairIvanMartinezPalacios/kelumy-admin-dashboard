@@ -27,6 +27,28 @@ const AdvancedReports = () => {
     setIsVisible(true)
   }, [])
 
+  // Funciones de reportes
+  const handleGenerateReport = (reportId) => {
+    alert(`Generando reporte ${reportId}...\n\n✓ Recopilando datos\n✓ Procesando información\n✓ Creando visualizaciones`)
+  }
+
+  const handleDownloadReport = (format) => {
+    alert(`Descargando reporte en formato ${format}`)
+  }
+
+  const handleScheduleReport = () => {
+    alert('Configurando envío automático de reportes...')
+  }
+
+  const handleCreateCustomReport = () => {
+    alert('Abriendo constructor de reportes personalizados...')
+  }
+
+  const handleViewReport = (reportId) => {
+    setSelectedReport(reportId)
+    alert(`Mostrando reporte ${reportId}`)
+  }
+
   const reportTemplates = [
     {
       id: 1,

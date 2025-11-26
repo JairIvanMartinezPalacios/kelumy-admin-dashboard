@@ -24,11 +24,26 @@ const ConversionAnalytics = () => {
   const [dateRange, setDateRange] = useState('month')
   const [isVisible, setIsVisible] = useState(false)
   const [funnelAnimated, setFunnelAnimated] = useState(false)
+  const [barsAnimated, setBarsAnimated] = useState(false)
 
   useEffect(() => {
     setIsVisible(true)
     setTimeout(() => setFunnelAnimated(true), 300)
+    setTimeout(() => setBarsAnimated(true), 600)
   }, [])
+
+  // Funciones de analíticas
+  const handleExportData = () => {
+    alert('Exportando datos de conversión a Excel...')
+  }
+
+  const handleRefreshData = () => {
+    alert('Actualizando datos en tiempo real...')
+  }
+
+  const handleViewDetails = (stage) => {
+    alert(`Mostrando detalles de: ${stage}`)
+  }
 
   const funnelData = [
     { stage: 'Visitantes', count: 10000, percentage: 100, color: 'blue' },
@@ -84,27 +99,8 @@ const ConversionAnalytics = () => {
           }
         }
         
-        @keyframes widthExpand {
-          from {
-            width: 0%;
-          }
-        }
-        
-        @keyframes bounceIn {
-          0% {
-            opacity: 0;
-            transform: scale(0.3);
-          }
-          50% {
-            opacity: 1;
-            transform: scale(1.05);
-          }
-          70% {
-            transform: scale(0.9);
-          }
-          100% {
-            transform: scale(1);
-          }
+        @keyframes growWidth {
+          from { width: 0; }
         }
         
         .animate-fadeInUp {
@@ -118,6 +114,10 @@ const ConversionAnalytics = () => {
         }
         
         .funnel-bar {
+          transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .progress-bar {
           transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
@@ -137,19 +137,18 @@ const ConversionAnalytics = () => {
       {/* Métricas Principales */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <div 
-          className={`group relative bg-gradient-to-br from-green-500/10 to-emerald-500/5 backdrop-blur-xl rounded-2xl p-4 sm:p-6 border border-green-500/20 hover:border-green-400/40 transition-all duration-500 hover:shadow-2xl hover:shadow-green-500/30 hover:-translate-y-2 card-hover-effect metric-card ${isVisible ? 'animate-fadeInUp' : ''}`}
-          style={{ '--index': 0 }}
+          className={`group relative bg-gradient-to-br from-green-500/10 to-emerald-500/5 backdrop-blur-xl rounded-2xl p-4 sm:p-6 border border-green-500/20 hover:border-green-400/40 transition-all duration-300 hover:shadow-lg hover:shadow-green-500/20 hover:-translate-y-1 ${isVisible ? 'animate-fadeInUp' : ''}`}
+          style={{ animationDelay: '0s' }}
         >
-          <div className="absolute top-0 right-0 w-20 h-20 bg-green-400/10 rounded-full blur-2xl group-hover:bg-green-400/30 group-hover:scale-150 transition-all duration-700"></div>
-          <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-green-500/0 to-green-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <div className="absolute top-0 right-0 w-20 h-20 bg-green-400/10 rounded-full blur-2xl group-hover:bg-green-400/20 transition-all"></div>
           <div className="relative z-10">
             <div className="flex items-center justify-between mb-3">
               <p className="text-white/80 text-xs sm:text-sm font-medium">Tasa de Conversión</p>
-              <div className="p-2 bg-green-500/20 rounded-lg group-hover:bg-green-500/30 group-hover:rotate-12 transition-all duration-300">
-                <Target className="w-5 h-5 text-green-400 group-hover:scale-110 transition-transform" />
+              <div className="p-2 bg-green-500/20 rounded-lg group-hover:bg-green-500/30 transition-all">
+                <Target className="w-5 h-5 text-green-400" />
               </div>
             </div>
-            <p className="text-2xl sm:text-3xl font-bold text-white mb-2 group-hover:scale-110 transition-transform duration-300 inline-block">{conversionMetrics.overallRate}%</p>
+            <p className="text-2xl sm:text-3xl font-bold text-white mb-2">{conversionMetrics.overallRate}%</p>
             <div className="flex items-center gap-1">
               <TrendingUp className="w-3 h-3 text-green-400 animate-bounce" />
               <p className="text-green-400 text-xs">+2.3% vs mes anterior</p>
@@ -158,8 +157,8 @@ const ConversionAnalytics = () => {
         </div>
 
         <div 
-          className={`group relative bg-gradient-to-br from-red-500/10 to-rose-500/5 backdrop-blur-xl rounded-2xl p-4 sm:p-6 border border-red-500/20 hover:border-red-400/40 transition-all duration-500 hover:shadow-2xl hover:shadow-red-500/30 hover:-translate-y-2 card-hover-effect metric-card ${isVisible ? 'animate-fadeInUp' : ''}`}
-          style={{ '--index': 1 }}
+          className={`group relative bg-gradient-to-br from-red-500/10 to-rose-500/5 backdrop-blur-xl rounded-2xl p-4 sm:p-6 border border-red-500/20 hover:border-red-400/40 transition-all duration-300 hover:shadow-lg hover:shadow-red-500/20 hover:-translate-y-1 ${isVisible ? 'animate-fadeInUp' : ''}`}
+          style={{ animationDelay: '0.1s' }}
         >
           <div className="absolute top-0 right-0 w-20 h-20 bg-red-400/10 rounded-full blur-2xl group-hover:bg-red-400/20 transition-all"></div>
           <div className="relative z-10">
@@ -177,7 +176,10 @@ const ConversionAnalytics = () => {
           </div>
         </div>
 
-        <div className="group relative bg-gradient-to-br from-blue-500/10 to-cyan-500/5 backdrop-blur-xl rounded-2xl p-4 sm:p-6 border border-blue-500/20 hover:border-blue-400/40 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/20 hover:-translate-y-1">
+        <div 
+          className={`group relative bg-gradient-to-br from-blue-500/10 to-cyan-500/5 backdrop-blur-xl rounded-2xl p-4 sm:p-6 border border-blue-500/20 hover:border-blue-400/40 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/20 hover:-translate-y-1 ${isVisible ? 'animate-fadeInUp' : ''}`}
+          style={{ animationDelay: '0.2s' }}
+        >
           <div className="absolute top-0 right-0 w-20 h-20 bg-blue-400/10 rounded-full blur-2xl group-hover:bg-blue-400/20 transition-all"></div>
           <div className="relative z-10">
             <div className="flex items-center justify-between mb-3">
@@ -194,7 +196,10 @@ const ConversionAnalytics = () => {
           </div>
         </div>
 
-        <div className="group relative bg-gradient-to-br from-purple-500/10 to-violet-500/5 backdrop-blur-xl rounded-2xl p-4 sm:p-6 border border-purple-500/20 hover:border-purple-400/40 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/20 hover:-translate-y-1">
+        <div 
+          className={`group relative bg-gradient-to-br from-purple-500/10 to-violet-500/5 backdrop-blur-xl rounded-2xl p-4 sm:p-6 border border-purple-500/20 hover:border-purple-400/40 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/20 hover:-translate-y-1 ${isVisible ? 'animate-fadeInUp' : ''}`}
+          style={{ animationDelay: '0.3s' }}
+        >
           <div className="absolute top-0 right-0 w-20 h-20 bg-purple-400/10 rounded-full blur-2xl group-hover:bg-purple-400/20 transition-all"></div>
           <div className="relative z-10">
             <div className="flex items-center justify-between mb-3">
@@ -213,7 +218,7 @@ const ConversionAnalytics = () => {
       </div>
 
         {/* Embudo de Conversión */}
-      <div className={`bg-white/10 backdrop-blur-xl rounded-2xl p-4 sm:p-6 border border-white/20 shadow-lg ${isVisible ? 'animate-fadeInScale' : ''}`} style={{ animationDelay: '0.4s' }}>
+      <div className={`bg-white/10 backdrop-blur-xl rounded-2xl p-4 sm:p-6 border border-white/20 shadow-lg ${isVisible ? 'animate-fadeInUp' : ''}`} style={{ animationDelay: '0.4s' }}>
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-white font-semibold text-lg flex items-center gap-2">
             <BarChart3 size={20} className="text-purple-400" />
@@ -277,7 +282,7 @@ const ConversionAnalytics = () => {
 
       {/* Fuentes de Conversión */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-        <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-4 sm:p-6 border border-white/20 shadow-lg">
+        <div className={`bg-white/10 backdrop-blur-xl rounded-2xl p-4 sm:p-6 border border-white/20 shadow-lg ${isVisible ? 'animate-fadeInUp' : ''}`} style={{ animationDelay: '0.5s' }}>
           <h3 className="text-white font-semibold text-lg mb-4 flex items-center gap-2">
             <TrendingUp size={20} className="text-green-400" />
             Top Fuentes de Conversión
@@ -289,15 +294,18 @@ const ConversionAnalytics = () => {
               { source: 'Email Marketing', conversions: 95, rate: 6.8 },
               { source: 'Búsqueda Orgánica', conversions: 55, rate: 3.2 }
             ].map((item, index) => (
-              <div key={item.source} className="bg-white/5 rounded-xl p-3 hover:bg-white/10 transition-all">
+              <div key={item.source} className="bg-white/5 rounded-xl p-3 hover:bg-white/10 transition-all group">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-white font-medium">{item.source}</span>
                   <span className="text-green-400 font-bold">{item.rate}%</span>
                 </div>
-                <div className="w-full bg-white/10 rounded-full h-2">
+                <div className="w-full bg-white/10 rounded-full h-2 overflow-hidden">
                   <div 
-                    className="bg-gradient-to-r from-green-500 to-emerald-500 h-2 rounded-full transition-all duration-500"
-                    style={{ width: `${(item.conversions / 180) * 100}%` }}
+                    className="bg-gradient-to-r from-green-500 to-emerald-500 h-2 rounded-full progress-bar group-hover:brightness-110"
+                    style={{ 
+                      width: barsAnimated ? `${(item.conversions / 180) * 100}%` : '0%',
+                      transitionDelay: `${index * 0.1}s`
+                    }}
                   ></div>
                 </div>
                 <p className="text-white/60 text-xs mt-1">{item.conversions} conversiones</p>
@@ -306,7 +314,7 @@ const ConversionAnalytics = () => {
           </div>
         </div>
 
-        <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-4 sm:p-6 border border-white/20 shadow-lg">
+        <div className={`bg-white/10 backdrop-blur-xl rounded-2xl p-4 sm:p-6 border border-white/20 shadow-lg ${isVisible ? 'animate-fadeInUp' : ''}`} style={{ animationDelay: '0.6s' }}>
           <h3 className="text-white font-semibold text-lg mb-4 flex items-center gap-2">
             <ShoppingCart size={20} className="text-purple-400" />
             Cursos con Mayor Conversión
@@ -318,15 +326,18 @@ const ConversionAnalytics = () => {
               { course: 'Node.js Master', conversions: 87, rate: 5.8 },
               { course: 'Vue.js Completo', conversions: 72, rate: 4.9 }
             ].map((item, index) => (
-              <div key={item.course} className="bg-white/5 rounded-xl p-3 hover:bg-white/10 transition-all">
+              <div key={item.course} className="bg-white/5 rounded-xl p-3 hover:bg-white/10 transition-all group">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-white font-medium">{item.course}</span>
                   <span className="text-purple-400 font-bold">{item.rate}%</span>
                 </div>
-                <div className="w-full bg-white/10 rounded-full h-2">
+                <div className="w-full bg-white/10 rounded-full h-2 overflow-hidden">
                   <div 
-                    className="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full transition-all duration-500"
-                    style={{ width: `${(item.conversions / 145) * 100}%` }}
+                    className="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full progress-bar group-hover:brightness-110"
+                    style={{ 
+                      width: barsAnimated ? `${(item.conversions / 145) * 100}%` : '0%',
+                      transitionDelay: `${index * 0.1}s`
+                    }}
                   ></div>
                 </div>
                 <p className="text-white/60 text-xs mt-1">{item.conversions} conversiones</p>
@@ -340,4 +351,3 @@ const ConversionAnalytics = () => {
 }
 
 export default ConversionAnalytics
-

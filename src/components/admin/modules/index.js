@@ -65,6 +65,9 @@ export { default as OrganizacionOperativa } from './investigacion/OrganizacionOp
 export { default as RiesgosMitigaciones } from './investigacion/RiesgosMitigaciones'
 export { default as BuenasPracticas } from './investigacion/BuenasPracticas'
 
+// 17. Notificaciones - Centro de notificaciones
+export { default as NotificationsModule } from './notificaciones/NotificationsModule'
+
 // ========================================
 // CONFIGURACIÓN DE MÓDULOS
 // ========================================

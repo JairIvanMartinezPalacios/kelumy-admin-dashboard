@@ -299,13 +299,116 @@ const CourseMaterials = ({ courseId }) => {
     ))
   }
   
+  // Función para reproducir/previsualizar una lección
+  const handlePlayLesson = (moduleId, lessonId) => {
+    const module = modules.find(m => m.id === moduleId)
+    const lesson = module?.lessons.find(l => l.id === lessonId)
+    if (lesson) {
+      alert(`Reproduciendo: ${lesson.title}\nTipo: ${getTypeText(lesson.type)}\nArchivo: ${lesson.file}`)
+      // En producción, aquí se abriría el reproductor de video o visor de contenido
+    }
+  }
+  
+  // Función para editar una lección
+  const handleEditLesson = (moduleId, lessonId) => {
+    const module = modules.find(m => m.id === moduleId)
+    const lesson = module?.lessons.find(l => l.id === lessonId)
+    if (lesson) {
+      alert(`Abriendo editor para: ${lesson.title}\nAquí se abriría el editor de contenido de la lección.`)
+      // En producción, aquí se abriría el editor de lecciones
+    }
+  }
+  
+  // Función para duplicar una lección
+  const handleDuplicateLesson = (moduleId, lessonId) => {
+    const module = modules.find(m => m.id === moduleId)
+    const lesson = module?.lessons.find(l => l.id === lessonId)
+    if (lesson) {
+      const newLesson = {
+        ...lesson,
+        id: Date.now(),
+        title: `${lesson.title} (Copia)`,
+        views: 0,
+        completion: 0
+      }
+      setModules(prev => prev.map(m => 
+        m.id === moduleId 
+          ? { ...m, lessons: [...m.lessons, newLesson] }
+          : m
+      ))
+      alert(`Lección "${lesson.title}" duplicada exitosamente`)
+    }
+  }
+  
+  // Función para eliminar una lección
+  const handleDeleteLesson = (moduleId, lessonId) => {
+    const module = modules.find(m => m.id === moduleId)
+    const lesson = module?.lessons.find(l => l.id === lessonId)
+    if (lesson && window.confirm(`¿Estás seguro de que deseas eliminar la lección "${lesson.title}"?`)) {
+      removeLesson(moduleId, lessonId)
+      alert(`Lección "${lesson.title}" eliminada exitosamente`)
+    }
+  }
+  
+  // Función para editar un módulo
+  const handleEditModule = (moduleId) => {
+    const module = modules.find(m => m.id === moduleId)
+    if (module) {
+      alert(`Abriendo editor para módulo: ${module.title}\nAquí se abriría el editor de módulos.`)
+      // En producción, aquí se abriría el editor de módulos
+    }
+  }
+  
+  // Función para mostrar opciones adicionales del módulo
+  const handleModuleOptions = (moduleId) => {
+    const module = modules.find(m => m.id === moduleId)
+    if (module) {
+      const options = [
+        'Duplicar módulo',
+        'Exportar módulo',
+        'Estadísticas del módulo',
+        'Configuración avanzada',
+        'Eliminar módulo'
+      ]
+      const selected = window.prompt(
+        `Opciones para: ${module.title}\n\n` +
+        options.map((opt, idx) => `${idx + 1}. ${opt}`).join('\n') +
+        '\n\nIngresa el número de la opción:'
+      )
+      if (selected) {
+        const optionIndex = parseInt(selected) - 1
+        if (optionIndex >= 0 && optionIndex < options.length) {
+          alert(`Ejecutando: ${options[optionIndex]}`)
+          // Aquí se ejecutaría la acción correspondiente
+        }
+      }
+    }
+  }
+  
   // ========================================
   // COMPONENTES INTERNOS - Subcomponentes
   // ========================================
   
   // Componente para el modal de subida de archivos
   const UploadModal = () => (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div 
+      className="fixed inset-0 bg-black/90 backdrop-blur-md overflow-hidden"
+      style={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center',
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        width: '100vw',
+        height: '100vh',
+        zIndex: 9999,
+        margin: 0,
+        padding: 0
+      }}
+    >
       <div className="bg-white rounded-xl p-6 w-full max-w-md">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">
           Subir {getTypeText(uploadType)}
@@ -465,19 +568,35 @@ const CourseMaterials = ({ courseId }) => {
             <Eye size={16} />
           </button>
           
-          <button className="p-2 text-white/60 hover:text-purple-400 hover:bg-purple-500/20 hover:border hover:border-purple-400/30 rounded-lg transition-colors">
+          <button 
+            onClick={() => handlePlayLesson(moduleId, lesson.id)}
+            className="p-2 text-white/60 hover:text-purple-400 hover:bg-purple-500/20 hover:border hover:border-purple-400/30 rounded-lg transition-colors"
+            title="Reproducir lección"
+          >
             <Play size={16} />
           </button>
           
-          <button className="p-2 text-white/60 hover:text-blue-400 hover:bg-blue-500/20 hover:border hover:border-blue-400/30 rounded-lg transition-colors">
+          <button 
+            onClick={() => handleEditLesson(moduleId, lesson.id)}
+            className="p-2 text-white/60 hover:text-blue-400 hover:bg-blue-500/20 hover:border hover:border-blue-400/30 rounded-lg transition-colors"
+            title="Editar lección"
+          >
             <Edit size={16} />
           </button>
           
-          <button className="p-2 text-white/60 hover:text-white/80 hover:bg-white/10 rounded-lg transition-colors">
+          <button 
+            onClick={() => handleDuplicateLesson(moduleId, lesson.id)}
+            className="p-2 text-white/60 hover:text-white/80 hover:bg-white/10 rounded-lg transition-colors"
+            title="Duplicar lección"
+          >
             <Copy size={16} />
           </button>
           
-          <button className="p-2 text-white/60 hover:text-red-400 hover:bg-red-500/20 hover:border hover:border-red-400/30 rounded-lg transition-colors">
+          <button 
+            onClick={() => handleDeleteLesson(moduleId, lesson.id)}
+            className="p-2 text-white/60 hover:text-red-400 hover:bg-red-500/20 hover:border hover:border-red-400/30 rounded-lg transition-colors"
+            title="Eliminar lección"
+          >
             <Trash2 size={16} />
           </button>
         </div>
@@ -532,11 +651,19 @@ const CourseMaterials = ({ courseId }) => {
             {module.isPublished ? <Globe size={16} /> : <Lock size={16} />}
           </button>
           
-          <button className="p-2 text-white/60 hover:text-blue-400 hover:bg-blue-500/20 hover:border hover:border-blue-400/30 rounded-lg transition-colors">
+          <button 
+            onClick={() => handleEditModule(module.id)}
+            className="p-2 text-white/60 hover:text-blue-400 hover:bg-blue-500/20 hover:border hover:border-blue-400/30 rounded-lg transition-colors"
+            title="Editar módulo"
+          >
             <Edit size={16} />
           </button>
           
-          <button className="p-2 text-white/60 hover:text-white/80 hover:bg-white/10 rounded-lg transition-colors">
+          <button 
+            onClick={() => handleModuleOptions(module.id)}
+            className="p-2 text-white/60 hover:text-white/80 hover:bg-white/10 rounded-lg transition-colors"
+            title="Más opciones"
+          >
             <MoreVertical size={16} />
           </button>
         </div>

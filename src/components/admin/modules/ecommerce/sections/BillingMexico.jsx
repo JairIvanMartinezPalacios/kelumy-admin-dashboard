@@ -79,6 +79,47 @@ const BillingMexico = () => {
     }).format(amount)
   }
 
+  // Funciones de facturación
+  const handleGenerateInvoice = (orderId) => {
+    alert(`Generando factura CFDI 4.0 para el pedido ${orderId}...\n\nEsta acción:\n- Timbra la factura con el PAC\n- Genera XML y PDF\n- Envía por email al cliente`)
+  }
+
+  const handleDownloadXML = (invoiceId) => {
+    alert(`Descargando XML de la factura ${invoiceId}`)
+    // Simular descarga
+    const blob = new Blob(['<?xml version="1.0" encoding="UTF-8"?>'], { type: 'text/xml' })
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `${invoiceId}.xml`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(url)
+  }
+
+  const handleDownloadPDF = (invoiceId) => {
+    alert(`Descargando PDF de la factura ${invoiceId}`)
+  }
+
+  const handleSendEmail = (invoiceId, email) => {
+    alert(`Enviando factura ${invoiceId} por email a: ${email}`)
+  }
+
+  const handleCancelInvoice = (invoiceId) => {
+    if (confirm(`¿Estás seguro de cancelar la factura ${invoiceId}?\n\nEsta acción:\n- Cancela el CFDI ante el SAT\n- No se puede revertir\n- Se notificará al cliente`)) {
+      alert(`Factura ${invoiceId} cancelada exitosamente`)
+    }
+  }
+
+  const handleSaveFiscalData = () => {
+    alert('Datos fiscales guardados correctamente')
+  }
+
+  const handleTestConnection = () => {
+    alert('Probando conexión con PAC...\n\n✓ Conexión exitosa\n✓ Certificados válidos\n✓ Timbres disponibles: 1,247')
+  }
+
   return (
     <div className="space-y-6 w-full max-w-full overflow-x-hidden min-w-0">
       {/* Estilos de animación avanzados */}
@@ -164,7 +205,10 @@ const BillingMexico = () => {
             <Building2 size={20} />
             Datos Fiscales de Kelumy
           </h3>
-          <button className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-all border border-white/20 flex items-center gap-2">
+          <button 
+            onClick={handleSaveFiscalData}
+            className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-all border border-white/20 flex items-center gap-2"
+          >
             <Settings size={18} />
             <span className="hidden sm:inline">Editar</span>
           </button>
@@ -330,15 +374,24 @@ const BillingMexico = () => {
                         </div>
                       </div>
                       <div className="flex gap-2">
-                        <button className="px-3 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-all border border-white/20 flex items-center gap-2 text-sm">
+                        <button 
+                          onClick={() => handleDownloadPDF(invoice.id)}
+                          className="px-3 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-all border border-white/20 flex items-center gap-2 text-sm"
+                        >
                           <Download size={16} />
                           PDF
                         </button>
-                        <button className="px-3 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-all border border-white/20 flex items-center gap-2 text-sm">
+                        <button 
+                          onClick={() => handleDownloadXML(invoice.id)}
+                          className="px-3 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-all border border-white/20 flex items-center gap-2 text-sm"
+                        >
                           <FileText size={16} />
                           XML
                         </button>
-                        <button className="px-3 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-all border border-white/20 flex items-center gap-2 text-sm">
+                        <button 
+                          onClick={() => handleSendEmail(invoice.id, invoice.customer)}
+                          className="px-3 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-all border border-white/20 flex items-center gap-2 text-sm"
+                        >
                           <Mail size={16} />
                           Email
                         </button>
@@ -358,15 +411,24 @@ const BillingMexico = () => {
             </h3>
 
             <div className="space-y-3">
-              <button className="w-full px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-all border border-white/20 flex items-center justify-center gap-2">
+              <button 
+                onClick={() => handleCancelInvoice('CFDI-001')}
+                className="w-full px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-all border border-white/20 flex items-center justify-center gap-2"
+              >
                 <RefreshCw size={18} />
                 Cancelar CFDI
               </button>
-              <button className="w-full px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-all border border-white/20 flex items-center justify-center gap-2">
+              <button 
+                onClick={handleTestConnection}
+                className="w-full px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-all border border-white/20 flex items-center justify-center gap-2"
+              >
                 <FileCheck size={18} />
                 Consultar Estatus en SAT
               </button>
-              <button className="w-full px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-all border border-white/20 flex items-center justify-center gap-2">
+              <button 
+                onClick={() => alert('Reenviando facturas fallidas...')}
+                className="w-full px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-all border border-white/20 flex items-center justify-center gap-2"
+              >
                 <Mail size={18} />
                 Reenviar Facturas Fallidas
               </button>

@@ -64,6 +64,29 @@ const CouponsPromotions = () => {
     }).format(amount)
   }
 
+  // Funciones de cupones
+  const handleCreateCoupon = () => {
+    alert('Abriendo formulario para crear nuevo cupón...')
+  }
+
+  const handleEditCoupon = (code) => {
+    alert(`Editando cupón: ${code}`)
+  }
+
+  const handleDeleteCoupon = (code) => {
+    if (confirm(`¿Eliminar el cupón ${code}?`)) {
+      alert(`Cupón ${code} eliminado`)
+    }
+  }
+
+  const handleDuplicateCoupon = (code) => {
+    alert(`Cupón ${code} duplicado exitosamente`)
+  }
+
+  const handleViewStats = (code) => {
+    alert(`Mostrando estadísticas del cupón ${code}`)
+  }
+
   return (
     <div className="space-y-6 w-full max-w-full overflow-x-hidden min-w-0">
       {/* Estilos de animación avanzados */}
@@ -146,7 +169,10 @@ const CouponsPromotions = () => {
                 placeholder="Código automático o personalizado"
                 className="flex-1 px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-purple-400"
               />
-              <button className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg border border-white/20">
+              <button 
+                onClick={() => alert('Generando código aleatorio...')}
+                className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg border border-white/20"
+              >
                 Generar
               </button>
             </div>
@@ -217,7 +243,10 @@ const CouponsPromotions = () => {
           </div>
         </div>
 
-        <button className="mt-4 w-full px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all">
+        <button 
+          onClick={handleCreateCoupon}
+          className="mt-4 w-full px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all"
+        >
           Crear Cupón
         </button>
       </div>
@@ -273,14 +302,25 @@ const CouponsPromotions = () => {
                     <p className="text-white font-semibold">{formatCurrency(coupon.revenue)}</p>
                   </div>
                   <div className="flex gap-2">
-                    <button className="flex-1 px-3 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-all border border-white/20 text-sm">
+                    <button 
+                      onClick={() => handleEditCoupon(coupon.code)}
+                      className="flex-1 px-3 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-all border border-white/20 text-sm"
+                    >
                       <Edit size={14} className="inline mr-1" />
                       Editar
                     </button>
-                    <button className="px-3 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-all border border-white/20 text-sm">
+                    <button 
+                      onClick={() => handleDuplicateCoupon(coupon.code)}
+                      className="px-3 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-all border border-white/20 text-sm"
+                      title="Duplicar cupón"
+                    >
                       <Copy size={14} />
                     </button>
-                    <button className="px-3 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-all border border-white/20 text-sm">
+                    <button 
+                      onClick={() => handleViewStats(coupon.code)}
+                      className="px-3 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-all border border-white/20 text-sm"
+                      title="Ver estadísticas"
+                    >
                       <BarChart3 size={14} />
                     </button>
                   </div>
