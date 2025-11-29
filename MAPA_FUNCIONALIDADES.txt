@@ -1,0 +1,1296 @@
+═══════════════════════════════════════════════════════════════════════════════
+                    KELUMY ADMIN DASHBOARD - MAPA DE FUNCIONALIDADES
+═══════════════════════════════════════════════════════════════════════════════
+
+📊 DASHBOARD PRINCIPAL
+│
+├── 🏠 INICIO (DashboardInicio)
+│   │
+│   ├── FUNCIONES:
+│   │   ├── Mostrar métricas principales del sistema
+│   │   ├── Visualizar gráficos de ingresos vs egresos
+│   │   ├── Mostrar distribución de costos
+│   │   ├── Generar reportes mensuales y anuales
+│   │   └── Acceso rápido a acciones principales
+│   │
+│   ├── CAMPOS Y DATOS:
+│   │   ├── Métricas:
+│   │   │   ├── Usuarios Activos (value: número, change: porcentaje)
+│   │   │   ├── Cursos Publicados (value: número, change: porcentaje)
+│   │   │   ├── Ingresos Mensuales (value: moneda, change: porcentaje)
+│   │   │   ├── Tasa de Conversión (value: porcentaje, change: porcentaje)
+│   │   │   ├── Certificados Emitidos (value: número, change: porcentaje)
+│   │   │   └── Ventas del Mes (value: número, change: porcentaje)
+│   │   ├── Gráfico Ingresos vs Egresos:
+│   │   │   ├── Datos diarios/semanales/mensuales
+│   │   │   ├── Comparativa de períodos
+│   │   │   └── Leyenda (Ingresos: púrpura, Egresos: rosa)
+│   │   └── Gráfico Distribución de Costos:
+│   │       ├── Docentes (porcentaje)
+│   │       ├── Licencias (porcentaje)
+│   │       ├── Marketing (porcentaje)
+│   │       └── Operación (porcentaje)
+│   │
+│   └── ACCIONES:
+│       ├── Botón "Reporte Mensual" → Genera reporte del mes actual
+│       ├── Botón "Reporte Anual" → Genera reporte del año actual
+│       ├── Botón "Calendario" → Abre calendario de eventos
+│       └── Botón "Alertas" → Muestra alertas del sistema
+│
+├── 📚 CURSOS (CursosModule)
+│   │
+│   ├── 📊 Resumen (overview)
+│   │   │
+│   │   ├── FUNCIONES:
+│   │   │   ├── Mostrar métricas generales de todos los cursos
+│   │   │   ├── Visualizar estadísticas de inscripciones
+│   │   │   ├── Mostrar cursos destacados
+│   │   │   ├── Embudo de conversión (visitas → leads → pruebas → compras)
+│   │   │   └── Actividad reciente del sistema
+│   │   │
+│   │   ├── CAMPOS Y DATOS:
+│   │   │   ├── Métricas Principales:
+│   │   │   │   ├── Total Cursos (número, cambio mensual)
+│   │   │   │   ├── Estudiantes Activos (número, cambio porcentual)
+│   │   │   │   ├── Ingresos Totales (moneda, cambio porcentual)
+│   │   │   │   └── Calificación Promedio (número 1-5, texto descriptivo)
+│   │   │   ├── Cursos Destacados:
+│   │   │   │   ├── Título del curso
+│   │   │   │   ├── Descripción
+│   │   │   │   ├── Duración
+│   │   │   │   ├── Número de estudiantes
+│   │   │   │   ├── Calificación (rating)
+│   │   │   │   ├── Tasa de finalización
+│   │   │   │   ├── Precio actual y original
+│   │   │   │   └── Porcentaje de descuento
+│   │   │   ├── Embudo de Conversión:
+│   │   │   │   ├── Visitas (valor, porcentaje)
+│   │   │   │   ├── Leads captados (valor, porcentaje)
+│   │   │   │   ├── Pruebas activas (valor, porcentaje)
+│   │   │   │   └── Compras confirmadas (valor, porcentaje)
+│   │   │   └── Notificaciones:
+│   │   │       ├── ID de notificación
+│   │   │       ├── Título
+│   │   │       ├── Curso asociado
+│   │   │       ├── Tipo (precio, módulo, reseñas, objetivo)
+│   │   │       └── Timestamp
+│   │   │
+│   │   └── ACCIONES:
+│   │       ├── Ver todos los cursos destacados
+│   │       ├── Filtrar por estado (publicado, borrador, archivado)
+│   │       └── Navegar a detalles del curso
+│   │
+│   ├── 🎯 Por Categorías (categories)
+│   │   ├── 🔬 Ciencias
+│   │   │   ├── Cálculo Diferencial e Integral
+│   │   │   ├── Física General
+│   │   │   ├── Química General
+│   │   │   ├── Álgebra Lineal
+│   │   │   ├── Ecuaciones Diferenciales
+│   │   │   └── Inglés para Ciencias
+│   │   │
+│   │   ├── 💻 Tecnología
+│   │   │   ├── Inteligencia Artificial
+│   │   │   ├── Base de Datos
+│   │   │   ├── Páginas Web
+│   │   │   ├── Programación y Desarrollo de Aplicaciones
+│   │   │   └── Ciberseguridad y Protección Digital
+│   │   │
+│   │   └── 🎓 Educación
+│   │       ├── Gestión Socioemocional
+│   │       ├── Gamificación
+│   │       ├── Laboratorios Creativos
+│   │       ├── Evaluación y Retroalimentación Efectiva
+│   │       └── Diseña tu Plan de Trabajo
+│   │
+│   ├── 📖 Todos los Cursos (all-courses)
+│   │   ├── Lista completa de cursos
+│   │   ├── Filtros por estado (publicado, borrador, archivado)
+│   │   ├── Búsqueda de cursos
+│   │   ├── Ordenamiento
+│   │   └── Acciones masivas
+│   │
+│   ├── ✏️ Editor (editor) - CourseEditor
+│   │   │
+│   │   ├── FUNCIONES:
+│   │   │   ├── Crear nuevo curso (formulario multi-paso)
+│   │   │   ├── Editar curso existente
+│   │   │   ├── Validar datos del formulario
+│   │   │   ├── Subir imagen de portada
+│   │   │   ├── Subir video de presentación
+│   │   │   ├── Gestionar etiquetas (tags)
+│   │   │   └── Vista previa antes de guardar
+│   │   │
+│   │   ├── PASOS DEL FORMULARIO (4 pasos):
+│   │   │   │
+│   │   │   ├── PASO 1: Información Básica
+│   │   │   │   ├── Campos:
+│   │   │   │   │   ├── Título del Curso * (text, requerido)
+│   │   │   │   │   ├── Subtítulo * (text, requerido)
+│   │   │   │   │   ├── Descripción Completa * (textarea, requerido)
+│   │   │   │   │   ├── Categoría Principal (select: programación, diseño, negocios, marketing, datos, idiomas, otro)
+│   │   │   │   │   ├── Subcategoría (select: web-dev, mobile-dev, game-dev, ui-design, graphic-design, digital-marketing, data-analysis)
+│   │   │   │   │   ├── Nivel del Curso (select: principiante, intermedio, avanzado, experto)
+│   │   │   │   │   ├── Instructor * (text, requerido)
+│   │   │   │   │   ├── Duración Estimada (number, horas)
+│   │   │   │   │   └── Idioma del Curso (select: es, en, pt, fr)
+│   │   │   │   └── Validaciones:
+│   │   │   │       ├── Título no puede estar vacío
+│   │   │   │       ├── Subtítulo no puede estar vacío
+│   │   │   │       ├── Descripción no puede estar vacía
+│   │   │   │       └── Instructor no puede estar vacío
+│   │   │   │
+│   │   │   ├── PASO 2: Multimedia
+│   │   │   │   ├── Imagen de Portada:
+│   │   │   │   │   ├── Subir archivo (image/*)
+│   │   │   │   │   ├── Vista previa de imagen
+│   │   │   │   │   ├── Recomendado: 1280x720px
+│   │   │   │   │   ├── Formatos: JPG o PNG
+│   │   │   │   │   └── Máximo: 2MB
+│   │   │   │   └── Video de Presentación:
+│   │   │   │       ├── Subir archivo (video/*)
+│   │   │   │       ├── Máximo: 2 minutos
+│   │   │   │       └── Formatos: MP4 o MOV
+│   │   │   │
+│   │   │   ├── PASO 3: Precios
+│   │   │   │   ├── Campos:
+│   │   │   │   │   ├── Precio de Venta * (number, min: 0, step: 0.01)
+│   │   │   │   │   └── Precio Original * (number, min: 0, step: 0.01)
+│   │   │   │   ├── Validaciones:
+│   │   │   │   │   ├── Precio no puede ser negativo
+│   │   │   │   │   ├── Precio original no puede ser negativo
+│   │   │   │   │   └── Precio original debe ser mayor al precio de venta
+│   │   │   │   ├── Cálculo automático:
+│   │   │   │   │   └── Porcentaje de descuento (si precio original > precio venta)
+│   │   │   │   └── Configuraciones Adicionales:
+│   │   │   │       ├── Curso Destacado (checkbox)
+│   │   │   │       ├── Curso Público (checkbox)
+│   │   │   │       ├── Permitir Comentarios (checkbox, default: true)
+│   │   │   │       └── Certificado de Finalización (checkbox, default: true)
+│   │   │   │
+│   │   │   └── PASO 4: Contenido
+│   │   │       ├── Requisitos Previos (textarea, placeholder)
+│   │   │       ├── Objetivos de Aprendizaje (textarea, placeholder)
+│   │   │       └── Etiquetas del Curso:
+│   │   │           ├── Input para agregar etiqueta
+│   │   │           ├── Lista de etiquetas actuales
+│   │   │           ├── Agregar etiqueta (botón o Enter)
+│   │   │           └── Eliminar etiqueta (botón X en cada tag)
+│   │   │
+│   │   ├── ESTADO DEL FORMULARIO:
+│   │   │   ├── formData (objeto con todos los campos)
+│   │   │   ├── errors (objeto con errores de validación)
+│   │   │   ├── imagePreview (URL de vista previa de imagen)
+│   │   │   ├── activeStep (número del paso actual: 1-4)
+│   │   │   └── newTag (texto temporal para nueva etiqueta)
+│   │   │
+│   │   └── ACCIONES:
+│   │       ├── Navegación:
+│   │       │   ├── Botón "Anterior" (deshabilitado en paso 1)
+│   │       │   ├── Botón "Siguiente" (avanza al siguiente paso)
+│   │       │   └── Botón "Cancelar" (cierra el editor)
+│   │       ├── Guardado:
+│   │       │   ├── Botón "Crear Curso" (en último paso, si es nuevo)
+│   │       │   └── Botón "Actualizar Curso" (en último paso, si es edición)
+│   │       └── Validación:
+│   │           └── validateForm() - Valida todos los campos antes de guardar
+│   │
+│   ├── 📁 Materiales (materials) - CourseMaterials
+│   │   │
+│   │   ├── FUNCIONES:
+│   │   │   ├── Crear y gestionar módulos del curso
+│   │   │   ├── Agregar lecciones a cada módulo
+│   │   │   ├── Subir archivos multimedia (videos, PDFs, etc.)
+│   │   │   ├── Organizar contenido por orden
+│   │   │   ├── Duplicar lecciones
+│   │   │   ├── Ver estadísticas de visualización
+│   │   │   └── Gestionar recursos descargables
+│   │   │
+│   │   ├── ESTRUCTURA DE DATOS:
+│   │   │   ├── Módulos:
+│   │   │   │   ├── id (número único)
+│   │   │   │   ├── title (título del módulo)
+│   │   │   │   ├── description (descripción)
+│   │   │   │   └── lessons (array de lecciones)
+│   │   │   └── Lecciones:
+│   │   │       ├── id (número único)
+│   │   │       ├── title (título de la lección)
+│   │   │       ├── type (video, pdf, quiz, exercise)
+│   │   │       ├── duration (duración en minutos)
+│   │   │       ├── views (número de visualizaciones)
+│   │   │       ├── fileUrl (URL del archivo)
+│   │   │       └── order (orden dentro del módulo)
+│   │   │
+│   │   ├── TIPOS DE LECCIÓN:
+│   │   │   ├── video: Archivos de video (MP4, MOV, etc.)
+│   │   │   ├── pdf: Documentos PDF
+│   │   │   ├── quiz: Cuestionarios interactivos
+│   │   │   └── exercise: Ejercicios prácticos
+│   │   │
+│   │   └── ACCIONES:
+│   │       ├── Agregar módulo nuevo
+│   │       ├── Agregar lección a módulo
+│   │       ├── Editar módulo/lección
+│   │       ├── Eliminar módulo/lección
+│   │       ├── Duplicar lección
+│   │       ├── Reordenar módulos/lecciones (drag & drop)
+│   │       └── Ver estadísticas de cada lección
+│   │
+│   ├── 💰 Precios (pricing) - CoursePricing
+│   │   │
+│   │   ├── FUNCIONES:
+│   │   │   ├── Configurar precios por nivel (básico, intermedio, avanzado)
+│   │   │   ├── Aplicar descuentos porcentuales o fijos
+│   │   │   ├── Crear y gestionar cupones de descuento
+│   │   │   ├── Crear bundles/paquetes de cursos
+│   │   │   ├── Aplicar descuentos masivos a múltiples cursos
+│   │   │   └── Ver historial de cambios de precios
+│   │   │
+│   │   ├── VISTAS:
+│   │   │   ├── Cursos (courses): Gestión de precios por curso
+│   │   │   ├── Cupones (coupons): Gestión de cupones
+│   │   │   └── Bundles (bundles): Gestión de paquetes
+│   │   │
+│   │   ├── CAMPOS POR NIVEL DE CURSO:
+│   │   │   ├── name (nombre del nivel: Básico, Intermedio, Avanzado)
+│   │   │   ├── price (precio actual)
+│   │   │   ├── originalPrice (precio original)
+│   │   │   ├── discount (porcentaje de descuento)
+│   │   │   ├── isDiscountActive (boolean)
+│   │   │   ├── discountStartDate (fecha inicio)
+│   │   │   ├── discountEndDate (fecha fin)
+│   │   │   ├── students (número de estudiantes en ese nivel)
+│   │   │   ├── revenue (ingresos generados)
+│   │   │   ├── topics (array de temas del nivel)
+│   │   │   ├── activities (número de actividades)
+│   │   │   ├── quizzes (número de quizzes)
+│   │   │   └── exams (número de exámenes)
+│   │   │
+│   │   ├── CUPONES:
+│   │   │   ├── Campos:
+│   │   │   │   ├── code (código del cupón, único)
+│   │   │   │   ├── description (descripción)
+│   │   │   │   ├── type (percentage o fixed)
+│   │   │   │   ├── value (valor del descuento)
+│   │   │   │   ├── minAmount (monto mínimo de compra)
+│   │   │   │   ├── maxUses (máximo de usos)
+│   │   │   │   ├── usedCount (usos actuales)
+│   │   │   │   ├── startDate (fecha inicio)
+│   │   │   │   ├── endDate (fecha fin)
+│   │   │   │   ├── isActive (boolean)
+│   │   │   │   ├── applicableCourses (all o categoría específica)
+│   │   │   │   └── category (categoría del cupón)
+│   │   │   └── Acciones:
+│   │   │       ├── Crear cupón
+│   │   │       ├── Editar cupón
+│   │   │       ├── Duplicar cupón
+│   │   │       ├── Activar/Desactivar cupón
+│   │   │       └── Eliminar cupón
+│   │   │
+│   │   ├── BUNDLES:
+│   │   │   ├── Campos:
+│   │   │   │   ├── name (nombre del bundle)
+│   │   │   │   ├── description (descripción)
+│   │   │   │   ├── courses (array de IDs de cursos incluidos)
+│   │   │   │   ├── originalPrice (suma de precios originales)
+│   │   │   │   ├── bundlePrice (precio del bundle)
+│   │   │   │   ├── discount (porcentaje de descuento)
+│   │   │   │   ├── isActive (boolean)
+│   │   │   │   ├── sales (número de ventas)
+│   │   │   │   ├── category (categoría)
+│   │   │   │   ├── startDate (fecha inicio)
+│   │   │   │   └── endDate (fecha fin)
+│   │   │   └── Acciones:
+│   │   │       ├── Crear bundle
+│   │   │       ├── Editar bundle
+│   │   │       ├── Agregar/Quitar cursos del bundle
+│   │   │       └── Eliminar bundle
+│   │   │
+│   │   └── ACCIONES MASIVAS:
+│   │       ├── Seleccionar múltiples cursos (checkbox)
+│   │       ├── Aplicar descuento porcentual masivo (20%, 30%, 50%)
+│   │       ├── Aplicar descuento fijo masivo ($50, $100)
+│   │       └── Deseleccionar todos
+│   │
+│   └── 📈 Analíticas (analytics) - CourseAnalytics
+│       │
+│       ├── FUNCIONES:
+│       │   ├── Visualizar métricas de rendimiento del curso
+│       │   ├── Analizar inscripciones por período
+│       │   ├── Ver ingresos por fuente
+│       │   ├── Identificar puntos de abandono
+│       │   ├── Ver lecciones más vistas
+│       │   ├── Analizar demografía de estudiantes
+│       │   ├── Ver progreso individual de estudiantes
+│       │   └── Exportar reportes
+│       │
+│       ├── PERÍODOS DE ANÁLISIS:
+│       │   ├── Últimos 7 días
+│       │   ├── Últimos 30 días
+│       │   ├── Últimos 90 días
+│       │   └── Último año
+│       │
+│       ├── MÉTRICAS PRINCIPALES:
+│       │   ├── Total Estudiantes (número, cambio porcentual)
+│       │   ├── Estudiantes Activos (número, cambio porcentual)
+│       │   ├── Tasa de Finalización (porcentaje, cambio porcentual)
+│       │   └── Ingresos Totales (moneda, cambio porcentual)
+│       │
+│       ├── GRÁFICOS Y DATOS:
+│       │   ├── Inscripciones por Período:
+│       │   │   ├── Datos diarios (fecha, cantidad)
+│       │   │   ├── Total de la semana
+│       │   │   └── Promedio diario
+│       │   ├── Ingresos por Fuente:
+│       │   │   ├── Directo (monto, porcentaje)
+│       │   │   ├── Google Ads (monto, porcentaje)
+│       │   │   ├── Redes Sociales (monto, porcentaje)
+│       │   │   └── Referidos (monto, porcentaje)
+│       │   ├── Puntos de Abandono:
+│       │   │   ├── Lección (nombre)
+│       │   │   └── Tasa de abandono (porcentaje)
+│       │   ├── Lecciones Más Vistas:
+│       │   │   ├── Título de lección
+│       │   │   ├── Número de vistas
+│       │   │   └── Porcentaje de completación
+│       │   ├── Demografía de Estudiantes:
+│       │   │   ├── Grupos de Edad:
+│       │   │   │   ├── Rango (18-25, 26-35, 36-45, 46+)
+│       │   │   │   ├── Cantidad
+│       │   │   │   └── Porcentaje
+│       │   │   └── Distribución por País:
+│       │   │       ├── País
+│       │   │       ├── Cantidad
+│       │   │       └── Porcentaje
+│       │   └── Progreso de Estudiantes:
+│       │       ├── Nombre del estudiante
+│       │       ├── Progreso (porcentaje)
+│       │       └── Último acceso (fecha)
+│       │
+│       └── ACCIONES:
+│           ├── Seleccionar período de análisis (dropdown)
+│           ├── Actualizar datos (botón refresh)
+│           ├── Exportar reporte (botón export)
+│           ├── Ver detalles del estudiante
+│           └── Ver lección completa
+│
+├── 👥 USUARIOS (UsuariosModule) - UserManagement
+│   │
+│   ├── FUNCIONES:
+│   │   ├── Gestionar usuarios del sistema (crear, editar, eliminar)
+│   │   ├── Filtrar usuarios por rol y estado
+│   │   ├── Buscar usuarios por nombre o email
+│   │   ├── Ver detalles completos de cada usuario
+│   │   ├── Exportar lista de usuarios
+│   │   └── Importar usuarios masivamente
+│   │
+│   ├── FILTROS Y BÚSQUEDA:
+│   │   ├── Búsqueda por texto (nombre o email)
+│   │   ├── Filtro por rol (all, admin, instructor, student)
+│   │   └── Filtro por estado (all, active, inactive, pending)
+│   │
+│   ├── 📖 Estudiantes (students)
+│   │   │
+│   │   ├── CAMPOS DEL ESTUDIANTE:
+│   │   │   ├── id (identificador único)
+│   │   │   ├── name (nombre completo)
+│   │   │   ├── email (correo electrónico)
+│   │   │   ├── phone (teléfono)
+│   │   │   ├── role (rol: 'student')
+│   │   │   ├── status (estado: active, inactive, pending)
+│   │   │   ├── joinDate (fecha de registro)
+│   │   │   ├── coursesEnrolled (número de cursos inscritos)
+│   │   │   ├── progress (progreso promedio en porcentaje)
+│   │   │   └── lastAccess (último acceso al sistema)
+│   │   │
+│   │   ├── FUNCIONES ESPECÍFICAS:
+│   │   │   ├── Ver lista de estudiantes
+│   │   │   ├── Ver perfil completo del estudiante
+│   │   │   ├── Ver cursos inscritos
+│   │   │   ├── Ver progreso académico
+│   │   │   ├── Ver historial de pagos
+│   │   │   └── Gestionar accesos y permisos
+│   │   │
+│   │   └── ACCIONES:
+│   │       ├── Ver detalles (botón Eye)
+│   │       ├── Editar usuario (botón Edit)
+│   │       ├── Eliminar usuario (botón Trash)
+│   │       └── Más opciones (botón MoreVertical)
+│   │
+│   ├── 🎓 Instructores (instructors)
+│   │   │
+│   │   ├── CAMPOS DEL INSTRUCTOR:
+│   │   │   ├── id (identificador único)
+│   │   │   ├── name (nombre completo)
+│   │   │   ├── email (correo electrónico)
+│   │   │   ├── phone (teléfono)
+│   │   │   ├── role (rol: 'instructor')
+│   │   │   ├── status (estado: active, inactive, pending)
+│   │   │   ├── joinDate (fecha de registro)
+│   │   │   ├── coursesCreated (número de cursos creados)
+│   │   │   ├── students (número total de estudiantes)
+│   │   │   ├── rating (calificación promedio 1-5)
+│   │   │   └── lastAccess (último acceso al sistema)
+│   │   │
+│   │   ├── FUNCIONES ESPECÍFICAS:
+│   │   │   ├── Ver lista de instructores
+│   │   │   ├── Ver perfil completo del instructor
+│   │   │   ├── Ver cursos asignados/creados
+│   │   │   ├── Ver evaluaciones y calificaciones
+│   │   │   └── Ver estadísticas de desempeño
+│   │   │
+│   │   └── ACCIONES:
+│   │       ├── Ver detalles (botón Eye)
+│   │       ├── Editar instructor (botón Edit)
+│   │       ├── Eliminar instructor (botón Trash)
+│   │       └── Más opciones (botón MoreVertical)
+│   │
+│   ├── 👑 Administradores (admins)
+│   │   │
+│   │   ├── CAMPOS DEL ADMINISTRADOR:
+│   │   │   ├── id (identificador único)
+│   │   │   ├── name (nombre completo)
+│   │   │   ├── email (correo electrónico)
+│   │   │   ├── phone (teléfono)
+│   │   │   ├── role (rol: 'admin')
+│   │   │   ├── status (estado: active, inactive, pending)
+│   │   │   ├── joinDate (fecha de registro)
+│   │   │   ├── permissions (permisos: full, limited)
+│   │   │   └── lastAccess (último acceso al sistema)
+│   │   │
+│   │   ├── FUNCIONES ESPECÍFICAS:
+│   │   │   ├── Ver lista de administradores
+│   │   │   ├── Gestionar roles y permisos
+│   │   │   ├── Ver registro de actividad
+│   │   │   └── Gestionar accesos al sistema
+│   │   │
+│   │   └── ACCIONES:
+│   │       ├── Ver detalles (botón Eye)
+│   │       ├── Editar administrador (botón Edit)
+│   │       ├── Gestionar permisos (botón Shield)
+│   │       └── Ver registro de actividad
+│   │
+│   ├── ESTADOS Y COLORES:
+│   │   ├── active: Verde (text-green-600 bg-green-100)
+│   │   ├── inactive: Rojo (text-red-600 bg-red-100)
+│   │   └── pending: Amarillo (text-yellow-600 bg-yellow-100)
+│   │
+│   ├── ROLES Y COLORES:
+│   │   ├── admin: Púrpura (text-purple-600 bg-purple-100), icono: Crown
+│   │   ├── instructor: Azul (text-blue-600 bg-blue-100), icono: GraduationCap
+│   │   └── student: Verde (text-green-600 bg-green-100), icono: BookOpen
+│   │
+│   └── ACCIONES GENERALES:
+│       ├── Agregar Usuario (botón Plus)
+│       ├── Exportar Lista (botón Download)
+│       └── Importar Usuarios (botón Upload)
+│
+├── 🛒 E-COMMERCE (EcommerceModule)
+│   │
+│   ├── 📊 Panel de Ventas (sales) - SalesPanel
+│   │   │
+│   │   ├── FUNCIONES:
+│   │   │   ├── Visualizar resumen de ventas en tiempo real
+│   │   │   ├── Ver ingresos por período (diario, semanal, mensual)
+│   │   │   ├── Analizar métodos de pago utilizados
+│   │   │   ├── Filtrar por curso, método de pago y fecha
+│   │   │   ├── Exportar reportes (Excel, PDF, CSV)
+│   │   │   └── Ver proyecciones de ingresos
+│   │   │
+│   │   ├── FILTROS:
+│   │   │   ├── Filtro de fecha (month, week, day, custom)
+│   │   │   ├── Filtro de curso (all o curso específico)
+│   │   │   ├── Filtro de método de pago (all, Stripe, PayPal, MercadoPago, OXXO Pay)
+│   │   │   └── Rango de fechas personalizado (startDate, endDate)
+│   │   │
+│   │   ├── MÉTRICAS PRINCIPALES:
+│   │   │   ├── Ingresos Diarios:
+│   │   │   │   ├── Valor (moneda MXN)
+│   │   │   │   └── Indicador de ventas del día actual
+│   │   │   ├── Ingresos Semanales:
+│   │   │   │   ├── Valor (moneda MXN)
+│   │   │   │   └── Indicador de ventas de la semana
+│   │   │   ├── Ingresos Mensuales:
+│   │   │   │   ├── Valor (moneda MXN)
+│   │   │   │   └── Indicador de ventas del mes
+│   │   │   └── Proyección:
+│   │   │       ├── Valor proyectado (moneda MXN)
+│   │   │       └── Basado en tendencias actuales
+│   │   │
+│   │   ├── GRÁFICOS:
+│   │   │   ├── Ingresos por Día de la Semana:
+│   │   │   │   ├── Datos: Lun, Mar, Mié, Jue, Vie, Sáb, Dom
+│   │   │   │   ├── Monto por día
+│   │   │   │   └── Gráfico de barras
+│   │   │   └── Ingresos por Método de Pago:
+│   │   │       ├── Stripe (monto, porcentaje)
+│   │   │       ├── PayPal (monto, porcentaje)
+│   │   │       ├── MercadoPago (monto, porcentaje)
+│   │   │       └── OXXO Pay (monto, porcentaje)
+│   │   │
+│   │   └── ACCIONES:
+│   │       ├── Seleccionar filtro de fecha (dropdown)
+│   │       ├── Seleccionar filtro de curso (dropdown)
+│   │       ├── Seleccionar filtro de método de pago (dropdown)
+│   │       ├── Configurar rango de fechas personalizado
+│   │       ├── Exportar a Excel (botón con menú)
+│   │       ├── Exportar a PDF (botón con menú)
+│   │       └── Exportar a CSV (botón con menú)
+│   │
+│   ├── 📦 Pedidos y Transacciones (orders)
+│   │   ├── Lista de pedidos
+│   │   ├── Estado de pedidos (pendiente, completado, cancelado)
+│   │   ├── Detalles de transacciones
+│   │   ├── Historial de compras
+│   │   └── Gestión de devoluciones
+│   │
+│   ├── 👤 Gestión de Clientes (customers)
+│   │   ├── Base de datos de clientes
+│   │   ├── Historial de compras por cliente
+│   │   ├── Segmentación de clientes
+│   │   ├── Análisis de comportamiento
+│   │   └── Valor del tiempo de vida (LTV)
+│   │
+│   ├── 📈 Análisis de Conversión (conversion)
+│   │   ├── Embudo de ventas
+│   │   ├── Tasa de conversión
+│   │   ├── Abandono de carrito
+│   │   ├── Optimización de checkout
+│   │   └── A/B testing
+│   │
+│   ├── 💳 Métodos de Pago (payments)
+│   │   ├── Configuración de pasarelas de pago
+│   │   ├── Tarjetas de crédito/débito
+│   │   ├── PayPal
+│   │   ├── Transferencias bancarias
+│   │   ├── Pagos en efectivo (OXXO, etc.)
+│   │   └── Criptomonedas
+│   │
+│   ├── 🧾 Facturación (México) (billing)
+│   │   ├── Generación de facturas CFDI 4.0
+│   │   ├── Gestión de RFC
+│   │   ├── Timbrado fiscal
+│   │   ├── Envío automático de facturas
+│   │   ├── Cancelación de facturas
+│   │   └── Reportes fiscales
+│   │
+│   ├── 🎟️ Cupones y Promociones (coupons)
+│   │   ├── Crear cupones de descuento
+│   │   ├── Códigos promocionales
+│   │   ├── Descuentos porcentuales
+│   │   ├── Descuentos fijos
+│   │   ├── Vigencia de cupones
+│   │   ├── Límites de uso
+│   │   └── Estadísticas de uso
+│   │
+│   ├── 📦 Bundles y Paquetes (bundles)
+│   │   ├── Crear paquetes de cursos
+│   │   ├── Precios especiales para bundles
+│   │   ├── Combos promocionales
+│   │   └── Gestión de contenido agrupado
+│   │
+│   ├── 🔄 Suscripciones y Membresías (subscriptions)
+│   │   ├── Planes de suscripción
+│   │   ├── Membresías mensuales/anuales
+│   │   ├── Renovaciones automáticas
+│   │   ├── Gestión de cancelaciones
+│   │   ├── Beneficios por nivel
+│   │   └── Facturación recurrente
+│   │
+│   ├── 🔔 Notificaciones y Alertas (notifications)
+│   │   ├── Notificaciones de pedidos
+│   │   ├── Alertas de stock bajo
+│   │   ├── Confirmaciones de pago
+│   │   ├── Recordatorios de carrito abandonado
+│   │   └── Actualizaciones de envío
+│   │
+│   └── 📊 Reportes Avanzados (reports)
+│       ├── Reporte de ventas detallado
+│       ├── Análisis de productos
+│       ├── Reporte de clientes
+│       ├── Reporte financiero
+│       ├── Exportación de datos (CSV, Excel, PDF)
+│       └── Dashboards personalizados
+│
+├── 📦 PRODUCTOS ONLINE (ProductosModule)
+│   ├── 📦 Gestión de Productos
+│   │   ├── Crear/editar productos digitales
+│   │   ├── Catálogo de productos
+│   │   ├── Descripciones y especificaciones
+│   │   ├── Imágenes y multimedia
+│   │   └── Estado de productos (activo/inactivo)
+│   │
+│   ├── 🏷️ Gestión de Categorías
+│   │   ├── Crear categorías
+│   │   ├── Subcategorías
+│   │   ├── Organización jerárquica
+│   │   └── Etiquetas y filtros
+│   │
+│   ├── 💰 Precios y Descuentos
+│   │   ├── Configuración de precios
+│   │   ├── Descuentos por volumen
+│   │   ├── Ofertas especiales
+│   │   └── Precios dinámicos
+│   │
+│   ├── 📊 Inventario y Stock
+│   │   ├── Control de inventario digital
+│   │   ├── Disponibilidad de productos
+│   │   ├── Alertas de stock
+│   │   └── Historial de movimientos
+│   │
+│   └── 📈 Analíticas de Productos
+│       ├── Productos más vendidos
+│       ├── Tendencias de ventas
+│       ├── Análisis de rentabilidad
+│       └── Reportes de desempeño
+│
+├── 🏆 CERTIFICACIONES (CertificacionesModule)
+│   │
+│   ├── 🏅 Certificados (certificados)
+│   │   │
+│   │   ├── FUNCIONES:
+│   │   │   ├── Ver lista de certificados emitidos
+│   │   │   ├── Buscar certificados por nombre, estudiante o código
+│   │   │   ├── Filtrar por estado y categoría
+│   │   │   ├── Ver detalles completos del certificado
+│   │   │   ├── Editar certificado
+│   │   │   ├── Eliminar certificado
+│   │   │   └── Descargar certificado en PDF
+│   │   │
+│   │   ├── CAMPOS DEL CERTIFICADO:
+│   │   │   ├── id (identificador único)
+│   │   │   ├── nombre (nombre del certificado)
+│   │   │   ├── descripcion (descripción detallada)
+│   │   │   ├── categoria (Ciencias, Tecnología, Educación, Arte, Negocios)
+│   │   │   ├── duracion (duración del programa)
+│   │   │   ├── precio (precio del certificado)
+│   │   │   ├── estudiantes (número de estudiantes inscritos)
+│   │   │   ├── completados (número de estudiantes que completaron)
+│   │   │   ├── rating (calificación promedio 1-5)
+│   │   │   ├── estado (activo, borrador, vencido)
+│   │   │   ├── fechaCreacion (fecha de creación)
+│   │   │   ├── fechaVencimiento (fecha de vencimiento)
+│   │   │   ├── requisitos (array de requisitos)
+│   │   │   ├── habilidades (array de habilidades)
+│   │   │   ├── plantilla (basica, premium, corporativa)
+│   │   │   ├── qrCode (código QR único)
+│   │   │   ├── blockchainHash (hash de blockchain o null)
+│   │   │   ├── validaciones (número de validaciones)
+│   │   │   └── ingresos (ingresos generados)
+│   │   │
+│   │   ├── FILTROS:
+│   │   │   ├── Búsqueda por texto (nombre, descripción)
+│   │   │   ├── Filtro por estado (all, activo, borrador, vencido)
+│   │   │   ├── Filtro por categoría (all o categoría específica)
+│   │   │   ├── Ordenamiento (nombre, fecha, estudiantes, ingresos)
+│   │   │   └── Orden (ascendente o descendente)
+│   │   │
+│   │   ├── VISTAS:
+│   │   │   ├── Cuadrícula (grid): Vista de tarjetas
+│   │   │   └── Lista (list): Vista de lista
+│   │   │
+│   │   └── ACCIONES:
+│   │       ├── Crear certificado (botón Plus)
+│   │       ├── Ver certificado (botón Eye)
+│   │       ├── Editar certificado (botón Edit)
+│   │       ├── Eliminar certificado (botón Trash)
+│   │       ├── Descargar certificado (botón Download)
+│   │       ├── Generar QR (botón QrCode)
+│   │       └── Validar certificado (botón CheckCircle)
+│   │
+│   ├── ⚡ Generación (generacion)
+│   │   │
+│   │   ├── FUNCIONES:
+│   │   │   ├── Generar certificados individuales
+│   │   │   ├── Generación masiva de certificados
+│   │   │   ├── Diseñar y editar plantillas
+│   │   │   ├── Personalizar diseño (colores, fuentes, logos)
+│   │   │   ├── Configurar campos dinámicos
+│   │   │   ├── Vista previa antes de generar
+│   │   │   └── Configurar automatización de generación
+│   │   │
+│   │   ├── PLANTILLAS:
+│   │   │   ├── Básica: Diseño simple y profesional
+│   │   │   ├── Premium: Diseño avanzado con elementos visuales
+│   │   │   └── Corporativa: Diseño institucional
+│   │   │
+│   │   ├── CAMPOS DINÁMICOS:
+│   │   │   ├── Nombre del estudiante
+│   │   │   ├── Nombre del certificado
+│   │   │   ├── Fecha de emisión
+│   │   │   ├── Fecha de finalización
+│   │   │   ├── Código único del certificado
+│   │   │   ├── QR Code
+│   │   │   └── Firma digital
+│   │   │
+│   │   └── ACCIONES:
+│   │       ├── Seleccionar plantilla
+│   │       ├── Personalizar diseño
+│   │       ├── Agregar campos dinámicos
+│   │       ├── Vista previa
+│   │       ├── Generar certificado individual
+│   │       ├── Generar certificados masivos
+│   │       └── Configurar automatización
+│   │
+│   ├── 📱 Validación (validacion)
+│   │   │
+│   │   ├── FUNCIONES:
+│   │   │   ├── Validar certificado por código QR
+│   │   │   ├── Validar por número de certificado
+│   │   │   ├── Verificar autenticidad en blockchain
+│   │   │   ├── Consulta pública de certificados
+│   │   │   ├── Ver historial completo de validaciones
+│   │   │   ├── Generar códigos QR en lote
+│   │   │   └── Escanear QR con cámara
+│   │   │
+│   │   ├── MÉTODOS DE VALIDACIÓN:
+│   │   │   ├── QR: Escaneo de código QR
+│   │   │   └── API: Validación mediante API
+│   │   │
+│   │   ├── CAMPOS DE VALIDACIÓN:
+│   │   │   ├── id (identificador único)
+│   │   │   ├── qrCode (código QR validado)
+│   │   │   ├── certificado (nombre del certificado)
+│   │   │   ├── estudiante (nombre del estudiante)
+│   │   │   ├── fecha (fecha y hora de validación)
+│   │   │   ├── resultado (valid, invalid, pending)
+│   │   │   ├── metodo (QR o API)
+│   │   │   ├── ip (dirección IP del validador)
+│   │   │   ├── ubicacion (ubicación geográfica)
+│   │   │   ├── blockchainVerified (boolean)
+│   │   │   └── motivo (razón si es inválido)
+│   │   │
+│   │   ├── ESTADÍSTICAS DE VALIDACIÓN:
+│   │   │   ├── totalValidaciones (número total)
+│   │   │   ├── validas (número de válidas)
+│   │   │   ├── invalidas (número de inválidas)
+│   │   │   ├── pendientes (número de pendientes)
+│   │   │   ├── validacionesHoy (número del día)
+│   │   │   ├── validacionesSemana (número de la semana)
+│   │   │   └── validacionesMes (número del mes)
+│   │   │
+│   │   ├── GENERACIÓN DE QR:
+│   │   │   ├── certificadoId (ID del certificado)
+│   │   │   ├── cantidad (número de códigos a generar)
+│   │   │   ├── formato (PNG, SVG, PDF)
+│   │   │   ├── tamaño (500x500, 1000x1000, etc.)
+│   │   │   └── incluirLogo (boolean)
+│   │   │
+│   │   └── ACCIONES:
+│   │       ├── Ingresar código QR manualmente
+│   │       ├── Escanear QR con cámara (botón Camera)
+│   │       ├── Validar certificado (botón CheckCircle)
+│   │       ├── Ver detalles de validación
+│   │       ├── Generar QR individual
+│   │       ├── Generar QR en lote
+│   │       ├── Verificar en blockchain
+│   │       ├── Exportar reporte de validaciones
+│   │       └── Validación masiva
+│   │
+│   ├── 📊 Estadísticas (estadisticas)
+│   │   ├── Certificados emitidos por período
+│   │   ├── Certificados por curso
+│   │   ├── Certificados por categoría
+│   │   ├── Tasa de finalización
+│   │   └── Gráficos y reportes
+│   │
+│   └── ⚙️ Configuración (configuracion)
+│       ├── Diseño de plantillas
+│       ├── Configuración de campos
+│       ├── Requisitos de emisión
+│       ├── Firmas digitales
+│       ├── Logos y marcas de agua
+│       └── Integración con blockchain (opcional)
+│
+├── 🎯 MARKETING (MarketingModule)
+│   ├── 📧 Campañas (campaigns)
+│   │   ├── Crear campañas de marketing
+│   │   ├── Campañas de email
+│   │   ├── Campañas en redes sociales
+│   │   ├── Display ads
+│   │   ├── Estado de campañas (activa, pausada, completada)
+│   │   ├── Métricas de rendimiento
+│   │   │   ├── Tasa de apertura
+│   │   │   ├── Tasa de clics (CTR)
+│   │   │   ├── Conversiones
+│   │   │   └── ROI
+│   │   └── Programación de campañas
+│   │
+│   ├── 📨 Emails (emails)
+│   │   ├── Email marketing masivo
+│   │   ├── Plantillas de email
+│   │   ├── Editor de emails
+│   │   ├── Segmentación de audiencia
+│   │   ├── Personalización
+│   │   ├── Pruebas A/B
+│   │   └── Automatización de emails
+│   │
+│   └── 📊 Analíticas (analytics)
+│       ├── Métricas de marketing
+│       ├── Análisis de audiencia
+│       ├── Embudo de conversión
+│       ├── Atribución de ventas
+│       ├── Análisis de canales
+│       └── Reportes de ROI
+│
+├── 💬 SOPORTE (SoporteModule)
+│   │
+│   ├── 🎫 Tickets (tickets) - GestionTickets
+│   │   │
+│   │   ├── FUNCIONES:
+│   │   │   ├── Crear, editar y gestionar tickets de soporte
+│   │   │   ├── Asignar tickets a agentes
+│   │   │   ├── Responder a tickets con mensajes
+│   │   │   ├── Adjuntar archivos a mensajes
+│   │   │   ├── Categorizar y etiquetar tickets
+│   │   │   ├── Filtrar y buscar tickets
+│   │   │   ├── Ver historial completo de conversaciones
+│   │   │   └── Gestionar tiempos de resolución (SLA)
+│   │   │
+│   │   ├── CAMPOS DEL TICKET:
+│   │   │   ├── id (identificador único, formato: TKT-001)
+│   │   │   ├── subject (asunto del ticket)
+│   │   │   ├── customer (objeto cliente):
+│   │   │   │   ├── name (nombre)
+│   │   │   │   ├── email (correo)
+│   │   │   │   ├── phone (teléfono)
+│   │   │   │   └── avatar (imagen de perfil)
+│   │   │   ├── status (estado: open, in_progress, resolved, closed)
+│   │   │   ├── priority (prioridad: urgent, high, medium, low)
+│   │   │   ├── category (categoría: Acceso, Pago, Certificados, Contenido, Reembolsos, Técnico, General)
+│   │   │   ├── assignedTo (agente asignado o null)
+│   │   │   ├── createdAt (fecha de creación)
+│   │   │   ├── updatedAt (fecha de última actualización)
+│   │   │   ├── lastMessage (último mensaje)
+│   │   │   ├── messages (array de mensajes)
+│   │   │   ├── tags (array de etiquetas)
+│   │   │   ├── satisfaction (calificación 1-5 o null)
+│   │   │   └── estimatedResolution (fecha estimada de resolución)
+│   │   │
+│   │   ├── MENSAJES:
+│   │   │   ├── id (identificador único)
+│   │   │   ├── sender (customer o agent)
+│   │   │   ├── senderName (nombre del remitente)
+│   │   │   ├── message (texto del mensaje)
+│   │   │   ├── timestamp (fecha y hora)
+│   │   │   └── attachments (array de archivos adjuntos)
+│   │   │
+│   │   ├── FILTROS Y BÚSQUEDA:
+│   │   │   ├── Búsqueda por texto (searchTerm)
+│   │   │   ├── Filtro por estado (all, open, in_progress, resolved, closed)
+│   │   │   ├── Filtro por prioridad (all, urgent, high, medium, low)
+│   │   │   ├── Filtro por agente (all o agente específico)
+│   │   │   ├── Ordenamiento (fecha, prioridad, estado)
+│   │   │   └── Orden (ascendente o descendente)
+│   │   │
+│   │   ├── ESTADOS Y COLORES:
+│   │   │   ├── open: Rojo (bg-red-500/20 text-red-300)
+│   │   │   ├── in_progress: Amarillo (bg-yellow-500/20 text-yellow-300)
+│   │   │   ├── resolved: Verde (bg-green-500/20 text-green-300)
+│   │   │   └── closed: Gris (bg-gray-500/20 text-gray-300)
+│   │   │
+│   │   ├── PRIORIDADES Y COLORES:
+│   │   │   ├── urgent: Rojo (bg-red-500/20 text-red-300)
+│   │   │   ├── high: Naranja (bg-orange-500/20 text-orange-300)
+│   │   │   ├── medium: Amarillo (bg-yellow-500/20 text-yellow-300)
+│   │   │   └── low: Azul (bg-blue-500/20 text-blue-300)
+│   │   │
+│   │   ├── VISTAS:
+│   │   │   ├── Lista (list): Vista de lista con detalles
+│   │   │   └── Cuadrícula (grid): Vista de tarjetas
+│   │   │
+│   │   └── ACCIONES:
+│   │       ├── Crear nuevo ticket (botón Plus)
+│   │       ├── Ver detalles del ticket (botón Eye)
+│   │       ├── Editar ticket (botón Edit)
+│   │       ├── Eliminar ticket (botón Trash)
+│   │       ├── Responder al ticket (botón Reply)
+│   │       ├── Asignar a agente (dropdown)
+│   │       ├── Cambiar estado (dropdown)
+│   │       ├── Cambiar prioridad (dropdown)
+│   │       ├── Agregar etiquetas (input)
+│   │       ├── Adjuntar archivos (botón Paperclip)
+│   │       ├── Archivar ticket (botón Archive)
+│   │       ├── Imprimir ticket (botón Printer)
+│   │       ├── Compartir ticket (botón Share)
+│   │       └── Ver historial (botón History)
+│   │
+│   ├── 💬 Chat en Vivo (chat)
+│   │   ├── Chat en tiempo real
+│   │   ├── Múltiples conversaciones simultáneas
+│   │   ├── Estado de agentes (online, away, offline)
+│   │   ├── Transferencia de chats
+│   │   ├── Respuestas rápidas
+│   │   ├── Historial de chats
+│   │   └── Notificaciones de nuevos mensajes
+│   │
+│   ├── ❓ FAQ (faq)
+│   │   ├── Gestión de preguntas frecuentes
+│   │   ├── Categorización de FAQs
+│   │   ├── Búsqueda de FAQs
+│   │   ├── Estadísticas de visualización
+│   │   ├── Votos útiles/no útiles
+│   │   └── Publicar/despublicar FAQs
+│   │
+│   ├── 📚 Base de Conocimiento (base-conocimiento)
+│   │   ├── Artículos de ayuda
+│   │   ├── Tutoriales
+│   │   ├── Guías paso a paso
+│   │   ├── Videos instructivos
+│   │   ├── Recursos descargables
+│   │   ├── Categorías de contenido
+│   │   ├── Búsqueda de artículos
+│   │   └── Estadísticas de acceso
+│   │
+│   ├── 👥 Agentes (agentes)
+│   │   ├── Gestión de agentes de soporte
+│   │   ├── Perfiles de agentes
+│   │   ├── Roles y permisos
+│   │   ├── Estado de disponibilidad
+│   │   ├── Tickets asignados
+│   │   ├── Métricas de desempeño
+│   │   │   ├── Tickets resueltos
+│   │   │   ├── Tiempo promedio de respuesta
+│   │   │   ├── Satisfacción del cliente
+│   │   │   └── Tickets activos
+│   │   └── Horarios de trabajo
+│   │
+│   ├── 📝 Plantillas (plantillas)
+│   │   ├── Plantillas de respuestas
+│   │   ├── Respuestas predefinidas
+│   │   ├── Categorización de plantillas
+│   │   ├── Variables dinámicas
+│   │   ├── Plantillas por tipo de problema
+│   │   └── Uso de plantillas en tickets/chat
+│   │
+│   ├── 📊 Estadísticas (estadisticas)
+│   │   ├── Tickets por período
+│   │   ├── Tiempo promedio de resolución
+│   │   ├── Tasa de resolución en primer contacto
+│   │   ├── Satisfacción del cliente (CSAT)
+│   │   ├── Net Promoter Score (NPS)
+│   │   ├── Tickets por categoría
+│   │   ├── Tickets por agente
+│   │   └── Tendencias y patrones
+│   │
+│   └── ⚙️ Configuración (configuracion)
+│       ├── Notificaciones
+│       │   ├── Notificaciones por email
+│       │   ├── Notificaciones push
+│       │   └── Alertas de SLA
+│       ├── Tiempos y SLA
+│       │   ├── Tiempo de primera respuesta
+│       │   ├── Tiempo de resolución
+│       │   └── Escalamiento automático
+│       ├── Chat en Vivo
+│       │   ├── Horarios de atención
+│       │   ├── Mensaje de bienvenida
+│       │   ├── Mensaje fuera de horario
+│       │   └── Límite de chats por agente
+│       ├── Seguridad
+│       │   ├── Autenticación de dos factores
+│       │   ├── Registro de actividad
+│       │   └── Permisos de acceso
+│       └── General
+│           ├── Idiomas
+│           ├── Zona horaria
+│           └── Formato de fecha/hora
+│
+├── 💰 FINANZAS (FinanzasModule)
+│   ├── Panel de ingresos y gastos
+│   ├── Reportes financieros
+│   ├── Flujo de caja
+│   ├── Conciliación bancaria
+│   ├── Gestión de impuestos
+│   ├── Facturación y cobranza
+│   ├── Presupuestos
+│   └── Análisis de rentabilidad
+│
+├── 🏢 ADMINISTRATIVO (AdministrativoModule)
+│   ├── Gestión de empresa
+│   ├── Recursos humanos
+│   ├── Nómina
+│   ├── Contratos
+│   ├── Políticas y procedimientos
+│   ├── Gestión documental
+│   └── Auditoría y cumplimiento
+│
+├── 📊 REPORTES (ReportesModule)
+│   ├── Reportes de ventas
+│   ├── Reportes de usuarios
+│   ├── Reportes de cursos
+│   ├── Reportes financieros
+│   ├── Reportes de marketing
+│   ├── Reportes personalizados
+│   ├── Exportación de datos
+│   │   ├── PDF
+│   │   ├── Excel
+│   │   ├── CSV
+│   │   └── JSON
+│   └── Dashboards interactivos
+│
+├── 📝 CONTENIDO (ContenidoModule)
+│   ├── Gestión de blog
+│   ├── Páginas estáticas
+│   ├── Biblioteca de medios
+│   ├── Gestión de imágenes
+│   ├── Gestión de videos
+│   ├── Documentos y archivos
+│   └── SEO y metadatos
+│
+├── 📅 CALENDARIO (CalendarioModule)
+│   ├── Calendario de eventos
+│   ├── Programación de cursos
+│   ├── Webinars y sesiones en vivo
+│   ├── Recordatorios
+│   ├── Sincronización con Google Calendar
+│   └── Gestión de disponibilidad
+│
+├── 📧 CORREO (CorreoModule)
+│   ├── Email marketing
+│   ├── Campañas de correo
+│   ├── Listas de distribución
+│   ├── Segmentación de audiencia
+│   ├── Automatización de emails
+│   ├── Plantillas de correo
+│   ├── Análisis de campañas
+│   └── Gestión de suscriptores
+│
+├── 🔔 NOTIFICACIONES (NotificationsModule)
+│   ├── Centro de notificaciones
+│   ├── Notificaciones del sistema
+│   ├── Alertas importantes
+│   ├── Notificaciones de cursos
+│   ├── Notificaciones de ventas
+│   ├── Notificaciones de usuarios
+│   ├── Marcar como leído
+│   └── Historial de notificaciones
+│
+├── ⚙️ CONFIGURACIÓN (ConfiguracionModule)
+│   ├── Configuración general
+│   ├── Información de la empresa
+│   ├── Configuración de correo
+│   ├── Integraciones
+│   ├── API y webhooks
+│   ├── Seguridad
+│   ├── Respaldos
+│   └── Mantenimiento del sistema
+│
+├── 🔬 INVESTIGACIÓN (InvestigacionMosaico)
+│   ├── 💼 Modelos de Negocio
+│   │   ├── Análisis de modelos de negocio
+│   │   ├── Canvas de modelo de negocio
+│   │   └── Estrategias de monetización
+│   │
+│   ├── 💰 Estrategias de Precio
+│   │   ├── Análisis de precios
+│   │   ├── Estrategias de pricing
+│   │   ├── Precios psicológicos
+│   │   └── Análisis competitivo
+│   │
+│   ├── 🎯 Embudo de Ventas
+│   │   ├── Diseño de embudos
+│   │   ├── Optimización de conversión
+│   │   ├── Análisis de puntos de fuga
+│   │   └── Estrategias de retención
+│   │
+│   ├── 🛒 UX Checkout
+│   │   ├── Optimización del proceso de compra
+│   │   ├── Reducción de fricción
+│   │   ├── Pruebas de usabilidad
+│   │   └── Análisis de abandono
+│   │
+│   ├── 💳 Métodos de Venta
+│   │   ├── Estrategias de venta
+│   │   ├── Canales de distribución
+│   │   ├── Modelos de suscripción
+│   │   └── Ventas cruzadas y upselling
+│   │
+│   ├── 📊 Marketing y CRM
+│   │   ├── Estrategias de marketing digital
+│   │   ├── Gestión de relaciones con clientes
+│   │   ├── Automatización de marketing
+│   │   └── Análisis de customer journey
+│   │
+│   ├── 📈 Métricas y KPIs
+│   │   ├── Definición de KPIs
+│   │   ├── Dashboards de métricas
+│   │   ├── Análisis de rendimiento
+│   │   └── Reportes ejecutivos
+│   │
+│   ├── 🚀 Growth Hacks
+│   │   ├── Estrategias de crecimiento rápido
+│   │   ├── Técnicas de growth hacking
+│   │   ├── Experimentos de crecimiento
+│   │   └── Casos de éxito
+│   │
+│   ├── 🧪 Pricing Experiments
+│   │   ├── Pruebas A/B de precios
+│   │   ├── Análisis de elasticidad
+│   │   ├── Optimización de precios
+│   │   └── Estrategias de descuento
+│   │
+│   ├── 🏗️ Organización Operativa
+│   │   ├── Estructura organizacional
+│   │   ├── Procesos y flujos de trabajo
+│   │   ├── Roles y responsabilidades
+│   │   └── Optimización operativa
+│   │
+│   ├── ⚠️ Riesgos y Mitigaciones
+│   │   ├── Identificación de riesgos
+│   │   ├── Análisis de impacto
+│   │   ├── Planes de mitigación
+│   │   └── Gestión de crisis
+│   │
+│   └── ✅ Buenas Prácticas
+│       ├── Mejores prácticas de la industria
+│       ├── Estándares de calidad
+│       ├── Casos de estudio
+│       └── Recomendaciones
+│
+├── 👤 MI PERFIL (AdminProfile)
+│   ├── Información personal
+│   ├── Foto de perfil
+│   ├── Cambiar contraseña
+│   ├── Preferencias
+│   ├── Notificaciones
+│   └── Actividad reciente
+│
+└── ⚙️ CONFIGURACIÓN DE CUENTA (AdminSettings)
+    ├── Configuración de perfil
+    ├── Seguridad
+    ├── Privacidad
+    ├── Notificaciones
+    ├── Idioma y región
+    └── Tema (claro/oscuro)
+
+═══════════════════════════════════════════════════════════════════════════════
+                              CARACTERÍSTICAS GENERALES
+═══════════════════════════════════════════════════════════════════════════════
+
+🎨 INTERFAZ DE USUARIO
+├── Diseño moderno con glassmorphism
+├── Gradientes púrpura y rosa
+├── Sidebar colapsable con hover
+├── Navegación responsiva (desktop y móvil)
+├── Navbar fijo con backdrop blur
+├── Búsqueda global
+├── Centro de notificaciones
+├── Menú de usuario
+└── Animaciones suaves
+
+🔐 AUTENTICACIÓN Y SEGURIDAD
+├── Login con email y contraseña
+├── Integración con Google, Facebook y Apple
+├── Registro en 4 pasos
+│   ├── Datos personales
+│   ├── Datos académicos
+│   ├── Intereses
+│   └── Crear contraseña
+├── Recuperación de contraseña
+├── Autenticación de dos factores (2FA)
+└── Gestión de sesiones
+
+📱 RESPONSIVIDAD
+├── Diseño adaptable a todos los dispositivos
+├── Sidebar móvil con overlay
+├── Navegación optimizada para móviles
+├── Componentes responsivos
+└── Touch-friendly
+
+🌐 INTERNACIONALIZACIÓN
+├── Soporte multiidioma
+├── Formato de fechas localizado
+├── Formato de moneda localizado
+└── Zona horaria configurable
+
+📊 ANALÍTICAS Y MÉTRICAS
+├── Dashboard de métricas en tiempo real
+├── Gráficos interactivos
+├── Exportación de reportes
+├── Análisis predictivo
+└── Visualización de datos
+
+🔔 SISTEMA DE NOTIFICACIONES
+├── Notificaciones en tiempo real
+├── Notificaciones push
+├── Notificaciones por email
+├── Centro de notificaciones
+├── Filtros y categorías
+└── Marcar como leído/no leído
+
+🔍 BÚSQUEDA Y FILTROS
+├── Búsqueda global
+├── Búsqueda por módulo
+├── Filtros avanzados
+├── Ordenamiento personalizado
+└── Búsqueda predictiva
+
+📤 EXPORTACIÓN DE DATOS
+├── Exportar a PDF
+├── Exportar a Excel
+├── Exportar a CSV
+├── Exportar a JSON
+└── Exportación programada
+
+🔗 INTEGRACIONES
+├── Pasarelas de pago (Stripe, PayPal, etc.)
+├── Servicios de email (SendGrid, Mailchimp)
+├── Almacenamiento en la nube
+├── Google Analytics
+├── Redes sociales
+├── CRM externos
+└── API REST
+
+═══════════════════════════════════════════════════════════════════════════════
+                                  TECNOLOGÍAS UTILIZADAS
+═══════════════════════════════════════════════════════════════════════════════
+
+Frontend:
+├── React 18
+├── Lucide React (iconos)
+├── Tailwind CSS (estilos)
+├── Context API (gestión de estado)
+└── React Router (navegación)
+
+Backend (Recomendado):
+├── Node.js + Express
+├── MongoDB / PostgreSQL
+├── JWT para autenticación
+└── Socket.io para tiempo real
+
+Servicios:
+├── Firebase (autenticación, storage)
+├── Stripe (pagos)
+├── SendGrid (emails)
+└── AWS S3 (almacenamiento)
+
+═══════════════════════════════════════════════════════════════════════════════
+                                      FIN DEL MAPA
+═══════════════════════════════════════════════════════════════════════════════
+
+NOTA IMPORTANTE:
+Este mapa ha sido expandido con información detallada que incluye:
+✓ Funciones específicas de cada módulo y submódulo
+✓ Campos de datos completos con tipos y descripciones
+✓ Acciones disponibles (botones, menús, etc.)
+✓ Estados y validaciones
+✓ Filtros y búsquedas
+✓ Estructura de datos y objetos
+✓ Submódulos y componentes anidados
+✓ Configuraciones y opciones
+
+Las secciones más detalladas incluyen:
+- INICIO: Métricas, gráficos y acciones rápidas
+- CURSOS: Editor completo (4 pasos), Materiales, Precios (niveles, cupones, bundles), Analíticas
+- USUARIOS: Estudiantes, Instructores, Administradores con campos completos
+- E-COMMERCE: Panel de ventas con filtros y exportación
+- CERTIFICACIONES: Certificados, Generación, Validación con QR y blockchain
+- SOPORTE: Tickets con estados, prioridades, mensajes y archivos adjuntos
+
+═══════════════════════════════════════════════════════════════════════════════
+
+Fecha de generación: 27 de noviembre de 2025
+Versión: 2.0 (Expandida con funciones, campos y acciones detalladas)
+Proyecto: KELUMY Admin Dashboard
+
